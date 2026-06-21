@@ -23,7 +23,7 @@ class Os extends MY_Controller
     public function gerenciar()
     {
         $this->load->library('pagination');
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('contas_model');
 
         $where_array = [];
@@ -104,7 +104,7 @@ class Os extends MY_Controller
         );
 
         $this->data['texto_de_notificacao'] = $this->data['configuration']['notifica_whats'];
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['tecnicos'] = $this->tecnicos_model->getAll();
         $this->data['usuarios'] = $this->contas_model->getAll('usuarios');
         $this->data['view'] = 'os/os';
@@ -179,12 +179,12 @@ class Os extends MY_Controller
             ];
 
             if (is_numeric($id = $this->os_model->add('os', $data, true))) {
-                $this->load->model('mapos_model');
+                $this->load->model('steos_model');
                 $this->load->model('usuarios_model');
 
                 $idOs = $id;
                 $os = $this->os_model->getById($idOs);
-                $emitente = $this->mapos_model->getEmitente();
+                $emitente = $this->steos_model->getEmitente();
 
                 $tecnico = $this->usuarios_model->getById($os->usuarios_id);
 
@@ -326,10 +326,10 @@ class Os extends MY_Controller
 
         if (is_numeric($id = $this->os_model->add('os', $data, true))) {
 
-            $this->load->model('mapos_model');
+            $this->load->model('steos_model');
             $idOs = $id;
             $os = $this->os_model->getById($idOs);
-            $emitente = $this->mapos_model->getEmitente();
+            $emitente = $this->steos_model->getEmitente();
             $tecnico = $this->usuarios_model->getById($os->usuarios_id);
 
             // adiciona tecnicos
@@ -574,13 +574,13 @@ class Os extends MY_Controller
             }
 
             if ($this->os_model->edit('os', $data, 'idOs', $this->input->post('idOs')) == true) {
-                $this->load->model('mapos_model');
+                $this->load->model('steos_model');
                 $this->load->model('usuarios_model');
 
                 $idOs = $this->input->post('idOs');
 
                 $os = $this->os_model->getById($idOs);
-                $emitente = $this->mapos_model->getEmitente();
+                $emitente = $this->steos_model->getEmitente();
                 $tecnico = $this->usuarios_model->getById($os->usuarios_id);
 
                 // adiciona tecnicos
@@ -698,9 +698,9 @@ class Os extends MY_Controller
             $this->data['totalProdutos'] = $return['totalProdutos'];
         }
 
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('financeiro_model');
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         
         $where = "vendas_id = '$os->idOs'";
         $this->data['lancamentos'] = $this->financeiro_model->get1('lancamentos', '*', $where);
@@ -716,7 +716,7 @@ class Os extends MY_Controller
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
@@ -727,7 +727,7 @@ class Os extends MY_Controller
         $this->data['custom_error'] = '';
         $this->data['texto_de_notificacao'] = $this->data['configuration']['notifica_whats'];
 
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('tecnicos_os_model');
         $this->load->model('equipamentos_os_model');
         $this->load->model('modelos_model');
@@ -736,7 +736,7 @@ class Os extends MY_Controller
         $this->data['result'] = $this->os_model->getById($this->uri->segment(3));
         $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['anexos'] = $this->os_model->getAnexos($this->uri->segment(3));
         $this->data['anotacoes'] = $this->os_model->getAnotacoes($this->uri->segment(3));
         $this->data['editavel'] = $this->os_model->isEditable($this->uri->segment(3));
@@ -770,7 +770,7 @@ class Os extends MY_Controller
     {
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
@@ -779,7 +779,7 @@ class Os extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('tecnicos_os_model');
         $this->load->model('equipamentos_os_model');
 
@@ -790,7 +790,7 @@ class Os extends MY_Controller
         $this->data['assinatura'] = $this->os_model->getByIdAssinaturaExtr($this->uri->segment(3));
         $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['equipamentos'] = $this->equipamentos_os_model->getAll($this->uri->segment(3));
         $this->data['tecnicos_os'] = $this->tecnicos_os_model->getById($this->uri->segment(3));
         $this->data['qrCode'] = $this->os_model->getQrCode(
@@ -870,7 +870,7 @@ class Os extends MY_Controller
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
@@ -879,7 +879,7 @@ class Os extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('tecnicos_os_model');
         $this->load->model('equipamentos_os_model');
         $this->load->model('modelos_model');
@@ -889,7 +889,7 @@ class Os extends MY_Controller
         $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
         $this->data['anexos'] = $this->os_model->getAnexos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['equipamentos'] = $this->equipamentos_os_model->getAll($this->uri->segment(3));
         $this->data['tecnicos_os'] = $this->tecnicos_os_model->getById($this->uri->segment(3));
 
@@ -911,7 +911,7 @@ class Os extends MY_Controller
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
@@ -920,7 +920,7 @@ class Os extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('tecnicos_os_model');
         $this->load->model('equipamentos_os_model');
 
@@ -928,7 +928,7 @@ class Os extends MY_Controller
         $this->data['assinatura'] = $this->os_model->getByIdAssinaturaExtr($this->uri->segment(3));
         $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['equipamentos'] = $this->equipamentos_os_model->getAll($this->uri->segment(3));
         $this->data['tecnicos_os'] = $this->tecnicos_os_model->getById($this->uri->segment(3));
         $this->data['qrCode'] = $this->os_model->getQrCode(
@@ -945,7 +945,7 @@ class Os extends MY_Controller
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
@@ -953,7 +953,7 @@ class Os extends MY_Controller
             redirect(base_url());
         }
 
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('usuarios_model');
         $this->data['result'] = $this->os_model->getById($this->uri->segment(3));
         if (! isset($this->data['result']->email)) {
@@ -963,7 +963,7 @@ class Os extends MY_Controller
 
         $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
 
         if (! isset($this->data['emitente']->email)) {
             $this->session->set_flashdata('error', 'Efetue o cadastro dos dados de emitente');
@@ -1098,48 +1098,48 @@ class Os extends MY_Controller
 
     public function autoCompleteProduto()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->os_model->autoCompleteProduto($q);
         }
     }
 
     public function autoCompleteProdutoSaida()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->os_model->autoCompleteProdutoSaida($q);
         }
     }
 
     public function autoCompleteCliente()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->os_model->autoCompleteCliente($q);
         }
     }
 
     public function autoCompleteUsuario()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->os_model->autoCompleteUsuario($q);
         }
     }
 
     public function autoCompleteTermoGarantia()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->os_model->autoCompleteTermoGarantia($q);
         }
     }
 
     public function autoCompleteServico()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->os_model->autoCompleteServico($q);
         }
     }
@@ -1183,11 +1183,7 @@ class Os extends MY_Controller
                 $this->produtos_model->updateEstoque($produto, $quantidade, '-');
             }
 
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $id);
-            $this->db->update('os');
+            $this->os_model->edit('os', ['desconto' => 0.00, 'valor_desconto' => 0.00, 'tipo_desconto' => null], 'idOs', $id);
 
             log_info('Adicionou produto a uma OS. ID (OS): ' . $this->input->post('idOsProduto'));
 
@@ -1224,11 +1220,7 @@ class Os extends MY_Controller
                 $this->produtos_model->updateEstoque($produto, $quantidade, '+');
             }
 
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $idOs);
-            $this->db->update('os');
+            $this->os_model->edit('os', ['desconto' => 0.00, 'valor_desconto' => 0.00, 'tipo_desconto' => null], 'idOs', $idOs);
 
             log_info('Removeu produto de uma OS. ID (OS): ' . $idOs);
 
@@ -1262,11 +1254,7 @@ class Os extends MY_Controller
         if ($this->os_model->add('servicos_os', $data) == true) {
             log_info('Adicionou serviço a uma OS. ID (OS): ' . $this->input->post('idOsServico'));
 
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $this->input->post('idOsServico'));
-            $this->db->update('os');
+            $this->os_model->edit('os', ['desconto' => 0.00, 'valor_desconto' => 0.00, 'tipo_desconto' => null], 'idOs', $this->input->post('idOsServico'));
 
             return $this->output
                 ->set_content_type('application/json')
@@ -1287,11 +1275,7 @@ class Os extends MY_Controller
 
         if ($this->os_model->delete('servicos_os', 'idServicos_os', $ID) == true) {
             log_info('Removeu serviço de uma OS. ID (OS): ' . $idOs);
-            $this->db->set('desconto', 0.00);
-            $this->db->set('valor_desconto', 0.00);
-            $this->db->set('tipo_desconto', null);
-            $this->db->where('idOs', $idOs);
-            $this->db->update('os');
+            $this->os_model->edit('os', ['desconto' => 0.00, 'valor_desconto' => 0.00, 'tipo_desconto' => null], 'idOs', $idOs);
             echo json_encode(['result' => true]);
         } else {
             echo json_encode(['result' => false]);
@@ -1518,46 +1502,32 @@ class Os extends MY_Controller
                 'usuarios_id' => $this->session->userdata('id_admin'),
             ];
 
-            $this->db->trans_start();
-
             $editavel = $this->os_model->isEditable($os_id);
             if (!$editavel) {
-                $this->db->trans_rollback();
                 return $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(400)
                     ->set_output(json_encode(['result' => false]));
             }
 
-            if ($this->os_model->add('lancamentos', $data)) {
-                $this->db->set('faturado', 1);
-                $this->db->set('valorTotal', $valorTotal);
-
-                if ($valorDesconto > 0) {
-                    $this->db->set('desconto', $valorTotalComDesconto);
-                    $this->db->set('valor_desconto', $valorDesconto);
-                } else {
-                    $this->db->set('desconto', 0);
-                    $this->db->set('valor_desconto', $valorTotal);
-                }
-
-                $this->db->set('status', 'Faturado');
-                $this->db->where('idOs', $os_id);
-                $this->db->update('os');
-
-                log_info('Faturou uma OS. ID: ' . $os_id);
-
-                $this->db->trans_complete();
-
-                if ($this->db->trans_status() === false) {
-                    $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar OS.');
-                    $json = ['result' => false];
-                } else {
-                    $this->session->set_flashdata('success', 'OS faturada com sucesso!');
-                    $json = ['result' => true];
-                }
+            $dadosOs = [
+                'faturado' => 1,
+                'valorTotal' => $valorTotal,
+                'status' => 'Faturado'
+            ];
+            if ($valorDesconto > 0) {
+                $dadosOs['desconto'] = $valorTotalComDesconto;
+                $dadosOs['valor_desconto'] = $valorDesconto;
             } else {
-                $this->db->trans_rollback();
+                $dadosOs['desconto'] = 0;
+                $dadosOs['valor_desconto'] = $valorTotal;
+            }
+
+            if ($this->os_model->faturarOs($os_id, $data, $dadosOs)) {
+                log_info('Faturou uma OS. ID: ' . $os_id);
+                $this->session->set_flashdata('success', 'OS faturada com sucesso!');
+                $json = ['result' => true];
+            } else {
                 $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar OS.');
                 $json = ['result' => false];
             }
@@ -1575,7 +1545,7 @@ class Os extends MY_Controller
     {
         $dados = [];
 
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $dados['result'] = $this->os_model->getById($idOs);
         if (! isset($dados['result']->email)) {
             return false;
@@ -1583,7 +1553,7 @@ class Os extends MY_Controller
 
         $dados['produtos'] = $this->os_model->getProdutos($idOs);
         $dados['servicos'] = $this->os_model->getServicos($idOs);
-        $dados['emitente'] = $this->mapos_model->getEmitente();
+        $dados['emitente'] = $this->steos_model->getEmitente();
         $emitente = $dados['emitente'];
         if (! isset($emitente->email)) {
             return false;

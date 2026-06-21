@@ -1,7 +1,7 @@
 <?php
-// MIGRAÇÃO STEOS → MAPOS v4.53.2
-// Os_model.php — BASE: steos (dominante) + métodos exclusivos preservados do mapos
-// Regra: steos domina; métodos do mapos não presentes no steos são adicionados ao final
+// MIGRAÇÃO STEOS → STEOS v4.53.2
+// Os_model.php — BASE: steos (dominante) + métodos exclusivos preservados do steos
+// Regra: steos domina; métodos do steos não presentes no steos são adicionados ao final
 
 use Piggly\Pix\StaticPayload;
 
@@ -13,7 +13,7 @@ class Os_model extends CI_Model
     }
 
     // ─── GET BASE ────────────────────────────────────────────
-    // Base: idêntico em ambos — mantido do mapos (mais limpo)
+    // Base: idêntico em ambos — mantido do steos (mais limpo)
     public function get($table, $fields, $where = '', $perpage = 0, $start = 0, $one = false, $array = 'array')
     {
         $this->db->select($fields . ',clientes.nomeCliente, clientes.celular as celular_cliente');
@@ -289,7 +289,7 @@ class Os_model extends CI_Model
     }
 
     // ─── AUTOCOMPLETE ────────────────────────────────────────
-    // limit(25) do mapos mantido (mais resultados que o steos limit=5)
+    // limit(25) do steos mantido (mais resultados que o steos limit=5)
     public function autoCompleteProduto($q)
     {
         $this->db->select('*');
@@ -305,7 +305,7 @@ class Os_model extends CI_Model
         }
     }
 
-    // autoCompleteProdutoSaida com filtro 'saida=1' — MAPOS (não existe no steos)
+    // autoCompleteProdutoSaida com filtro 'saida=1' — STEOS (não existe no steos)
     public function autoCompleteProdutoSaida($q)
     {
         $this->db->select('*');
@@ -322,7 +322,7 @@ class Os_model extends CI_Model
         }
     }
 
-    // autoCompleteCliente — MERGE: steos base + campo 'documento' do mapos
+    // autoCompleteCliente — MERGE: steos base + campo 'documento' do steos
     public function autoCompleteCliente($q)
     {
         $this->db->select('*');
@@ -330,7 +330,7 @@ class Os_model extends CI_Model
         $this->db->like('nomeCliente', $q);
         $this->db->or_like('telefone', $q);
         $this->db->or_like('celular', $q);
-        $this->db->or_like('documento', $q); // MAPOS: busca por documento também
+        $this->db->or_like('documento', $q); // STEOS: busca por documento também
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
@@ -517,5 +517,22 @@ class Os_model extends CI_Model
             ->setMerchantCity($emitente->cidade);
 
         return $pix->getQRCode();
+    }
+
+    public function faturarOs($os_id, $dataLancamento, $dadosOs)
+    {
+        $this->db->trans_start();
+
+        $this->db->insert('lancamentos', $dataLancamento);
+        $idLancamentos = $this->db->insert_id();
+
+        if ($idLancamentos) {
+            $this->db->where('idOs', $os_id);
+            $this->db->update('os', $dadosOs);
+        }
+
+        $this->db->trans_complete();
+
+        return $this->db->trans_status();
     }
 }

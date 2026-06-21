@@ -12,7 +12,7 @@
 <script type="text/javascript" src="<?php echo base_url() ?>assets/trumbowyg/trumbowyg.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ?>assets/trumbowyg/langs/pt_br.js"></script>
 <!-- jQuery UI Signature core CSS -->
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/south-street/jquery-ui.css" rel="stylesheet">
+<link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/south-street/jquery-ui.css" rel="stylesheet">
 <link href="<?php echo base_url() ?>assets/assinaturas/css/jquery.signature.css" rel="stylesheet">
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />

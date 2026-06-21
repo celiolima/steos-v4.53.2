@@ -5,7 +5,7 @@
             <img src="<?php echo base_url() ?>assets/img/logo-two.png">
         </div>
         <div class="title1">
-            <?= $configuration['app_theme'] == 'white' ||  $configuration['app_theme'] == 'whitegreen' ? '<img src="' . base_url() . 'assets/img/logo-mapos.png">' : '<img src="' . base_url() . 'assets/img/logo-mapos-branco.png">'; ?>
+            <?= $configuration['app_theme'] == 'white' ||  $configuration['app_theme'] == 'whitegreen' ? '<img src="' . base_url() . 'assets/img/logo-steos.png">' : '<img src="' . base_url() . 'assets/img/logo-steos-branco.png">'; ?>
         </div>
     </div>
     <a href="#" class="visible-phone">
@@ -18,7 +18,7 @@
     </a>
     <!-- Start Pesquisar-->
     <li class="search-box">
-        <form style="display: flex" action="<?= site_url('mapos/pesquisar') ?>">
+        <form style="display: flex" action="<?= site_url('steos/pesquisar') ?>">
             <button style="background:transparent;border:transparent" type="submit" class="tip-bottom" title="">
                 <i class='bx bx-search iconX'></i></button>
             <input style="background:transparent;<?= $configuration['app_theme'] == 'white' ? 'color:#313030;' : 'color:#fff;' ?>border:transparent" type="search" name="termo" placeholder="Pesquise aqui...">

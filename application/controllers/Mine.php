@@ -414,7 +414,7 @@ class Mine extends CI_Controller
 
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eCobranca')) {
@@ -436,7 +436,7 @@ class Mine extends CI_Controller
 
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eCobranca')) {
@@ -498,7 +498,7 @@ class Mine extends CI_Controller
 
         $data['menuOs'] = 'os';
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('os_model');
         $this->CI = &get_instance();
         $this->CI->load->database();
@@ -508,7 +508,7 @@ class Mine extends CI_Controller
         $data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
         $data['anexos'] = $this->os_model->getAnexos($this->uri->segment(3));
-        $data['emitente'] = $this->mapos_model->getEmitente();
+        $data['emitente'] = $this->steos_model->getEmitente();
         $data['qrCode'] = $this->os_model->getQrCode(
             $id,
             $data['pix_key'],
@@ -608,12 +608,12 @@ class Mine extends CI_Controller
 
         $data['menuOs'] = 'os';
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('os_model');
         $data['result'] = $this->os_model->getById($this->uri->segment(3));
         $data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
-        $data['emitente'] = $this->mapos_model->getEmitente();
+        $data['emitente'] = $this->steos_model->getEmitente();
 
         if ($data['result']->idClientes != $this->session->userdata('cliente_id')) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
@@ -631,12 +631,12 @@ class Mine extends CI_Controller
 
         $data['menuVendas'] = 'vendas';
         $data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('vendas_model');
 
         $data['result'] = $this->vendas_model->getById($this->uri->segment(3));
         $data['produtos'] = $this->vendas_model->getProdutos($this->uri->segment(3));
-        $data['emitente'] = $this->mapos_model->getEmitente();
+        $data['emitente'] = $this->steos_model->getEmitente();
 
         if ($data['result']->clientes_id != $this->session->userdata('cliente_id')) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
@@ -656,11 +656,11 @@ class Mine extends CI_Controller
 
         $data['menuVendas'] = 'vendas';
         $data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('vendas_model');
         $data['result'] = $this->vendas_model->getById($this->uri->segment(3));
         $data['produtos'] = $this->vendas_model->getProdutos($this->uri->segment(3));
-        $data['emitente'] = $this->mapos_model->getEmitente();
+        $data['emitente'] = $this->steos_model->getEmitente();
 
         if ($data['result']->clientes_id != $this->session->userdata('cliente_id')) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
@@ -684,7 +684,7 @@ class Mine extends CI_Controller
 
             $data['menuOs'] = 'os';
             $this->data['custom_error'] = '';
-            $this->load->model('mapos_model');
+            $this->load->model('steos_model');
             $this->load->model('os_model');
             $data['result'] = $this->os_model->getById($id);
             if ($data['result'] == null) {
@@ -693,7 +693,7 @@ class Mine extends CI_Controller
             } else {
                 $data['produtos'] = $this->os_model->getProdutos($id);
                 $data['servicos'] = $this->os_model->getServicos($id);
-                $data['emitente'] = $this->mapos_model->getEmitente();
+                $data['emitente'] = $this->steos_model->getEmitente();
 
                 $this->load->view('conecte/minha_os', $data);
             }
@@ -745,7 +745,7 @@ class Mine extends CI_Controller
             ];
 
             if (is_numeric($id = $this->Conecte_model->add('os', $data, true))) {
-                $this->load->model('mapos_model');
+                $this->load->model('steos_model');
                 $this->load->model('usuarios_model');
 
                 $idOs = $id;
@@ -774,7 +774,7 @@ class Mine extends CI_Controller
     public function detalhesOs($id = null)
     {
         if (is_numeric($id) && $id != null) {
-            $this->load->model('mapos_model');
+            $this->load->model('steos_model');
             $this->load->model('os_model');
 
             $this->data['result'] = $this->os_model->getById($id);
@@ -881,10 +881,10 @@ class Mine extends CI_Controller
     private function enviarRecuperarSenha($idClientes, $clienteEmail, $assunto, $token)
     {
         $dados = [];
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('clientes_model', '', true);
 
-        $dados['emitente'] = $this->mapos_model->getEmitente();
+        $dados['emitente'] = $this->steos_model->getEmitente();
         $dados['cliente'] = $this->clientes_model->getById($idClientes);
         $dados['resets_de_senha'] = json_decode($token);
 
@@ -920,7 +920,7 @@ class Mine extends CI_Controller
     {
         $dados = [];
 
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('os_model');
         $dados['result'] = $this->os_model->getById($idOs);
         if (!isset($dados['result']->email)) {
@@ -929,7 +929,7 @@ class Mine extends CI_Controller
 
         $dados['produtos'] = $this->os_model->getProdutos($idOs);
         $dados['servicos'] = $this->os_model->getServicos($idOs);
-        $dados['emitente'] = $this->mapos_model->getEmitente();
+        $dados['emitente'] = $this->steos_model->getEmitente();
 
         $emitente = $dados['emitente'];
         if (!isset($emitente)) {
@@ -963,10 +963,10 @@ class Mine extends CI_Controller
     private function enviarEmailBoasVindas($id)
     {
         $dados = [];
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('clientes_model', '', true);
 
-        $dados['emitente'] = $this->mapos_model->getEmitente();
+        $dados['emitente'] = $this->steos_model->getEmitente();
         $dados['cliente'] = $this->clientes_model->getById($id);
 
         $emitente = $dados['emitente'];
@@ -996,11 +996,11 @@ class Mine extends CI_Controller
     private function enviarEmailTecnicoNotificaClienteNovo($id)
     {
         $dados = [];
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->load->model('clientes_model', '', true);
         $this->load->model('usuarios_model');
 
-        $dados['emitente'] = $this->mapos_model->getEmitente();
+        $dados['emitente'] = $this->steos_model->getEmitente();
         $dados['cliente'] = $this->clientes_model->getById($id);
 
         $emitente = $dados['emitente'];

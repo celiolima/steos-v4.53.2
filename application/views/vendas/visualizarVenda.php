@@ -44,7 +44,7 @@ if (($result->faturado != 1 || $editavel) && $this->permission->checkPermission(
                                     <tr>
                                         <td colspan="3" class="alert">
                                             Você precisa configurar os dados do emitente.
-                                            <a href="<?php echo base_url(); ?>index.php/mapos/emitente">Configurar</a>
+                                            <a href="<?php echo base_url(); ?>index.php/steos/emitente">Configurar</a>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -57,7 +57,7 @@ if (($result->faturado != 1 || $editavel) && $this->permission->checkPermission(
                                         <tbody>
                                             <?php if ($emitente == null) { ?>
                                                 <tr>
-                                                    <td colspan="3" class="alert">Você precisa configurar os dados do emitente. >>><a href="<?php echo base_url(); ?>index.php/mapos/emitente">Configurar <<< </a></td>
+                                                    <td colspan="3" class="alert">Você precisa configurar os dados do emitente. >>><a href="<?php echo base_url(); ?>index.php/steos/emitente">Configurar <<< </a></td>
                                                 </tr>
                                             <?php } ?>
                                             <h3><i class='bx bx-cart'></i> Venda #<?php echo sprintf('%04d', $result->idVendas) ?></h3>

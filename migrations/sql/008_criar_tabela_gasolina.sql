@@ -1,6 +1,6 @@
 -- ============================================================
 -- Migration: 008_criar_tabela_gasolina.sql
--- Projeto: steosMapos v4.53.2
+-- Projeto: steosSteos v4.53.2
 -- Fase 2 — Banco de Dados
 -- Descrição: Histórico de abastecimentos de cada veículo.
 --            Registra velocímetro de entrada/saída e data.
@@ -9,12 +9,12 @@
 
 CREATE TABLE IF NOT EXISTS `gasolina` (
   `idGasolina` int(11) NOT NULL AUTO_INCREMENT,
-  `veiculos_id` int(11) NOT NULL COMMENT 'FK: veiculos.idVeiculos',
-  `saldoAnterior` int(11) NOT NULL DEFAULT '0' COMMENT 'Km no início do período',
-  `saldoAtual` int(11) NOT NULL DEFAULT '0' COMMENT 'Km no fim do período (odômetro atual)',
-  `velocimetroEntrada` int(11) NOT NULL DEFAULT '0' COMMENT 'Km no velocímetro na entrada',
-  `velocimetroSaida` int(11) NOT NULL DEFAULT '0' COMMENT 'Km no velocímetro na saída',
-  `dataLancamento` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data e hora do registro',
+  `dataLancamento` datetime NOT NULL,
+  `saldoAtual` int(11) DEFAULT '0',
+  `kmRodadoDia` int(11) DEFAULT '0',
+  `velocimetroEntrada` int(11) DEFAULT '0',
+  `velocimetroSaida` int(11) DEFAULT '0',
+  `veiculos_id` int(11) NOT NULL,
   PRIMARY KEY (`idGasolina`),
   KEY `idx_gasolina_veiculo` (`veiculos_id`),
   KEY `idx_gasolina_data` (`dataLancamento`),

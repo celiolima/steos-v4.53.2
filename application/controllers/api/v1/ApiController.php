@@ -11,7 +11,7 @@ class ApiController extends REST_Controller
         parent::__construct();
 
         $this->load->library('Authorization_Token');
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
     }
 
     public function index_get()
@@ -19,18 +19,18 @@ class ApiController extends REST_Controller
         $user = $this->logged_user();
 
         $result = [
-            'countOs' => $this->mapos_model->count('os'),
-            'clientes' => $this->mapos_model->count('clientes'),
-            'produtos' => $this->mapos_model->count('produtos'),
-            'servicos' => $this->mapos_model->count('servicos'),
-            'garantias' => $this->mapos_model->count('garantias'),
-            'vendas' => $this->mapos_model->count('vendas'),
+            'countOs' => $this->steos_model->count('os'),
+            'clientes' => $this->steos_model->count('clientes'),
+            'produtos' => $this->steos_model->count('produtos'),
+            'servicos' => $this->steos_model->count('servicos'),
+            'garantias' => $this->steos_model->count('garantias'),
+            'vendas' => $this->steos_model->count('vendas'),
         ];
 
         if ($this->permission->checkPermission($this->logged_user()->level, 'vOs')) {
-            $result['osAbertas'] = $this->mapos_model->getOsAbertas();
-            $result['osAndamento'] = $this->mapos_model->getOsAndamento();
-            $result['estoqueBaixo'] = $this->mapos_model->getProdutosMinimo();
+            $result['osAbertas'] = $this->steos_model->getOsAbertas();
+            $result['osAndamento'] = $this->steos_model->getOsAndamento();
+            $result['estoqueBaixo'] = $this->steos_model->getProdutosMinimo();
         }
 
         $this->response([
@@ -54,7 +54,7 @@ class ApiController extends REST_Controller
         $start = $this->get('start', true) ?: date('Y-m-01');
         $end = $this->get('end', true) ?: date('Y-m-t');
 
-        $allOs = $this->mapos_model->calendario($start, $end, $status);
+        $allOs = $this->steos_model->calendario($start, $end, $status);
 
         $events = array_map(function ($os) {
             switch ($os->status) {
@@ -129,7 +129,7 @@ class ApiController extends REST_Controller
 
         $result = [
             'appName' => $this->getConfig('app_name'),
-            'emitente' => $this->mapos_model->getEmitente() ?: false,
+            'emitente' => $this->steos_model->getEmitente() ?: false,
         ];
 
         $this->response([

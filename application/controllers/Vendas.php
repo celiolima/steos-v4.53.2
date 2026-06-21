@@ -183,7 +183,7 @@ class Vendas extends MY_Controller
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
@@ -192,10 +192,10 @@ class Vendas extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->data['result'] = $this->vendas_model->getById($this->uri->segment(3));
         $this->data['produtos'] = $this->vendas_model->getProdutos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['qrCode'] = $this->vendas_model->getQrCode(
             $this->uri->segment(3),
             $this->data['configuration']['pix_key'],
@@ -226,7 +226,7 @@ class Vendas extends MY_Controller
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
@@ -235,10 +235,10 @@ class Vendas extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->data['result'] = $this->vendas_model->getById($this->uri->segment(3));
         $this->data['produtos'] = $this->vendas_model->getProdutos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['qrCode'] = $this->vendas_model->getQrCode(
             $this->uri->segment(3),
             $this->data['configuration']['pix_key'],
@@ -253,7 +253,7 @@ class Vendas extends MY_Controller
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
@@ -262,10 +262,10 @@ class Vendas extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->data['result'] = $this->vendas_model->getById($this->uri->segment(3));
         $this->data['produtos'] = $this->vendas_model->getProdutos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['qrCode'] = $this->vendas_model->getQrCode(
             $this->uri->segment(3),
             $this->data['configuration']['pix_key'],
@@ -281,7 +281,7 @@ class Vendas extends MY_Controller
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
@@ -290,10 +290,10 @@ class Vendas extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->data['result'] = $this->vendas_model->getById($this->uri->segment(3));
         $this->data['produtos'] = $this->vendas_model->getProdutos($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
         $this->data['qrCode'] = $this->vendas_model->getQrCode(
             $this->uri->segment(3),
             $this->data['configuration']['pix_key'],
@@ -353,24 +353,24 @@ class Vendas extends MY_Controller
 
     public function autoCompleteProduto()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->vendas_model->autoCompleteProduto($q);
         }
     }
 
     public function autoCompleteCliente()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->vendas_model->autoCompleteCliente($q);
         }
     }
 
     public function autoCompleteUsuario()
     {
-        if (isset($_GET['term'])) {
-            $q = strtolower($_GET['term']);
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
             $this->vendas_model->autoCompleteUsuario($q);
         }
     }
@@ -419,11 +419,7 @@ class Vendas extends MY_Controller
                 }
 
                 // Atualiza o desconto da venda
-                $this->db->set('desconto', 0.00);
-                $this->db->set('valor_desconto', 0.00);
-                $this->db->set('tipo_desconto', null);
-                $this->db->where('idVendas', $idVenda);
-                $this->db->update('vendas');
+                $this->vendas_model->edit('vendas', ['desconto' => 0.00, 'valor_desconto' => 0.00, 'tipo_desconto' => null], 'idVendas', $idVenda);
 
                 // Registra a ação nos logs com o ID da venda
                 log_info('Adicionou produto à venda com ID: ' . $idVenda);
@@ -475,11 +471,7 @@ class Vendas extends MY_Controller
             $this->produtos_model->updateEstoque($produto, $quantidade, '+');
         }
 
-        $this->db->set('desconto', 0.00);
-        $this->db->set('valor_desconto', 0.00);
-        $this->db->set('tipo_desconto', null);
-        $this->db->where('idVendas', $idVendas);
-        $this->db->update('vendas');
+        $this->vendas_model->edit('vendas', ['desconto' => 0.00, 'valor_desconto' => 0.00, 'tipo_desconto' => null], 'idVendas', $idVendas);
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();
@@ -598,34 +590,19 @@ class Vendas extends MY_Controller
                 'usuarios_id' => $this->session->userdata('id_admin'),
             ];
 
-            $this->db->trans_start();
+            $dadosVenda = [
+                'faturado' => 1,
+                'valorTotal' => $valorTotal,
+                'desconto' => $vendas->desconto,
+                'valor_desconto' => $valorComDesconto,
+                'status' => 'Faturado'
+            ];
 
-            $this->db->insert('lancamentos', $data);
-            $idLancamentos = $this->db->insert_id();
-
-            if ($idLancamentos) {
-                $this->db->set('faturado', 1);
-                $this->db->set('valorTotal', $valorTotal);
-                $this->db->set('desconto', $vendas->desconto);
-                $this->db->set('valor_desconto', $valorComDesconto);
-                $this->db->set('lancamentos_id', $idLancamentos);
-                $this->db->set('status', 'Faturado');
-                $this->db->where('idVendas', $venda_id);
-                $this->db->update('vendas');
-
+            if ($this->vendas_model->faturarVenda($venda_id, $data, $dadosVenda)) {
                 log_info('Faturou a venda com ID.' . $venda_id);
-
-                $this->db->trans_complete();
-
-                if ($this->db->trans_status() === false) {
-                    $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar venda.');
-                    $json = ['result' => false];
-                } else {
-                    $this->session->set_flashdata('success', 'Venda faturada com sucesso!');
-                    $json = ['result' => true];
-                }
+                $this->session->set_flashdata('success', 'Venda faturada com sucesso!');
+                $json = ['result' => true];
             } else {
-                $this->db->trans_rollback();
                 $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar faturar venda.');
                 $json = ['result' => false];
             }

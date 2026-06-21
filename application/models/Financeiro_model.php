@@ -1,6 +1,6 @@
 <?php
-// MIGRAÇÃO STEOS → MAPOS v4.53.2
-// Financeiro_model.php — BASE: mapos novo + adições do steos
+// MIGRAÇÃO STEOS → STEOS v4.53.2
+// Financeiro_model.php — BASE: steos novo + adições do steos
 // Adições steos: get1(), calendario(), autoCompleteClienteFornecedor limit=15
 
 if (!defined('BASEPATH')) {
@@ -29,7 +29,7 @@ class Financeiro_model extends CI_Model
         return $result;
     }
 
-    // get — idêntico em ambos (mantido do mapos)
+    // get — idêntico em ambos (mantido do steos)
     public function get($table, $fields, $where = '', $perpage = 0, $start = 0, $one = false, $array = 'array')
     {
         $this->db->select($fields . ', usuarios.*');
@@ -71,7 +71,7 @@ class Financeiro_model extends CI_Model
         return (array) $this->db->get()->row();
     }
 
-    // getEstatisticasFinanceiro2 — MAPOS dominante (cálculo de desconto mais preciso)
+    // getEstatisticasFinanceiro2 — STEOS dominante (cálculo de desconto mais preciso)
     public function getEstatisticasFinanceiro2()
     {
         $sql = "SELECT SUM(CASE WHEN baixado = 1 AND tipo = 'receita' THEN IF(valor_desconto = 0, valor, valor_desconto) END) as total_receita,
@@ -139,7 +139,7 @@ class Financeiro_model extends CI_Model
         return $this->db->count_all_results();
     }
 
-    // autoCompleteClienteFornecedor — STEOS limit=15 (mapos usa 5)
+    // autoCompleteClienteFornecedor — STEOS limit=15 (steos usa 5)
     public function autoCompleteClienteFornecedor($q)
     {
         $this->db->select('DISTINCT(cliente_fornecedor) as cliente_fornecedor');

@@ -14,7 +14,7 @@ class Classificacao_financeira_model extends CI_Model
     {
         $this->db->select($fields);
         $this->db->from($table);
-        $this->db->order_by('id', 'desc');
+        $this->db->order_by('idClassFin', 'desc');
         $this->db->limit($perpage, $start);
         if ($where) {
             $this->db->where($where);
@@ -30,14 +30,14 @@ class Classificacao_financeira_model extends CI_Model
 
     public function getById($id)
     {
-        $this->db->where('id', $id);
+        $this->db->where('idClassFin', $id);
         $this->db->limit(1);
         return $this->db->get('classificacao_financeira')->row();
     }
 
     public function getByClassFin($ClassFin)
     {
-        $this->db->where('classificacao_fin', $ClassFin);
+        $this->db->where('nomeClassFin', $ClassFin);
         $this->db->limit(1);
         return $this->db->get('classificacao_financeira')->row();
     }

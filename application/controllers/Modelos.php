@@ -69,7 +69,7 @@ class Modelos extends MY_Controller
     {
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         $this->load->library('form_validation');
@@ -101,13 +101,13 @@ class Modelos extends MY_Controller
     {
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->data['result'] = $this->modelos_model->getById($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
 
         $this->data['view'] = 'modelos/visualizarModelo';
         return $this->layout();
@@ -117,13 +117,13 @@ class Modelos extends MY_Controller
     {
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->data['result'] = $this->modelos_model->getById($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
 
         $this->load->view('modelos/imprimirModelo', $this->data);
     }
@@ -132,7 +132,7 @@ class Modelos extends MY_Controller
     {
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
-            redirect('mapos');
+            redirect('steos');
         }
 
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vGarantia')) {
@@ -141,9 +141,9 @@ class Modelos extends MY_Controller
         }
 
         $this->data['custom_error'] = '';
-        $this->load->model('mapos_model');
+        $this->load->model('steos_model');
         $this->data['osGarantia'] = $this->garantias_model->getByIdOsGarantia($this->uri->segment(3));
-        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        $this->data['emitente'] = $this->steos_model->getEmitente();
 
         $this->load->view('garantias/imprimirGarantiaOs', $this->data);
     }

@@ -312,6 +312,24 @@ class Vendas_model extends CI_Model
 
         return $total;
     }
+
+    public function faturarVenda($vendas_id, $dataLancamento, $dadosVenda)
+    {
+        $this->db->trans_start();
+
+        $this->db->insert('lancamentos', $dataLancamento);
+        $idLancamentos = $this->db->insert_id();
+
+        if ($idLancamentos) {
+            $dadosVenda['lancamentos_id'] = $idLancamentos;
+            $this->db->where('idVendas', $vendas_id);
+            $this->db->update('vendas', $dadosVenda);
+        }
+
+        $this->db->trans_complete();
+
+        return $this->db->trans_status();
+    }
 }
 
 /* End of file vendas_model.php */

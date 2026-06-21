@@ -44,7 +44,7 @@ date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'America/Sao_Paulo');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = $_ENV['APP_BASEURL'] ?? 'http://localhost:8000/';
+$config['base_url'] = $_ENV['APP_BASEURL'] ?? 'http://localhost:8080/';
 
 /*
 |--------------------------------------------------------------------------
@@ -443,8 +443,8 @@ $config['cookie_httponly'] = isset($_ENV['APP_COOKIE_HTTPONLY']) ? filter_var($_
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
 $config['csrf_protection'] = isset($_ENV['APP_CSRF_PROTECTION']) ? filter_var($_ENV['APP_CSRF_PROTECTION'], FILTER_VALIDATE_BOOLEAN) : true;
-$config['csrf_token_name'] = $_ENV['APP_CSRF_TOKEN_NAME'] ?? 'MAPOS_TOKEN';
-$config['csrf_cookie_name'] = $_ENV['APP_CSRF_COOKIE_NAME'] ?? 'MAPOS_COOKIE';
+$config['csrf_token_name'] = $_ENV['APP_CSRF_TOKEN_NAME'] ?? 'STEOS_TOKEN';
+$config['csrf_cookie_name'] = $_ENV['APP_CSRF_COOKIE_NAME'] ?? 'STEOS_COOKIE';
 $config['csrf_expire'] = $_ENV['APP_CSRF_EXPIRE'] ?? 7200;
 $config['csrf_regenerate'] = isset($_ENV['APP_CSRF_REGENERATE']) ? filter_var($_ENV['APP_CSRF_REGENERATE'], FILTER_VALIDATE_BOOLEAN) : true;
 $config['csrf_exclude_uris'] = ['api.*+'];
@@ -521,4 +521,4 @@ $config['global_xss_filtering'] = $_ENV['GLOBAL_XSS_FILTERING'] ? filter_var($_E
 | REST Handle Exceptions
 |--------------------------------------------------------------------------
 */
-$config['rest_handle_exceptions'] = isset($_ENV['WHOOPS_ERROR_PAGE_ENABLED']) ? filter_var($_ENV['WHOOPS_ERROR_PAGE_ENABLED'], FILTER_VALIDATE_BOOLEAN) === false : true ;
+$config['rest_handle_exceptions'] = isset($_ENV['WHOOPS_ERROR_PAGE_ENABLED']) ? filter_var($_ENV['WHOOPS_ERROR_PAGE_ENABLED'], FILTER_VALIDATE_BOOLEAN) === false : true;

@@ -1,6 +1,6 @@
 -- ============================================================
 -- Migration: 015_configuracoes_insert.sql
--- Projeto: steosMapos v4.53.2
+-- Projeto: steosSteos v4.53.2
 -- Fase 2 — Banco de Dados
 -- Descrição: Insere 4 novas chaves de configuração para os
 --            módulos adicionados pelo steos.

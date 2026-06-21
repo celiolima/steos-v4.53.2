@@ -5,7 +5,8 @@
     <title><?php echo $this->config->item('app_name') ?></title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="<?php echo $this->config->item('app_name') . ' - ' . $this->config->item('app_subname') ?>">
+    <meta name="description"
+        content="<?php echo $this->config->item('app_name') . ' - ' . $this->config->item('app_subname') ?>">
     <meta name="csrf-token-name" content="<?= config_item("csrf_token_name") ?>">
     <meta name="csrf-cookie-name" content="<?= config_item("csrf_cookie_name") ?>">
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/bootstrap.min.css" />
@@ -36,8 +37,8 @@
 
 <?php
 $parse_email = $this->input->get('e');
-    $parse_cpfcnpj = $this->input->get('c');
-    ?>
+$parse_cpfcnpj = $this->input->get('c');
+?>
 
 <body>
     <div class="main-login">
@@ -48,7 +49,8 @@ $parse_email = $this->input->get('e');
 
         <div id="loginbox">
             <form class="form-vertical" id="formLogin" method="post" action="<?php echo site_url() ?>/mine/login">
-                <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+                <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>"
+                    value="<?= $this->security->get_csrf_hash(); ?>">
                 <div class="d-flex flex-column">
                     <div class="right-login">
                         <div class="container">
@@ -59,7 +61,7 @@ $parse_email = $this->input->get('e');
                                             <img src="<?php echo base_url() ?>assets/img/logo-two.png">
                                         </div>
                                         <div class="title01">
-                                            <img src="<?php echo base_url() ?>assets/img/logo-mapos-branco.png">
+                                            <img src="<?php echo base_url() ?>assets/img/logo-steos-branco.png">
                                         </div>
                                     </div>
                                     <div id="mcell">Versão: <?= $this->config->item('app_version'); ?></div>
@@ -67,7 +69,8 @@ $parse_email = $this->input->get('e');
                                         <div class="controls">
                                             <div class="main_input_box">
                                                 <span class="add-on bg_lg"><i class='bx bx-user-plus iconU'></i></span>
-                                                <input id="email" name="email" type="text" placeholder="Email" value="<?php echo trim($parse_email); ?>" />
+                                                <input id="email" name="email" type="text" placeholder="Email"
+                                                    value="<?php echo trim($parse_email); ?>" />
                                             </div>
                                         </div>
                                     </div>
@@ -76,18 +79,20 @@ $parse_email = $this->input->get('e');
                                         <div class="controls">
                                             <div class="main_input_box">
                                                 <span class="add-on bg_ly"><i class='bx bx-id-card iconU'></i></span>
-                                                <input class="" maxlength="18" size="18" name="senha" type="password" placeholder="Senha" value="" />
+                                                <input class="" maxlength="18" size="18" name="senha" type="password"
+                                                    placeholder="Senha" value="" />
                                             </div>
                                         </div>
                                     </div>
 
                                     <button style="margin: 0" class="btn btn-info btn-large"> Acessar</button>
-                                    <a href="<?= site_url('mine/cadastrar') ?>" class="btn btn-success btn-large">Cadastrar-me</a>
+                                    <a href="<?= site_url('mine/cadastrar') ?>"
+                                        class="btn btn-success btn-large">Cadastrar-me</a>
                                     <div class="links-uteis"><a href="<?= site_url('mine/resetarSenha') ?>">
                                             <p style="margin:0px 0 18px">Esqueceu a senha?</p>
                                         </a></div>
-                                    <div class="links-uteis"><a href="https://github.com/RamonSilva20/mapos">
-                                            <p><?= date('Y'); ?> &copy; Ramon Silva</p>
+                                    <div class="links-uteis"><a href="https:stesistemas.com">
+                                            <p><?= date('Y'); ?> &copy; Celio Lima</p>
                                         </a></div>
                                 </div>
                             </div>
@@ -125,7 +130,7 @@ $parse_email = $this->input->get('e');
     <?php } ?>
 
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
 
             $("#formLogin").validate({
                 rules: {
@@ -146,7 +151,7 @@ $parse_email = $this->input->get('e');
                         required: 'Campo Requerido.'
                     }
                 },
-                submitHandler: function(form) {
+                submitHandler: function (form) {
                     var dados = $(form).serialize();
 
 
@@ -155,7 +160,7 @@ $parse_email = $this->input->get('e');
                         url: "<?php echo base_url(); ?>index.php/mine/login?ajax=true",
                         data: dados,
                         dataType: 'json',
-                        success: function(data) {
+                        success: function (data) {
                             if (data.result == true) {
                                 window.location.href = "<?php echo base_url(); ?>index.php/mine/painel";
                             } else {
@@ -167,7 +172,7 @@ $parse_email = $this->input->get('e');
                                     timer: 4000
                                 })
 
-                                var newCsrfToken = data.MAPOS_TOKEN;
+                                var newCsrfToken = data.STEOS_TOKEN;
                                 $("input[name='<?= $this->security->get_csrf_token_name(); ?>']").val(newCsrfToken);
                             }
                         }
@@ -178,10 +183,10 @@ $parse_email = $this->input->get('e');
 
                 errorClass: "help-inline",
                 errorElement: "span",
-                highlight: function(element, errorClass, validClass) {
+                highlight: function (element, errorClass, validClass) {
                     $(element).parents('.control-group').addClass('error');
                 },
-                unhighlight: function(element, errorClass, validClass) {
+                unhighlight: function (element, errorClass, validClass) {
                     $(element).parents('.control-group').removeClass('error');
                     $(element).parents('.control-group').addClass('success');
                 }

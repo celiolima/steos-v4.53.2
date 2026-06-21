@@ -83,7 +83,7 @@
           <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Perfis"><i class='bx bx-user-circle iconN'></i><span class="text"></span></a>
           <ul class="dropdown-menu">
             <li class=""><a title="Área do Cliente" href="<?= site_url(); ?>/mine" target="_blank"> <span class="text">Área do Cliente</span></a></li>
-            <li class=""><a title="Meu Perfil" href="<?= site_url('mapos/minhaConta'); ?>"><span class="text">Meu Perfil</span></a></li>
+            <li class=""><a title="Meu Perfil" href="<?= site_url('steos/minhaConta'); ?>"><span class="text">Meu Perfil</span></a></li>
             <li class="divider"></li>
             <li class=""><a title="Sair do Sistema" href="<?= site_url('login/sair'); ?>"><i class='bx bx-log-out-circle'></i> <span class="text">Sair do Sistema</span></a></li>
           </ul>
@@ -126,19 +126,19 @@
         <li class="dropdown">
           <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Configurações"><i class='bx bx-cog iconN'></i><span class="text"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="<?= site_url('mapos/configurar') ?>">Sistema</a></li>
+            <li><a href="<?= site_url('steos/configurar') ?>">Sistema</a></li>
             <li><a href="<?= site_url('usuarios') ?>">Usuários</a></li>
-            <li><a href="<?= site_url('mapos/emitente') ?>">Emitente</a></li>
+            <li><a href="<?= site_url('steos/emitente') ?>">Emitente</a></li>
             <li><a href="<?= site_url('permissoes') ?>">Permissões</a></li>
             <li><a href="<?= site_url('auditoria') ?>">Auditoria</a></li>
-            <li><a href="<?= site_url('mapos/emails') ?>">Emails</a></li>
-            <li><a href="<?= site_url('mapos/backup') ?>">Backup</a></li>
+            <li><a href="<?= site_url('steos/emails') ?>">Emails</a></li>
+            <li><a href="<?= site_url('steos/backup') ?>">Backup</a></li>
           </ul>
         </li>
         <li class="dropdown">
           <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Operacional"><i class='bx bxs-group'></i><span class="text"></span></a>
           <ul class="dropdown-menu">
-            <!--  <li><a href="<?= site_url('mapos/configurar') ?>">Sistema</a></li> -->
+            <!--  <li><a href="<?= site_url('steos/configurar') ?>">Sistema</a></li> -->
             <li><a href="<?= site_url('tecnicos') ?>">Técnicos</a></li>
             <li><a href="<?= site_url('veiculos') ?>">Veículos</a></li>
 
@@ -172,7 +172,7 @@
       <section style="display:block;position:absolute;right:10px">
         <div class="profile">
           <div class="profile-img">
-            <a href="<?= site_url('mapos/minhaConta'); ?>"><img src="<?= !is_file(FCPATH . "assets/userImage/" . $this->session->userdata('url_image_user_admin')) ?  base_url() . "assets/img/User.png" : base_url() . "assets/userImage/" . $this->session->userdata('url_image_user_admin') ?>" alt=""></a>
+            <a href="<?= site_url('steos/minhaConta'); ?>"><img src="<?= !is_file(FCPATH . "assets/userImage/" . $this->session->userdata('url_image_user_admin')) ?  base_url() . "assets/img/User.png" : base_url() . "assets/userImage/" . $this->session->userdata('url_image_user_admin') ?>" alt=""></a>
           </div>
         </div>
       </section>
@@ -183,7 +183,7 @@
 
   <!--start-top-serch-->
   <div style="display: none" id="search">
-    <form action="<?= site_url('mapos/pesquisar') ?>">
+    <form action="<?= site_url('steos/pesquisar') ?>">
       <input type="text" name="termo" placeholder="Pesquisar..." />
       <button type="submit" class="tip-bottom" title="Pesquisar"><i class="fas fa-search fa-white"></i></button>
     </form>
