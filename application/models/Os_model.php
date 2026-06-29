@@ -29,84 +29,133 @@ class Os_model extends CI_Model
         return $result;
     }
 
-    // ─── GET OS (STEOS DOMINANTE) ─────────────────────────────
-    // Steos tem filtros extras: tecnico, local, tipo, vendedor, os, afaturar
-    public function getOs($table, $fields, $where = [], $perpage = 0, $start = 0, $one = false, $array = 'array')
+    // ─── APLICAÇÃO DE FILTROS OS ─────────────────────────────
+    protected function _applyOsFilters($where = [])
     {
-        $lista_clientes = [];
-        if ($where) {
-            if (array_key_exists('pesquisa', $where)) {
-                $this->db->select('idClientes');
-                $this->db->like('nomeCliente', $where['pesquisa']);
-                $this->db->limit(25);
-                $clientes = $this->db->get('clientes')->result();
-                foreach ($clientes as $c) {
-                    array_push($lista_clientes, $c->idClientes);
+        if (empty($where) || !is_array($where)) {
+            return;
+        }
+
+        // 1. Número da OS
+        if (!empty($where['os'])) {
+            if (is_array($where['os'])) {
+                $this->db->where_in('os.idOs', $where['os']);
+            } else {
+                $os_clean = preg_replace('/[^0-9,]/', '', $where['os']);
+                if (strpos($os_clean, ',') !== false) {
+                    $os_arr = array_filter(explode(',', $os_clean));
+                    if (!empty($os_arr)) {
+                        $this->db->where_in('os.idOs', $os_arr);
+                    }
+                } elseif (!empty($os_clean)) {
+                    $this->db->where('os.idOs', $os_clean);
                 }
             }
         }
 
-        // condicional de tecnico — steos adiciona join em tecnicos_os
-        if (array_key_exists('tecnico', $where)) {
-            $this->db->select($fields . ',clientes.idClientes, clientes.nomeCliente, clientes.celular as celular_cliente, usuarios.nome, garantias.*,tecnicos_os.tecnicoName');
-        } else {
-            $this->db->select($fields . ',clientes.idClientes, clientes.nomeCliente, clientes.celular as celular_cliente, usuarios.nome, garantias.*');
+        // 2. Técnico
+        if (!empty($where['tecnico']) && $where['tecnico'] !== 'Todos' && $where['tecnico'] !== 'Nome do Tecnico') {
+            if (is_array($where['tecnico'])) {
+                $this->db->where("EXISTS (SELECT 1 FROM tecnicos_os WHERE tecnicos_os.os_id = os.idOs AND tecnicos_os.tecnicoName IN (".implode(',', array_map([$this->db, 'escape'], $where['tecnico']))."))", null, false);
+            } else {
+                $this->db->where("EXISTS (SELECT 1 FROM tecnicos_os WHERE tecnicos_os.os_id = os.idOs AND tecnicos_os.tecnicoName = ".$this->db->escape($where['tecnico']).")", null, false);
+            }
         }
 
+        // 3. Local
+        if (!empty($where['local']) && $where['local'] !== 'Todos') {
+            if (is_array($where['local'])) {
+                $this->db->where_in('os.local', $where['local']);
+            } else {
+                $this->db->where('os.local', $where['local']);
+            }
+        }
+
+        // 4. Tipo
+        if (!empty($where['tipo']) && $where['tipo'] !== 'Todos') {
+            if (is_array($where['tipo'])) {
+                $this->db->where_in('os.tipo', $where['tipo']);
+            } else {
+                $this->db->where('os.tipo', $where['tipo']);
+            }
+        }
+
+        // 5. Vendedor / Usuário Responsável
+        if (!empty($where['vendedor']) && $where['vendedor'] !== 'Todos') {
+            if (is_array($where['vendedor'])) {
+                $this->db->where_in('usuarios.nome', $where['vendedor']);
+            } else {
+                $this->db->where('usuarios.nome', $where['vendedor']);
+            }
+        }
+
+        // 6. Status
+        if (!empty($where['status']) && $where['status'] !== 'Todos') {
+            if (is_array($where['status'])) {
+                $this->db->where_in('os.status', $where['status']);
+            } else {
+                $this->db->where('os.status', $where['status']);
+            }
+        }
+
+        // 7. Cliente (Pesquisa por Nome)
+        if (!empty($where['pesquisa'])) {
+            $this->db->like('clientes.nomeCliente', $where['pesquisa']);
+        }
+
+        // 8. Observação
+        if (!empty($where['observacao'])) {
+            $this->db->like('os.observacoes', $where['observacao']);
+        }
+
+        // 9. A faturar
+        if (!empty($where['afaturar'])) {
+            if (is_array($where['afaturar'])) {
+                $this->db->where_in('os.afaturar', $where['afaturar']);
+            } else {
+                $this->db->where('os.afaturar', 1);
+            }
+        }
+
+        // 10. Manut Preventiva
+        if (!empty($where['manPrevnt'])) {
+            $this->db->where('os.manutPreventiva', 1);
+        }
+
+        // 11. Período (Data Inicial e Final de Emissão/Abertura)
+        if (!empty($where['de'])) {
+            $de = $where['de'];
+            if (strpos($de, ':') === false) {
+                $de .= ' 00:00:00';
+            }
+            $this->db->where('os.dataInicial >=', $de);
+        }
+        if (!empty($where['ate'])) {
+            $ate = $where['ate'];
+            if (strpos($ate, ':') === false) {
+                $ate .= ' 23:59:59';
+            }
+            $this->db->where('os.dataInicial <=', $ate);
+        }
+    }
+
+    // ─── GET OS (STEOS DOMINANTE) ─────────────────────────────
+    public function getOs($table, $fields, $where = [], $perpage = 0, $start = 0, $one = false, $array = 'array', $param8 = null, $tecnicoLogado = null)
+    {
+        $this->db->select($fields . ',clientes.idClientes, clientes.nomeCliente, clientes.celular as celular_cliente, usuarios.nome, garantias.*, COALESCE((SELECT tecnicoName FROM tecnicos_os WHERE tecnicos_os.os_id = os.idOs LIMIT 1), usuarios.nome) as tecnico_responsavel, (SELECT tecnicoName FROM tecnicos_os WHERE tecnicos_os.os_id = os.idOs LIMIT 1) as tecnicoName', false);
         $this->db->from($table);
         $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
         $this->db->join('usuarios', 'usuarios.idUsuarios = os.usuarios_id');
         $this->db->join('garantias', 'garantias.idGarantias = os.garantias_id', 'left');
-        $this->db->join('produtos_os', 'produtos_os.os_id = os.idOs', 'left');
-        $this->db->join('servicos_os', 'servicos_os.os_id = os.idOs', 'left');
-        $this->db->join('tecnicos_os', 'tecnicos_os.os_id = os.idOs', 'left'); // STEOS
 
-        // condicional de os
-        if (array_key_exists('os', $where)) {
-            $this->db->where_in('idOs', $where['os']);
-        }
-        // condicional de tecnico (STEOS)
-        if (array_key_exists('tecnico', $where)) {
-            $this->db->where_in('tecnicos_os.tecnicoName', $where['tecnico']);
-        }
-        // condicional de local (STEOS)
-        if (array_key_exists('local', $where)) {
-            $this->db->where_in('local', $where['local']);
-        }
-        // condicional de tipo (STEOS)
-        if (array_key_exists('tipo', $where)) {
-            $this->db->where_in('tipo', $where['tipo']);
-        }
-        // condicional de vendedor (STEOS)
-        if (array_key_exists('vendedor', $where)) {
-            $this->db->where_in('vendedor', $where['vendedor']);
-        }
-        // condicional de status
-        if (array_key_exists('status', $where)) {
-            $this->db->where_in('status', $where['status']);
-        }
-        // condicional de afaturar (STEOS)
-        if (array_key_exists('afaturar', $where)) {
-            $this->db->where_in('afaturar', $where['afaturar']);
-        }
-        // condicional de clientes
-        if (array_key_exists('pesquisa', $where)) {
-            if ($lista_clientes != null) {
-                $this->db->where_in('os.clientes_id', $lista_clientes);
-            }
-        }
-        // condicional data inicial
-        if (array_key_exists('de', $where)) {
-            $this->db->where('dataInicial >=', $where['de']);
-        }
-        // condicional data final
-        if (array_key_exists('ate', $where)) {
-            $this->db->where('dataFinal <=', $where['ate']);
+        $this->_applyOsFilters($where);
+
+        if ($tecnicoLogado && !empty($tecnicoLogado)) {
+            $this->db->where("EXISTS (SELECT 1 FROM tecnicos_os WHERE tecnicos_os.os_id = os.idOs AND tecnicos_os.tecnicoName = ".$this->db->escape($tecnicoLogado).")", null, false);
         }
 
         $this->db->limit($perpage, $start);
         $this->db->order_by('os.idOs', 'desc');
-        $this->db->group_by('os.idOs');
 
         $query = $this->db->get();
         $result = !$one ? $query->result() : $query->row();
@@ -283,8 +332,15 @@ class Os_model extends CI_Model
         return false;
     }
 
-    public function count($table)
+    public function count($table, $where = [])
     {
+        if ($table === 'os' && !empty($where)) {
+            $this->db->from('os');
+            $this->db->join('clientes', 'clientes.idClientes = os.clientes_id');
+            $this->db->join('usuarios', 'usuarios.idUsuarios = os.usuarios_id');
+            $this->_applyOsFilters($where);
+            return $this->db->count_all_results();
+        }
         return $this->db->count_all($table);
     }
 

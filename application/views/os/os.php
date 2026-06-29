@@ -151,7 +151,7 @@ exit; */
                         <tr>
                             <th>N°</th>
                             <th width="20%">Cliente</th>
-                            <th class="ph1">Responsável</th>
+                            <th class="ph1">Técnico</th>
                             <th>Data Inicial</th>
                             <th class="ph2">Data Final</th>
                             <th class="ph3">Venc. Garantia</th>
@@ -176,15 +176,6 @@ exit; */
                                 $dataFinal = date(('d/m/Y'), strtotime($r->dataFinal));
                             } else {
                                 $dataFinal = "";
-                            }
-
-                            /* echo "<pre>";
-                            print_r(json_decode($configuration['os_status_list']));
-                            exit; */
-                            if ($this->input->get('pesquisa') === null && is_array(json_decode($configuration['os_status_list']))) {
-                                if (in_array($r->status, json_decode($configuration['os_status_list'])) != true) {
-                                    continue;
-                                }
                             }
 
                             switch ($r->status) {
@@ -247,7 +238,7 @@ exit; */
                             echo '<tr>';
                             echo '<td>' . $r->idOs . '</td>';
                             echo '<td class="cli1"><a href="' . base_url() . 'index.php/clientes/visualizar/' . $r->idClientes . '" style="margin-right: 1%">' . $r->nomeCliente . '</a></td>';
-                            echo '<td class="ph1">' . $r->nome . '</td>';
+                            echo '<td class="ph1">' . (!empty($r->tecnico_responsavel) ? $r->tecnico_responsavel : $r->nome) . '</td>';
                             echo '<td>' . $dataInicial . '</td>';
                             echo '<td class="ph2">' . $dataFinal . '</td>';
                             echo '<td class="ph3"><span class="badge" style="background-color: ' . $corGarantia . '; border-color: ' . $corGarantia . '">' . $vencGarantia . '</span> </td>';

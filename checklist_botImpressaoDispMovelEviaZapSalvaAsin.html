@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Equipamento - Com Assinatura Digital</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .document-container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: #fff;
+            border: 2px solid #000;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* Marca d'água */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            color: rgba(0, 0, 0, 0.15);
+            font-weight: bold;
+            z-index: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* Cabeçalho */
+        .header {
+            display: flex;
+            border-bottom: 1px solid #000;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-area {
+            width: 250px;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            border-right: 1px solid #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-area {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-style: italic;
+            font-weight: normal;
+            letter-spacing: 2px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* Linhas de Informação */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr 120px 1fr;
+            border-bottom: 1px solid #000;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-grid > div {
+            padding: 5px 10px;
+            border-right: 1px solid #000;
+            font-size: 14px;
+        }
+
+        .info-grid > div:last-child {
+            border-right: none;
+        }
+
+        .bg-orange {
+            background-color: #f4b183;
+        }
+
+        .client-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            border-bottom: 1px solid #000;
+            position: relative;
+            z-index: 1;
+        }
+
+        .client-row > div {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        .client-row > div:first-child {
+            border-right: 1px solid #000;
+        }
+
+        /* Títulos de Seção */
+        .section-title {
+            text-align: center;
+            padding: 5px;
+            border-bottom: 1px solid #000;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tabelas e Responsividade */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 2px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        th {
+            font-weight: normal;
+        }
+
+        .col-local { width: 150px; text-align: left; vertical-align: bottom; padding-left: 5px; }
+        .col-obs { width: auto; text-align: left; vertical-align: bottom; padding-left: 5px; }
+        .col-check { width: 25px; }
+        .col-ordem { width: 40px; }
+
+        /* Texto Vertical */
+        .vertical-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            height: 140px;
+            text-align: left;
+            padding: 5px 0;
+            margin: 0 auto;
+        }
+
+        td {
+            height: 20px;
+        }
+
+        td.text-left {
+            text-align: left;
+            padding-left: 5px;
+        }
+
+        /* Classes Interativas */
+        .clickable-cell {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+
+        .clickable-cell:hover {
+            background-color: #e9e9e9;
+        }
+
+        .editable-cell {
+            cursor: text;
+            outline: none;
+        }
+
+        .editable-cell:focus {
+            background-color: #fafafa;
+        }
+
+        /* Cores de Status */
+        .status-v { color: #00b050; font-weight: bold; }
+        .status-x { color: #ff0000; font-weight: bold; }
+        .status-o { color: #c65911; font-weight: bold; }
+
+        /* Rodapé e Observações */
+        .footer-section {
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .obs-lines {
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+
+        .obs-line {
+            border-bottom: 1px solid #000;
+            height: 20px;
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+            padding: 0 5px;
+        }
+
+        .signatures-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            align-items: flex-end;
+        }
+
+        .company-info {
+            font-size: 9px;
+            text-align: center;
+            line-height: 1.2;
+            width: 300px;
+        }
+
+        .company-info strong {
+            font-size: 11px;
+        }
+
+        .company-info a {
+            color: #0000ff;
+            text-decoration: none;
+        }
+
+        /* Área de Assinatura Digital */
+        .signature-box {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .signature-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .pad-container {
+            width: 100%;
+            max-width: 300px;
+            height: 100px;
+            border: 1px dashed #ccc;
+            background-color: #fafafa;
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .pad-container canvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            touch-action: none; /* Evita rolagem da tela ao assinar no celular */
+        }
+
+        .pad-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none; /* Escondido até salvar */
+        }
+
+        .pad-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .pad-controls button {
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: #eee;
+            border-radius: 3px;
+        }
+
+        .pad-controls button.save-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .sig-line {
+            border-top: 1px solid #000;
+            text-align: center;
+            padding-top: 5px;
+            font-size: 14px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        /* Botões de Ação Principais */
+        .action-buttons {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-print { background-color: #4CAF50; }
+        .btn-print:hover { background-color: #45a049; }
+        .btn-whatsapp { background-color: #25D366; }
+        .btn-whatsapp:hover { background-color: #128C7E; }
+
+        /* Media Queries para Mobile */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header { flex-direction: column; }
+            .logo-area { width: 100%; border-right: none; border-bottom: 1px solid #000; }
+            .title-area { font-size: 24px; }
+            .info-grid { grid-template-columns: 100px 1fr; }
+            .info-grid > div:nth-child(even) { border-right: none; }
+            .client-row { grid-template-columns: 1fr; }
+            .client-row > div:first-child { border-right: none; border-bottom: 1px solid #000; background-color: #f4b183; }
+            .signatures-area { flex-direction: column; align-items: center; gap: 40px; }
+            .company-info { width: 100%; }
+            .watermark { font-size: 60px; }
+        }
+
+        /* Regras para Impressão (PDF) */
+        @media print {
+            body { background-color: #fff; padding: 0; }
+            .document-container { border: none; box-shadow: none; max-width: 100%; }
+            .action-buttons, .pad-controls { display: none; } /* Esconde botões */
+            .pad-container { border: none; background-color: transparent; } /* Remove borda do canvas */
+            .table-responsive { overflow-x: visible; }
+            table { min-width: 100%; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="document-container">
+    <div class="watermark">Página 1</div>
+
+    <!-- Cabeçalho -->
+    <div class="header">
+        <div class="logo-area">
+            <span style="font-size: 24px; font-style: italic; font-weight: 900; letter-spacing: -1px;">STE</span>
+            <span>AUTOMAÇÃO E SISTEMAS</span>
+        </div>
+        <div class="title-area">
+            CHECKLIST EQUIPAMENTO
+        </div>
+    </div>
+
+    <!-- Informações -->
+    <div class="info-grid">
+        <div class="bg-orange">Técnico:</div>
+        <div contenteditable="true" class="editable-cell">DARIO/TIAGO</div>
+        <div class="bg-orange">Data:</div>
+        <div contenteditable="true" class="editable-cell">13/05/2026</div>
+    </div>
+    <div class="client-row">
+        <div>DADOS DO CLIENTE:</div>
+        <div contenteditable="true" class="editable-cell">Hotel Gran Marquise</div>
+    </div>
+
+    <!-- Seção 1 -->
+    <div class="section-title bg-orange">1-Intens de verificação(verificação mensal)</div>
+    <div class="section-title bg-orange">PORTA AUTOMATICA</div>
+
+    <!-- Tabela 1 -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-local">Local/Nome:</th>
+                    <th class="col-check"><div class="vertical-text">Central</div></th>
+                    <th class="col-check"><div class="vertical-text">Motor</div></th>
+                    <th class="col-check"><div class="vertical-text">Correia</div></th>
+                    <th class="col-check"><div class="vertical-text">Roldanas</div></th>
+                    <th class="col-check"><div class="vertical-text">Trilhos</div></th>
+                    <th class="col-check"><div class="vertical-text">Guias</div></th>
+                    <th class="col-check"><div class="vertical-text">Sensores</div></th>
+                    <th class="col-check"><div class="vertical-text">Estruturas do portão</div></th>
+                    <th class="col-check"><div class="vertical-text">Perfil</div></th>
+                    <th class="col-check"><div class="vertical-text">Ultima troca Rol.</div></th>
+                    <th class="col-obs" style="text-align: center;">Observações</th>
+                    <th class="col-ordem"><div class="vertical-text">Ordens de serviços</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-left editable-cell" contenteditable="true">ENTRADA PRINCIPAL</td>
+                    <td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td>
+                    <td class="editable-cell" contenteditable="true"></td><td class="editable-cell" contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="text-left editable-cell" contenteditable="true">REST. PRINCIPAL</td>
+                    <td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td>
+                    <td class="editable-cell" contenteditable="true"></td><td class="editable-cell" contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="text-left editable-cell" contenteditable="true">REST. LATERAL</td>
+                    <td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td>
+                    <td class="editable-cell" contenteditable="true"></td><td class="editable-cell" contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="text-left editable-cell" contenteditable="true">PISCINA</td>
+                    <td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td>
+                    <td class="editable-cell" contenteditable="true"></td><td class="editable-cell" contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="text-left editable-cell" contenteditable="true">AUDITORIO</td>
+                    <td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td>
+                    <td class="editable-cell" contenteditable="true"></td><td class="editable-cell" contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="text-left editable-cell" contenteditable="true">ESTACIONAMENTO</td>
+                    <td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td>
+                    <td class="editable-cell" contenteditable="true"></td><td class="editable-cell" contenteditable="true"></td>
+                </tr>
+                <!-- Linha de Resumo -->
+                <tr>
+                    <td></td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-x">X</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-o">+1A</td>
+                    <td style="border: none;"></td>
+                    <td style="border: none;"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Seção 2 -->
+    <div class="section-title bg-orange" style="border-top: 1px solid #000;">PORTÕES AUTOMATICOS</div>
+
+    <!-- Tabela 2 -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-local">Local/Nome:</th>
+                    <th class="col-check"><div class="vertical-text">Central/Bot/Control</div></th>
+                    <th class="col-check"><div class="vertical-text">Motor</div></th>
+                    <th class="col-check"><div class="vertical-text">Cremalheira/Ímãs</div></th>
+                    <th class="col-check"><div class="vertical-text">Roldanas</div></th>
+                    <th class="col-check"><div class="vertical-text">Trilho</div></th>
+                    <th class="col-check"><div class="vertical-text">Guias</div></th>
+                    <th class="col-check"><div class="vertical-text">Sensores</div></th>
+                    <th class="col-check"><div class="vertical-text">Estruturas do portão</div></th>
+                    <th class="col-check"><div class="vertical-text">Ultima troca Rol.</div></th>
+                    <th class="col-obs" style="text-align: center;">Observações</th>
+                    <th class="col-ordem"><div class="vertical-text">Ordens de serviços</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-left editable-cell" contenteditable="true">MOT-01</td>
+                    <td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td>
+                    <td class="editable-cell" contenteditable="true"></td><td class="editable-cell" contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <td class="text-left editable-cell" contenteditable="true">MOT-02</td>
+                    <td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td><td class="clickable-cell"></td>
+                    <td class="editable-cell" contenteditable="true"></td><td class="editable-cell" contenteditable="true"></td>
+                </tr>
+                <!-- Linha de Resumo -->
+                <tr>
+                    <td></td>
+                    <td class="status-x">X</td>
+                    <td class="status-x">X</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-v">V</td>
+                    <td class="status-o">+6M</td>
+                    <td style="border: none;"></td>
+                    <td style="border: none;"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Rodapé e Observações -->
+    <div class="footer-section">
+        <div>Observações Gerais:</div>
+        <div class="obs-lines">
+            <div class="obs-line" contenteditable="true"></div>
+            <div class="obs-line" contenteditable="true"></div>
+            <div class="obs-line" contenteditable="true"></div>
+            <div class="obs-line" contenteditable="true"></div>
+            <div class="obs-line" contenteditable="true"></div>
+            <div class="obs-line" contenteditable="true"></div>
+            <div class="obs-line" contenteditable="true"></div>
+            <div class="obs-line" contenteditable="true"></div>
+        </div>
+
+        <div class="signatures-area">
+            <div class="company-info">
+                <strong>STE AUTOMAÇÕES E SITEMAS</strong><br>
+                C.G.C. 31.569.670/0001-57 C.G.F 06.420803-6<br>
+                RUA NOGUEIRA ACIOLI, 371 - PRAIA DE IRACEMA<br>
+                FORTALEZA - CEARÁ - 60.110-140<br>
+                FONE/FAX: (0XX85)3226-7154/40629558<br>
+                E-mail: steautomacaoesistema@gmail.com<br>
+                site: <a href="https://steautomacaoesistemas.com.br/">https://steautomacaoesistemas.com.br/</a>
+            </div>
+
+            <div class="signature-box">
+                <!-- Assinatura Cliente -->
+                <div class="signature-wrapper">
+                    <div class="pad-container">
+                        <canvas id="canvas-cliente" width="300" height="100"></canvas>
+                        <img id="img-cliente" alt="Assinatura Cliente">
+                    </div>
+                    <div class="pad-controls" id="controls-cliente">
+                        <button onclick="limparAssinatura('cliente')">Limpar</button>
+                        <button class="save-btn" onclick="salvarAssinatura('cliente')">Salvar Assinatura</button>
+                    </div>
+                    <div class="sig-line">Assinatura do Cliente</div>
+                </div>
+
+                <!-- Assinatura Técnico -->
+                <div class="signature-wrapper">
+                    <div class="pad-container">
+                        <canvas id="canvas-tecnico" width="300" height="100"></canvas>
+                        <img id="img-tecnico" alt="Assinatura Técnico">
+                    </div>
+                    <div class="pad-controls" id="controls-tecnico">
+                        <button onclick="limparAssinatura('tecnico')">Limpar</button>
+                        <button class="save-btn" onclick="salvarAssinatura('tecnico')">Salvar Assinatura</button>
+                    </div>
+                    <div class="sig-line">Técnico</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botões de Ação -->
+<div class="action-buttons">
+    <button class="btn btn-print" onclick="window.print()">🖨️ Salvar PDF</button>
+    <button class="btn btn-whatsapp" onclick="enviarWhatsApp()">💬 Enviar para WhatsApp</button>
+</div>
+
+<script>
+    // --- Lógica de Interação da Tabela ---
+    document.querySelectorAll('.clickable-cell').forEach(cell => {
+        cell.addEventListener('click', function() {
+            if (this.textContent === '') {
+                this.textContent = 'V';
+                this.className = 'clickable-cell status-v';
+            } else if (this.textContent === 'V') {
+                this.textContent = 'X';
+                this.className = 'clickable-cell status-x';
+            } else {
+                this.textContent = '';
+                this.className = 'clickable-cell';
+            }
+        });
+    });
+
+    // --- Lógica do WhatsApp ---
+    function enviarWhatsApp() {
+        const numeroHardcoded = "5585999999999"; // Altere para o número desejado
+        const mensagem = encodeURIComponent("Olá! Segue em anexo o Checklist de Equipamento preenchido.");
+        const url = `https://wa.me/${numeroHardcoded}?text=${mensagem}`;
+        window.open(url, '_blank');
+    }
+
+    // --- Lógica de Assinatura Digital (Canvas) ---
+    function setupCanvas(id) {
+        const canvas = document.getElementById(`canvas-${id}`);
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // Configurações da caneta
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+
+        function getCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            // Ajusta a escala caso o CSS redimensione o canvas
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        const startDrawing = (e) => {
+            isDrawing = true;
+            const pos = getCoordinates(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            if(e.type.includes('touch')) e.preventDefault(); // Evita scroll no celular
+        };
+
+        const draw = (e) => {
+            if (!isDrawing) return;
+            const pos = getCoordinates(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            if(e.type.includes('touch')) e.preventDefault();
+        };
+
+        const stopDrawing = () => {
+            if (isDrawing) {
+                ctx.closePath();
+                isDrawing = false;
+            }
+        };
+
+        // Eventos de Mouse
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Eventos de Touch (Celular)
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDrawing);
+    }
+
+    // Inicializa os dois quadros de assinatura
+    setupCanvas('cliente');
+    setupCanvas('tecnico');
+
+    // Função para limpar o quadro
+    function limparAssinatura(id) {
+        const canvas = document.getElementById(`canvas-${id}`);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Se já estava salvo, volta para o modo de edição
+        document.getElementById(`img-${id}`).style.display = 'none';
+        canvas.style.display = 'block';
+    }
+
+    // Função para salvar a assinatura como imagem
+    function salvarAssinatura(id) {
+        const canvas = document.getElementById(`canvas-${id}`);
+        const img = document.getElementById(`img-${id}`);
+        const controls = document.getElementById(`controls-${id}`);
+
+        // Converte o desenho para uma imagem base64
+        const dataURL = canvas.toDataURL('image/png');
+
+        // Aplica a imagem e esconde o canvas
+        img.src = dataURL;
+        img.style.display = 'block';
+        canvas.style.display = 'none';
+
+        // Esconde os botões de controle para ficar limpo
+        controls.style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

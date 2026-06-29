@@ -18,6 +18,9 @@
  <script type="text/javascript" src="<?php echo base_url() ?>assets/trumbowyg/langs/pt_br.js"></script>
 
  <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />
+ <style>
+     .ui-autocomplete { z-index: 99999 !important; }
+ </style>
  <style type="text/css">
      /* autocomplete*/
      .ui-autocomplete-row {
@@ -56,11 +59,16 @@
                                      <!--  PRIMEIRA LINHA-->
                                      <div class="span12" style="padding: 1%; margin-left: 0">
                                          <!--  CLIENTE -->
-                                         <div class="span6" style="margin-right: 0">
+                                         <div class="span3" style="margin-right: 0">
                                              <label for="cliente">Cliente<span class="required">*</span></label>
                                              <input id="cliente" class="span12" autocomplete="off" style="padding: 1; margin-right: 0" type="text" name="cliente" value="" />
                                              <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="" />
-                                             <!--  <a class="btn btn-primary span2" style="padding: 0;margin-left: 0" href="#" role="button">Link</a> -->
+                                         </div>
+                                         <div class="span3">
+                                             <label for="contratos_id">Contrato Vinculado</label>
+                                             <select id="contratos_id" name="contratos_id" class="span12">
+                                                 <option value="">Nenhum</option>
+                                             </select>
                                          </div>
                                          <!--  OPERADOR -->
                                          <div class="span3">
@@ -386,19 +394,20 @@
      }
      $(document).ready(function() {
          $("#cliente").autocomplete({
-             source: "<?php echo base_url(); ?>index.php/os/autoCompleteCliente",
-             minLength: 1,
-             select: function(event, ui) {
-                 $("#clientes_id").val(ui.item.id);
-                 console.log(ui.item.id);
-
-             },
-             open: function(event, ui) {
-
-                 //$('.ui-autocomplete').append('<li><a href="javascript:alert(\'redirecting...\')">See All Result</a></li>'); //See all results
-                 $('.ui-autocomplete').append('<li><a href="<?php echo base_url(); ?>index.php/clientes/adicionar" ><button type="button" class="btn btn-primary"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cliente / Fornecedor </button></a></li > ');
-             }
-         });
+            source: "<?php echo base_url(); ?>index.php/os/autoCompleteCliente",
+            minLength: 1,
+            select: function(event, ui) {
+                $("#clientes_id").val(ui.item.id);
+                // Buscar contratos atrelados a este cliente
+                $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: ui.item.id}, function(data) {
+                    var options = '<option value="">Nenhum Contrato</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
+                    }
+                    $("#contratos_id").html(options);
+                });
+            }
+        });
 
          $("#tecnico").autocomplete({
              source: "<?php echo base_url(); ?>index.php/os/autoCompleteUsuario",

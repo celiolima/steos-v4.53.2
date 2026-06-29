@@ -112,6 +112,9 @@
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) { ?>
               <li><a href="<?= site_url('servicos') ?>">Servicos</a></li>
             <?php } ?>
+            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) { ?>
+              <li><a href="<?= site_url('sistemas') ?>">Sistemas</a></li>
+            <?php } ?>
             <li><a href="<?= site_url('equipamentos') ?>">Equipamentos</a></li>
             <li><a href="<?= site_url('modelos') ?>">Modelos</a></li>
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vGarantia')) { ?>

@@ -64,7 +64,7 @@ class Configuracoes extends Seeder
             [
                 'idConfig' => 12,
                 'config' => 'os_status_list',
-                'valor' => '[\"Aberto\",\"Faturado\",\"Negocia\\u00e7\\u00e3o\",\"Em Andamento\",\"Or\\u00e7amento\",\"Finalizado\",\"Cancelado\",\"Aguardando Pe\\u00e7as\"]',
+                'valor' => '[\"Aberto\",\"Faturado\",\"Negocia\\u00e7\\u00e3o\",\"Em Andamento\",\"Or\\u00e7amento\",\"Finalizado\",\"Cancelado\",\"Aguardando Pe\\u00e7as\",\"A Sair | Aguard Conclus\\u00e3o\",\"Aprovado\",\"Manuten\\u00e7\\u00e3o Preventiva\"]',
             ],
             [
                 'idConfig' => 13,

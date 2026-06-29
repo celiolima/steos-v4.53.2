@@ -98,9 +98,8 @@ class Vendas extends MY_Controller
                 'observacoes_cliente' => $this->input->post('observacoes_cliente'),
                 'clientes_id' => $this->input->post('clientes_id'),
                 'usuarios_id' => $this->input->post('usuarios_id'),
-                'faturado' => 0,
-                'status' => $this->input->post('status'),
-                'garantia' => $this->input->post('garantia')
+                'contratos_id' => $this->input->post('contratos_id') ?: null,
+                'faturado' => 0
             ];
 
             $id = $this->vendas_model->add('vendas', $data, true);
@@ -159,8 +158,7 @@ class Vendas extends MY_Controller
                 'observacoes_cliente' => $this->input->post('observacoes_cliente'),
                 'usuarios_id' => $this->input->post('usuarios_id'),
                 'clientes_id' => $this->input->post('clientes_id'),
-                'status' => $this->input->post('status'),
-                'garantia' => $this->input->post('garantia')
+                'contratos_id' => $this->input->post('contratos_id') ?: null
             ];
 
             if ($this->vendas_model->edit('vendas', $data, 'idVendas', $this->input->post('idVendas')) == true) {

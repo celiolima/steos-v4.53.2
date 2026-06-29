@@ -93,6 +93,14 @@
                             <span class="title-tooltip">Ordens</span>
                         </a>
                     </li>
+                    <li class="<?php if (isset($menuContrato)) {
+                                    echo 'active';
+                                }; ?>">
+                        <a class="tip-bottom" title="" href="<?= site_url('contratos') ?>"><i class='bx bx-file iconX'></i>
+                            <span class="title">Contratos</span>
+                            <span class="title-tooltip">Contratos</span>
+                        </a>
+                    </li>
                 <?php } ?>
 
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) { ?>

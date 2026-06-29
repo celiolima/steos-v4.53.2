@@ -1,0 +1,491 @@
+Data: 2026-06-25 19:45:27
+Raw Checks: '[{"sistema":"PORTA AUTOMATICA","local":"ENTRADA PRINCIPAL","check_desc":"Central/Control","status":"V","obs_local":"SENSOR DANIFICADO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ENTRADA PRINCIPAL","check_desc":"Motor","status":"V","obs_local":"SENSOR DANIFICADO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ENTRADA PRINCIPAL","check_desc":"Correia","status":"V","obs_local":"SENSOR DANIFICADO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ENTRADA PRINCIPAL","check_desc":"Roldanas","status":"V","obs_local":"SENSOR DANIFICADO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ENTRADA PRINCIPAL","check_desc":"Perfil","status":"V","obs_local":"SENSOR DANIFICADO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ENTRADA PRINCIPAL","check_desc":"Guias","status":"V","obs_local":"SENSOR DANIFICADO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ENTRADA PRINCIPAL","check_desc":"Sensores","status":"X","obs_local":"SENSOR DANIFICADO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ENTRADA PRINCIPAL","check_desc":"Estruturas da porta","status":"V","obs_local":"SENSOR DANIFICADO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. PRINCIPAL","check_desc":"Central/Control","status":"V","obs_local":"ROLDANA FAZENDO BARULHO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. PRINCIPAL","check_desc":"Motor","status":"V","obs_local":"ROLDANA FAZENDO BARULHO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. PRINCIPAL","check_desc":"Correia","status":"V","obs_local":"ROLDANA FAZENDO BARULHO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. PRINCIPAL","check_desc":"Roldanas","status":"X","obs_local":"ROLDANA FAZENDO BARULHO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. PRINCIPAL","check_desc":"Perfil","status":"V","obs_local":"ROLDANA FAZENDO BARULHO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. PRINCIPAL","check_desc":"Guias","status":"V","obs_local":"ROLDANA FAZENDO BARULHO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. PRINCIPAL","check_desc":"Sensores","status":"V","obs_local":"ROLDANA FAZENDO BARULHO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. PRINCIPAL","check_desc":"Estruturas da porta","status":"V","obs_local":"ROLDANA FAZENDO BARULHO","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. LATERAL","check_desc":"Central/Control","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. LATERAL","check_desc":"Motor","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. LATERAL","check_desc":"Correia","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. LATERAL","check_desc":"Roldanas","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. LATERAL","check_desc":"Perfil","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. LATERAL","check_desc":"Guias","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. LATERAL","check_desc":"Sensores","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"REST. LATERAL","check_desc":"Estruturas da porta","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"PISCINA","check_desc":"Central/Control","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"PISCINA","check_desc":"Motor","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"PISCINA","check_desc":"Correia","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"PISCINA","check_desc":"Roldanas","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"PISCINA","check_desc":"Perfil","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"PISCINA","check_desc":"Guias","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"PISCINA","check_desc":"Sensores","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"PISCINA","check_desc":"Estruturas da porta","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"AUDITORIO","check_desc":"Central/Control","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"AUDITORIO","check_desc":"Motor","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"AUDITORIO","check_desc":"Correia","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"AUDITORIO","check_desc":"Roldanas","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"AUDITORIO","check_desc":"Perfil","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"AUDITORIO","check_desc":"Guias","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"AUDITORIO","check_desc":"Sensores","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"AUDITORIO","check_desc":"Estruturas da porta","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ESTACIONAMENTO","check_desc":"Central/Control","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ESTACIONAMENTO","check_desc":"Motor","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ESTACIONAMENTO","check_desc":"Correia","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ESTACIONAMENTO","check_desc":"Roldanas","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ESTACIONAMENTO","check_desc":"Perfil","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ESTACIONAMENTO","check_desc":"Guias","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ESTACIONAMENTO","check_desc":"Sensores","status":"V","obs_local":"","os_local":""},{"sistema":"PORTA AUTOMATICA","local":"ESTACIONAMENTO","check_desc":"Estruturas da porta","status":"V","obs_local":"","os_local":""},{"sistema":"PORTÃO AUTOMATICO IND","local":"MOT-01","check_desc":"MOTOR","status":"V","obs_local":"","os_local":""},{"sistema":"PORTÃO AUTOMATICO IND","local":"MOT-01","check_desc":"CENTRAL ","status":"V","obs_local":"","os_local":""},{"sistema":"PORTÃO AUTOMATICO IND","local":"MOT-01","check_desc":"CREMALHEIRAS","status":"V","obs_local":"","os_local":""},{"sistema":"PORTÃO AUTOMATICO IND","local":"MOT-02","check_desc":"MOTOR","status":"V","obs_local":"","os_local":""},{"sistema":"PORTÃO AUTOMATICO IND","local":"MOT-02","check_desc":"CENTRAL ","status":"V","obs_local":"","os_local":""},{"sistema":"PORTÃO AUTOMATICO IND","local":"MOT-02","check_desc":"CREMALHEIRAS","status":"V","obs_local":"","os_local":""}]'
+Decoded: array (
+  0 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ENTRADA PRINCIPAL',
+    'check_desc' => 'Central/Control',
+    'status' => 'V',
+    'obs_local' => 'SENSOR DANIFICADO',
+    'os_local' => '',
+  ),
+  1 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ENTRADA PRINCIPAL',
+    'check_desc' => 'Motor',
+    'status' => 'V',
+    'obs_local' => 'SENSOR DANIFICADO',
+    'os_local' => '',
+  ),
+  2 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ENTRADA PRINCIPAL',
+    'check_desc' => 'Correia',
+    'status' => 'V',
+    'obs_local' => 'SENSOR DANIFICADO',
+    'os_local' => '',
+  ),
+  3 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ENTRADA PRINCIPAL',
+    'check_desc' => 'Roldanas',
+    'status' => 'V',
+    'obs_local' => 'SENSOR DANIFICADO',
+    'os_local' => '',
+  ),
+  4 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ENTRADA PRINCIPAL',
+    'check_desc' => 'Perfil',
+    'status' => 'V',
+    'obs_local' => 'SENSOR DANIFICADO',
+    'os_local' => '',
+  ),
+  5 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ENTRADA PRINCIPAL',
+    'check_desc' => 'Guias',
+    'status' => 'V',
+    'obs_local' => 'SENSOR DANIFICADO',
+    'os_local' => '',
+  ),
+  6 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ENTRADA PRINCIPAL',
+    'check_desc' => 'Sensores',
+    'status' => 'X',
+    'obs_local' => 'SENSOR DANIFICADO',
+    'os_local' => '',
+  ),
+  7 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ENTRADA PRINCIPAL',
+    'check_desc' => 'Estruturas da porta',
+    'status' => 'V',
+    'obs_local' => 'SENSOR DANIFICADO',
+    'os_local' => '',
+  ),
+  8 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. PRINCIPAL',
+    'check_desc' => 'Central/Control',
+    'status' => 'V',
+    'obs_local' => 'ROLDANA FAZENDO BARULHO',
+    'os_local' => '',
+  ),
+  9 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. PRINCIPAL',
+    'check_desc' => 'Motor',
+    'status' => 'V',
+    'obs_local' => 'ROLDANA FAZENDO BARULHO',
+    'os_local' => '',
+  ),
+  10 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. PRINCIPAL',
+    'check_desc' => 'Correia',
+    'status' => 'V',
+    'obs_local' => 'ROLDANA FAZENDO BARULHO',
+    'os_local' => '',
+  ),
+  11 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. PRINCIPAL',
+    'check_desc' => 'Roldanas',
+    'status' => 'X',
+    'obs_local' => 'ROLDANA FAZENDO BARULHO',
+    'os_local' => '',
+  ),
+  12 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. PRINCIPAL',
+    'check_desc' => 'Perfil',
+    'status' => 'V',
+    'obs_local' => 'ROLDANA FAZENDO BARULHO',
+    'os_local' => '',
+  ),
+  13 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. PRINCIPAL',
+    'check_desc' => 'Guias',
+    'status' => 'V',
+    'obs_local' => 'ROLDANA FAZENDO BARULHO',
+    'os_local' => '',
+  ),
+  14 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. PRINCIPAL',
+    'check_desc' => 'Sensores',
+    'status' => 'V',
+    'obs_local' => 'ROLDANA FAZENDO BARULHO',
+    'os_local' => '',
+  ),
+  15 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. PRINCIPAL',
+    'check_desc' => 'Estruturas da porta',
+    'status' => 'V',
+    'obs_local' => 'ROLDANA FAZENDO BARULHO',
+    'os_local' => '',
+  ),
+  16 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. LATERAL',
+    'check_desc' => 'Central/Control',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  17 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. LATERAL',
+    'check_desc' => 'Motor',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  18 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. LATERAL',
+    'check_desc' => 'Correia',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  19 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. LATERAL',
+    'check_desc' => 'Roldanas',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  20 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. LATERAL',
+    'check_desc' => 'Perfil',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  21 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. LATERAL',
+    'check_desc' => 'Guias',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  22 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. LATERAL',
+    'check_desc' => 'Sensores',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  23 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'REST. LATERAL',
+    'check_desc' => 'Estruturas da porta',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  24 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'PISCINA',
+    'check_desc' => 'Central/Control',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  25 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'PISCINA',
+    'check_desc' => 'Motor',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  26 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'PISCINA',
+    'check_desc' => 'Correia',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  27 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'PISCINA',
+    'check_desc' => 'Roldanas',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  28 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'PISCINA',
+    'check_desc' => 'Perfil',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  29 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'PISCINA',
+    'check_desc' => 'Guias',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  30 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'PISCINA',
+    'check_desc' => 'Sensores',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  31 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'PISCINA',
+    'check_desc' => 'Estruturas da porta',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  32 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'AUDITORIO',
+    'check_desc' => 'Central/Control',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  33 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'AUDITORIO',
+    'check_desc' => 'Motor',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  34 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'AUDITORIO',
+    'check_desc' => 'Correia',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  35 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'AUDITORIO',
+    'check_desc' => 'Roldanas',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  36 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'AUDITORIO',
+    'check_desc' => 'Perfil',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  37 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'AUDITORIO',
+    'check_desc' => 'Guias',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  38 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'AUDITORIO',
+    'check_desc' => 'Sensores',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  39 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'AUDITORIO',
+    'check_desc' => 'Estruturas da porta',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  40 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ESTACIONAMENTO',
+    'check_desc' => 'Central/Control',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  41 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ESTACIONAMENTO',
+    'check_desc' => 'Motor',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  42 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ESTACIONAMENTO',
+    'check_desc' => 'Correia',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  43 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ESTACIONAMENTO',
+    'check_desc' => 'Roldanas',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  44 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ESTACIONAMENTO',
+    'check_desc' => 'Perfil',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  45 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ESTACIONAMENTO',
+    'check_desc' => 'Guias',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  46 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ESTACIONAMENTO',
+    'check_desc' => 'Sensores',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  47 => 
+  array (
+    'sistema' => 'PORTA AUTOMATICA',
+    'local' => 'ESTACIONAMENTO',
+    'check_desc' => 'Estruturas da porta',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  48 => 
+  array (
+    'sistema' => 'PORTÃO AUTOMATICO IND',
+    'local' => 'MOT-01',
+    'check_desc' => 'MOTOR',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  49 => 
+  array (
+    'sistema' => 'PORTÃO AUTOMATICO IND',
+    'local' => 'MOT-01',
+    'check_desc' => 'CENTRAL ',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  50 => 
+  array (
+    'sistema' => 'PORTÃO AUTOMATICO IND',
+    'local' => 'MOT-01',
+    'check_desc' => 'CREMALHEIRAS',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  51 => 
+  array (
+    'sistema' => 'PORTÃO AUTOMATICO IND',
+    'local' => 'MOT-02',
+    'check_desc' => 'MOTOR',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  52 => 
+  array (
+    'sistema' => 'PORTÃO AUTOMATICO IND',
+    'local' => 'MOT-02',
+    'check_desc' => 'CENTRAL ',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+  53 => 
+  array (
+    'sistema' => 'PORTÃO AUTOMATICO IND',
+    'local' => 'MOT-02',
+    'check_desc' => 'CREMALHEIRAS',
+    'status' => 'V',
+    'obs_local' => '',
+    'os_local' => '',
+  ),
+)
+Count Inseridos: 54

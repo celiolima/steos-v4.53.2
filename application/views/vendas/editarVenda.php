@@ -7,6 +7,9 @@
 <script type="text/javascript" src="<?php echo base_url() ?>assets/trumbowyg/langs/pt_br.js"></script>
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />
+<style>
+    .ui-autocomplete { z-index: 99999 !important; }
+</style>
 
 <div class="row-fluid" style="margin-top:0">
     <div class="span12">
@@ -16,6 +19,26 @@
                     <i class="fas fa-cash-register"></i>
                 </span>
                 <h5>Editar Venda</h5>
+                <div class="buttons">
+                    <?php if ($result->faturado == 0) { ?>
+                        <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
+                            <span class="button__icon"><i class='bx bx-dollar'></i></span> 
+                            <span class="button__text">Faturar</span>
+                        </a>
+                    <?php } ?>
+                    <button class="button btn btn-mini btn-primary" id="btnContinuar" form="formVendas">
+                        <span class="button__icon"><i class="bx bx-sync"></i></span>
+                        <span class="button__text">Atualizar</span>
+                    </button>
+                    <a href="<?php echo base_url() ?>index.php/vendas/visualizar/<?php echo $result->idVendas; ?>" class="button btn btn-mini btn-primary">
+                        <span class="button__icon"><i class="bx bx-show"></i></span>
+                        <span class="button__text">Visualizar</span>
+                    </a>
+                    <a href="<?php echo base_url() ?>index.php/vendas" class="button btn btn-mini btn-warning">
+                        <span class="button__icon"><i class="bx bx-undo"></i></span>
+                        <span class="button__text">Voltar</span>
+                    </a>
+                </div>
             </div>
             <div class="widget-content nopadding tab-content">
                 <div class="span12" id="divProdutosServicos" style=" margin-left: 0">
@@ -28,46 +51,36 @@
                             <div class="span12" id="divEditarVenda">
                                 <form action="<?php echo current_url(); ?>" method="post" id="formVendas">
                                     <?php echo form_hidden('idVendas', $result->idVendas) ?>
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <h3>Venda:
-                                            <?php echo $result->idVendas ?>
+                                    <div class="span12" style="padding: 1%; margin-left: 0;">
+                                        <h3 style="margin: 0">Venda:
+                                            <?php echo str_pad($result->idVendas, 4, "0", STR_PAD_LEFT); ?>
                                         </h3>
+                                    </div>
+                                    <div class="span12" style="padding: 1%; margin-left: 0">
                                         <div class="span2" style="margin-left: 0">
                                             <label for="dataFinal">Data Final</label>
                                             <input id="dataVenda" class="span12 datepicker" type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
                                         </div>
-                                        <div class="span3">
+                                        <div class="span4" style="margin-left: 0">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
                                             <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" />
                                             <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
-                                            <input id="valorTotal" type="hidden" name="valorTotal" value="" />
+                                            <input id="valor_desconto" class="span12" type="hidden" name="valor_desconto" value="" />
+                                            <input id="valor_troco" class="span12" type="hidden" name="valor_troco" value="" />
+                                        </div>
+                                        <div class="span3">
+                                            <label for="contratos_id">Contrato</label>
+                                            <select id="contratos_id" name="contratos_id" class="span12">
+                                                <option value="">Nenhum</option>
+                                                <?php if(isset($result->contratos_id) && $result->contratos_id != null) { ?>
+                                                    <option value="<?php echo $result->contratos_id; ?>" selected>Manter Atual</option>
+                                                <?php } ?>
+                                            </select>
                                         </div>
                                         <div class="span3">
                                             <label for="tecnico">Vendedor<span class="required">*</span></label>
                                             <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo $result->nome ?>" />
                                             <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo $result->usuarios_id ?>" />
-                                        </div>
-                                        <div class="span2">
-                                            <label for="status">Status<span class="required">*</span></label>
-                                            <select class="span12" name="status" id="status" value="">
-                                                <?php $statusVenda = isset($result->status) ? $result->status : 'Finalizado'; ?>
-                                                <option <?= $statusVenda == 'Orçamento' ? 'selected' : '' ?> value="Orçamento">Orçamento</option>
-                                                <option <?= $statusVenda == 'Aberto' ? 'selected' : '' ?> value="Aberto">Aberto</option>
-                                                <option <?= $statusVenda == 'Faturado' ? 'selected' : '' ?> value="Faturado">Faturado</option>
-                                                <option <?= $statusVenda == 'Negociação' ? 'selected' : '' ?> value="Negociação">Negociação</option>
-                                                <option <?= $statusVenda == 'Em Andamento' ? 'selected' : '' ?> value="Em Andamento">Em Andamento</option>
-                                                <option <?= $statusVenda == 'Finalizado' ? 'selected' : '' ?> value="Finalizado">Finalizado</option>
-                                                <option <?= $statusVenda == 'Cancelado' ? 'selected' : '' ?> value="Cancelado">Cancelado</option>
-                                                <option <?= $statusVenda == 'Aguardando Peças' ? 'selected' : '' ?> value="Aguardando Peças">Aguardando Peças</option>
-                                                <option <?= $statusVenda == 'Aprovado' ? 'selected' : '' ?> value="Aprovado">Aprovado</option>
-                                            </select>
-                                        </div>
-                                        <div class="span2">
-                                            <label for="garantia">Garantia (dias)</label>
-                                            <input id="garantia" type="number" placeholder="Em dias" min="0" max="9999"
-                                                class="span12" name="garantia"
-                                                value="<?php echo isset($result->garantia) ? $result->garantia : '' ?>" />
-                                            <?php echo form_error('garantia'); ?>
                                         </div>
                                     </div>
 
@@ -83,29 +96,6 @@
                                             <h4>Observações ao Cliente</h4>
                                         </label>
                                         <textarea class="editor" name="observacoes_cliente" id="observacoes_cliente" cols="30" rows="5"><?php echo $result->observacoes_cliente ?></textarea>
-                                    </div>
-
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <div class="span12" style="display:flex; justify-content: center;">
-                                            <?php if ($result->faturado == 0) { ?>
-                                                <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-danger">
-                                                    <span class="button__icon"><i class='bx bx-dollar'></i></span> 
-                                                    <span class="button__text2">Faturar</span>
-                                                </a>
-                                            <?php } ?>
-                                            <button class="button btn btn-primary" id="btnContinuar">
-                                                <span class="button__icon"><i class="bx bx-sync"></i></span>
-                                                <span class="button__text2">Atualizar</span>
-                                            </button>
-                                            <a href="<?php echo base_url() ?>index.php/vendas/visualizar/<?php echo $result->idVendas; ?>" class="button btn btn-primary">
-                                                <span class="button__icon"><i class="bx bx-show"></i></span>
-                                                <span class="button__text2">Visualizar</span>
-                                            </a>
-                                            <a href="<?php echo base_url() ?>index.php/vendas" class="button btn btn-warning">
-                                                <span class="button__icon"><i class="bx bx-undo"></i></span>
-                                                <span class="button__text2">Voltar</span>
-                                            </a>
-                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -375,6 +365,20 @@ foreach ($produtos as $p) {
     });
 
     $(document).ready(function() {
+        // Preencher dropdown de contratos no load da pagina
+        var curr_cliente_id = $("#clientes_id").val();
+        var curr_contrato_id = "<?php echo isset($result->contratos_id) ? $result->contratos_id : ''; ?>";
+        if (curr_cliente_id) {
+            $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: curr_cliente_id}, function(data) {
+                var options = '<option value="">Nenhum</option>';
+                for (var i = 0; i < data.length; i++) {
+                    var selected = (data[i].id == curr_contrato_id) ? ' selected' : '';
+                    options += '<option value="' + data[i].id + '"' + selected + '>' + data[i].nome + '</option>';
+                }
+                $("#contratos_id").html(options);
+            });
+        }
+
         $(".money").maskMoney();
         $('#recebido').click(function(event) {
             var flag = $(this).is(':checked');
@@ -525,9 +529,17 @@ foreach ($produtos as $p) {
         });
         $("#cliente").autocomplete({
             source: "<?php echo base_url(); ?>index.php/os/autoCompleteCliente",
-            minLength: 2,
+            minLength: 1,
             select: function(event, ui) {
                 $("#clientes_id").val(ui.item.id);
+                // Buscar contratos atrelados a este cliente
+                $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: ui.item.id}, function(data) {
+                    var options = '<option value="">Nenhum Contrato</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
+                    }
+                    $("#contratos_id").html(options);
+                });
             }
         });
         $("#tecnico").autocomplete({

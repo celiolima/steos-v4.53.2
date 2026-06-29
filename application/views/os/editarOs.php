@@ -17,6 +17,7 @@
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />
 <style>
+    .ui-autocomplete { z-index: 99999 !important; }
     .kbw-signature {
         width: 450px;
         height: 90px;
@@ -49,6 +50,13 @@ if (!empty($lancamentos)) {
                             <span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text">Faturar</span></a>
                     <?php
                     } ?>
+                    
+                    <?php if ($result->manutPreventiva == 1 && $result->contratos_id != null) { ?>
+                        <a title="Preencher Checklist da OS" class="button btn btn-mini btn-info" href="<?php echo site_url() ?>/os/adicionarChecklist/<?php echo $result->idOs; ?>">
+                            <span class="button__icon"><i class="bx bx-check-square"></i></span><span class="button__text">Preencher Checklist</span>
+                        </a>
+                    <?php } ?>
+
                     <a title="Visualizar OS" class="button btn btn-primary" href="<?php echo site_url() ?>/os/visualizar/<?php echo $result->idOs; ?>">
                         <span class="button__icon"><i class="bx bx-show"></i></span><span class="button__text">Visualizar OS</span></a>
                     <a target="_blank" title="Imprimir OS Papel A4" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/os/imprimir/<?php echo $result->idOs; ?>">
@@ -114,11 +122,20 @@ if (!empty($lancamentos)) {
                                         <!--  CLIENTE -->
                                         <div class="span6" style="padding: 0; margin: 0">
                                             <div class="span12" style="padding: 0; margin: 0">
-                                                <div class="span9" style="padding: 0; margin: 0">
+                                                <div class="span5" style="padding: 0; margin: 0">
                                                     <label for="cliente">Cliente<span class="required">*</span></label>
                                                     <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" />
                                                     <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
                                                     <input id="valor" type="hidden" name="valor" value="" />
+                                                </div>
+                                                <div class="span4" style="padding: 0; margin-left: 2%">
+                                                    <label for="contratos_id">Contrato Vinculado</label>
+                                                    <select id="contratos_id" name="contratos_id" class="span12">
+                                                        <option value="">Nenhum</option>
+                                                        <?php if(isset($result->contratos_id) && $result->contratos_id != null) { ?>
+                                                            <option value="<?php echo $result->contratos_id; ?>" selected>Manter Atual</option>
+                                                        <?php } ?>
+                                                    </select>
                                                 </div>
                                                 <div class="span3" style="padding: 0; margin: 0">
                                                     <label for="map">Maps<span class="required">*</span></label>
@@ -624,27 +641,30 @@ if (!empty($lancamentos)) {
                         <div class="tab-pane" id="tab5">
                             <div class="span12" style="padding: 1%; margin-left: 0">
                                 <div class="span12 well" style="padding: 1%; margin-left: 0" id="form-anexos">
-                                    <form id="formAnexos1" enctype="multipart/form-data" action="<?php echo base_url(); ?>index.php/os/anexar" accept-charset="utf-8" s method="post">
-                                        <!-- <form id="formAnexos" enctype="multipart/form-data" action="javascript:;" accept-charset="utf-8" s method="post"> -->
+                                    <form id="formAnexos" enctype="multipart/form-data" action="javascript:;" accept-charset="utf-8" method="post">
                                         <div class="span6">
                                             <input type="hidden" name="idOsServico" id="idOsServico" value="<?php echo $result->idOs; ?>" />
                                             <label for="">Anexo</label>
                                             <input type="file" class="span12" name="userfile[]" multiple="multiple" size="20" />
                                         </div>
 
-                                        <div class="span2">
-                                            <label for="">.</label>
-                                            <button class="button btn btn-success">
-                                                <span class="button__icon"><i class='bx bx-paperclip'></i></span><span class="button__text2">Anexar</span></button>
-                                        </div>
-                                        <div class="span2">
-                                            <img src="" class="img-thumbnail" style="width:150px;height:150px;" />
-                                        </div>
+                                        <div class="span6" style="margin-left: 0; display: flex; gap: 10px;">
+                                            <div style="flex: 1;">
+                                                <label for="">.</label>
+                                                <button class="button btn btn-success" style="width: 100%;">
+                                                    <span class="button__icon"><i class='bx bx-paperclip'></i></span><span class="button__text2">Anexar</span>
+                                                </button>
+                                            </div>
 
-                                        <div class="span2" style=" margin-left: 0">
-                                            <label for="">.</label>
-                                            <input type="hidden" name="img" />
-                                            <button type="button" class="button btn btn-success" onclick="openWebCamCapture();"> <span class="button__icon"><i class="fa fa-camera"></i></span><span class="button__text2"> Webcam</span></button>
+                                            <div style="flex: 1;">
+                                                <label for="">.</label>
+                                                <input type="hidden" name="img" />
+                                                <label class="button btn btn-success" style="cursor: pointer; width: 100%; margin-bottom: 0;">
+                                                    <span class="button__icon"><i class="fas fa-camera"></i></span>
+                                                    <span class="button__text2"> Câmera Mobile</span>
+                                                    <input type="file" name="userfile[]" accept="image/*" capture="environment" multiple="multiple" style="display: none;" onchange="$('#formAnexos').submit();" />
+                                                </label>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
@@ -657,16 +677,24 @@ if (!empty($lancamentos)) {
                                     ?>
                                     <?php
                                     foreach ($anexos as $a) {
+                                        $ext = strtolower(pathinfo($a->anexo, PATHINFO_EXTENSION));
+
                                         if ($a->thumb == null) {
-                                            $thumb = base_url() . 'assets/img/icon-file.png';
-                                            $link = base_url() . 'assets/img/icon-file.png';
+                                            $link = $a->url . '/' . $a->anexo;
+                                            if ($ext == 'pdf') {
+                                                $thumb_content = '<div style="height: 150px; display: flex; align-items: center; justify-content: center; background: #f9f9f9;"><i class="fas fa-file-pdf" style="font-size: 80px; color: #e74c3c;"></i></div>';
+                                            } else {
+                                                $thumb = base_url() . 'assets/img/icon-file.png';
+                                                $thumb_content = '<img src="' . $thumb . '" alt="' . $a->anexo . '" style="max-height: 150px;">';
+                                            }
                                         } else {
                                             $thumb = $a->url . '/thumbs/' . $a->thumb;
                                             $link = $a->url . '/' . $a->anexo;
+                                            $thumb_content = '<img src="' . $thumb . '" alt="' . $a->anexo . '" style="max-height: 150px;">';
                                         }
-                                        echo '<div class="span3" style="min-height: 150px; margin-left: 0">
-                                                    <a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal">
-                                                        <img src="' . $thumb . '" alt="">
+                                        echo '<div class="span3" style="min-height: 150px; margin-left: 0; margin-bottom: 10px;">
+                                                    <a style="min-height: 150px; display: block; border: 1px solid #ddd; overflow: hidden; background: #fff;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal">
+                                                        ' . $thumb_content . '
                                                     </a>
                                                 </div>';
                                     }
@@ -1992,6 +2020,20 @@ if (!empty($lancamentos)) {
     });
 
     $(document).ready(function() {
+        // Preencher dropdown de contratos no load da pagina
+        var curr_cliente_id = $("#clientes_id").val();
+        var curr_contrato_id = "<?php echo isset($result->contratos_id) ? $result->contratos_id : ''; ?>";
+        if (curr_cliente_id) {
+            $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: curr_cliente_id}, function(data) {
+                var options = '<option value="">Nenhum</option>';
+                for (var i = 0; i < data.length; i++) {
+                    var selected = (data[i].id == curr_contrato_id) ? ' selected' : '';
+                    options += '<option value="' + data[i].id + '"' + selected + '>' + data[i].nome + '</option>';
+                }
+                $("#contratos_id").html(options);
+            });
+        }
+
 
         $('#parcelado').click(function(event) {
             /* $('#qtdparcelas_div').show();
@@ -2216,9 +2258,17 @@ if (!empty($lancamentos)) {
 
         $("#cliente").autocomplete({
             source: "<?php echo base_url(); ?>index.php/os/autoCompleteCliente",
-            minLength: 2,
+            minLength: 1,
             select: function(event, ui) {
                 $("#clientes_id").val(ui.item.id);
+                // Buscar contratos atrelados a este cliente
+                $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: ui.item.id}, function(data) {
+                    var options = '<option value="">Nenhum Contrato</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
+                    }
+                    $("#contratos_id").html(options);
+                });
             }
         });
 
@@ -2538,7 +2588,8 @@ if (!empty($lancamentos)) {
                             $("#userfile").val('');
 
                         } else {
-                            $("#divAnexos").html('<div class="alert fade in"><button type="button" class="close" data-dismiss="alert">×</button><strong>Atenção!</strong> ' + data.mensagem + '</div>');
+                            var erroDetalhado = (data.errors && data.errors.upload) ? '<br>' + data.errors.upload.join('<br>') : '';
+                            $("#divAnexos").html('<div class="alert fade in"><button type="button" class="close" data-dismiss="alert">×</button><strong>Atenção!</strong> ' + data.mensagem + erroDetalhado + '</div>');
                         }
                     },
                     error: function() {
@@ -2620,7 +2671,15 @@ if (!empty($lancamentos)) {
             var link = $(this).attr('link');
             var id = $(this).attr('imagem');
             var url = '<?php echo base_url(); ?>index.php/os/excluirAnexo/';
-            $("#div-visualizar-anexo").html('<img src="' + link + '" alt="">');
+            var ext = link.split('.').pop().toLowerCase();
+            
+            if (ext === 'pdf') {
+                $("#div-visualizar-anexo").html('<iframe src="' + link + '" width="100%" height="400px" style="border: none;"></iframe>');
+            } else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'].includes(ext)) {
+                $("#div-visualizar-anexo").html('<img src="' + link + '" alt="">');
+            } else {
+                $("#div-visualizar-anexo").html('<div><i class="fas fa-file-alt" style="font-size: 100px; color: #555;"></i><br><br>Documento</div>');
+            }
             $("#excluir-anexo").attr('link', url + id);
 
             $("#download").attr('href', "<?php echo base_url(); ?>index.php/os/downloadanexo/" + id);

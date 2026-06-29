@@ -41,51 +41,31 @@ class Os extends MY_Controller
         $afaturar = $this->input->get('afaturar');
         $manPrevnt = $this->input->get('manPrevnt');
 
-        if ($os) {
-            $where_array['os'] = $os;
-        }
-        if ($tecnico) {
-            $where_array['tecnico'] = $tecnico;
-        }
-        if ($local) {
-            $where_array['local'] = $local;
-        }
-        if ($observacao) {
-            $where_array['observacao'] = $observacao;
-        }
-        if ($pesquisa) {
-            $where_array['pesquisa'] = $pesquisa;
-        }
-        if ($status) {
-            $where_array['status'] = $status;
-        }
-        if ($tipo) {
-            $where_array['tipo'] = $tipo;
-        }
-        if ($vendedor) {
-            $where_array['vendedor'] = $vendedor;
-        }
+        if ($os) { $where_array['os'] = $os; }
+        if ($tecnico && $tecnico !== 'Nome do Tecnico' && $tecnico !== 'Todos') { $where_array['tecnico'] = $tecnico; }
+        if ($local && $local !== 'Todos') { $where_array['local'] = $local; }
+        if ($observacao) { $where_array['observacao'] = $observacao; }
+        if ($pesquisa) { $where_array['pesquisa'] = $pesquisa; }
+        if ($status && $status !== 'Todos') { $where_array['status'] = $status; }
+        if ($tipo && $tipo !== 'Todos') { $where_array['tipo'] = $tipo; }
+        if ($vendedor && $vendedor !== 'Todos') { $where_array['vendedor'] = $vendedor; }
         if ($inputDe) {
-            $de = explode('/', $inputDe);
-            $de = $de[2] . '-' . $de[1] . '-' . $de[0];
-
-            $where_array['de'] = $de;
+            $deArr = explode('/', $inputDe);
+            if (count($deArr) == 3) {
+                $where_array['de'] = $deArr[2] . '-' . $deArr[1] . '-' . $deArr[0];
+            }
         }
         if ($inputAte) {
-            $ate = explode('/', $inputAte);
-            $ate = $ate[2] . '-' . $ate[1] . '-' . $ate[0];
-
-            $where_array['ate'] = $ate;
+            $ateArr = explode('/', $inputAte);
+            if (count($ateArr) == 3) {
+                $where_array['ate'] = $ateArr[2] . '-' . $ateArr[1] . '-' . $ateArr[0];
+            }
         }
-        if ($afaturar) {
-            $where_array['afaturar'] = $afaturar;
-        }
-        if ($manPrevnt) {
-            $where_array['manPrevnt'] = $manPrevnt;
-        }
+        if ($afaturar == "1") { $where_array['afaturar'] = 1; }
+        if ($manPrevnt == "1") { $where_array['manPrevnt'] = 1; }
 
         $this->data['configuration']['base_url'] = site_url('os/gerenciar/');
-        $this->data['configuration']['total_rows'] = $this->os_model->count('os');
+        $this->data['configuration']['total_rows'] = $this->os_model->count('os', $where_array);
         if (count($where_array) > 0) {
             $this->data['configuration']['suffix'] = "?pesquisa={$pesquisa}&status={$status}&data={$inputDe}&data2={$inputAte}&os={$os}&tecnico={$tecnico}&local={$local}&observacao={$observacao}&tipo={$tipo}&vendedor={$vendedor}&afaturar={$afaturar}&manPrevnt={$manPrevnt}";
             $this->data['configuration']['first_url'] = base_url("index.php/os/gerenciar")."\?pesquisa={$pesquisa}&status={$status}&data={$inputDe}&data2={$inputAte}&os={$os}&tecnico={$tecnico}&local={$local}&observacao={$observacao}&tipo={$tipo}&vendedor={$vendedor}&afaturar={$afaturar}&manPrevnt={$manPrevnt}";
@@ -164,6 +144,7 @@ class Os extends MY_Controller
                 'dataInicial' => $dataInicial,
                 'clientes_id' => $this->input->post('clientes_id'),
                 'usuarios_id' => $this->input->post('usuarios_id'),
+                'contratos_id' => $this->input->post('contratos_id') ?: null,
                 'dataFinal' => $dataFinal,
                 'garantia' => set_value('garantia'),
                 'garantias_id' => $termoGarantiaId,
@@ -310,6 +291,7 @@ class Os extends MY_Controller
             'dataInicial' => $dataInicial,
             'clientes_id' => $this->input->post('clientes_id'), 
             'usuarios_id' => $this->input->post('usuarios_id'), 
+            'contratos_id' => $this->input->post('contratos_id') ?: null,
             'dataFinal' => $dataFinal,
             'garantia' => set_value('garantia'),
             'garantias_id' => $termoGarantiaId,
@@ -560,6 +542,7 @@ class Os extends MY_Controller
                 'laudoTecnico' => $this->input->post('laudoTecnico'),
                 'usuarios_id' => $this->input->post('usuarios_id'),
                 'clientes_id' => $this->input->post('clientes_id'),
+                'contratos_id' => $this->input->post('contratos_id') ?: null,
             ];
             $os = $this->os_model->getById($this->input->post('idOs'));
 
@@ -1302,7 +1285,7 @@ class Os extends MY_Controller
 
         $upload_conf = [
             'upload_path' => $directory,
-            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt', // formatos permitidos para anexos de os
+            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt|heic|HEIC|webp|WEBP', // formatos permitidos para anexos de os
             'max_size' => 0,
         ];
 
@@ -1322,6 +1305,10 @@ class Os extends MY_Controller
         $success = [];
 
         foreach ($_FILES as $field_name => $file) {
+            if (empty($file['name'])) {
+                continue;
+            }
+
             if (! $this->upload->do_upload($field_name)) {
                 $error['upload'][] = $this->upload->display_errors();
             } else {
@@ -1615,5 +1602,191 @@ class Os extends MY_Controller
         } else {
             echo json_encode(['result' => false]);
         }
+    }
+
+    public function adicionarChecklist($idOs = null)
+    {
+        if (!$idOs) {
+            redirect(site_url('os'));
+        }
+
+        // Verifica se já existe checklist
+        $this->db->where('os_id', $idOs);
+        $checklistExistente = $this->db->get('os_checklists')->row();
+        if ($checklistExistente) {
+            redirect(site_url('os/editarChecklist/' . $idOs));
+        }
+
+        $this->data['result'] = $this->os_model->getById($idOs);
+        if (!$this->data['result'] || !$this->data['result']->contratos_id) {
+            $this->session->set_flashdata('error', 'OS não encontrada ou não possui contrato vinculado.');
+            redirect(site_url('os'));
+        }
+
+        $maxObj = $this->db->query("SELECT IFNULL(MAX(idChecklist),0)+1 as proximo FROM os_checklists")->row();
+        $this->data['proximoId'] = $maxObj ? $maxObj->proximo : 1;
+
+        $this->load->model('tecnicos_os_model');
+        $tecnicosOS = $this->tecnicos_os_model->getById($idOs);
+        $nomeTecnicoResp = '';
+        if (!empty($tecnicosOS)) {
+            $nomeTecnicoResp = $tecnicosOS[0]->tecnicoName ?? ($tecnicosOS[0]->nome ?? '');
+        }
+        $this->data['tecnicoResp'] = !empty($nomeTecnicoResp) ? $nomeTecnicoResp : ($this->data['result']->nome ?? '');
+
+        $idContrato = $this->data['result']->contratos_id;
+        $this->load->model('contratos_model');
+        $this->data['contrato'] = $this->contratos_model->getById($idContrato);
+
+        $sistemas_contrato = $this->contratos_model->getSistemasByContrato($idContrato);
+        $matriz = [];
+        
+        if($sistemas_contrato){
+            foreach($sistemas_contrato as $sc){
+                $nomeSistema = trim(strtoupper($sc->nome));
+                if(!isset($matriz[$nomeSistema])){
+                    $matriz[$nomeSistema] = [
+                        'locais' => [],
+                        'checks' => []
+                    ];
+                    $checksBase = $this->db->where('sistemas_id', $sc->sistemas_id)->get('sistemas_checks')->result();
+                    foreach($checksBase as $cb){
+                        $matriz[$nomeSistema]['checks'][] = $cb->descricao;
+                    }
+                }
+                $matriz[$nomeSistema]['locais'][] = $sc->local ? strtoupper($sc->local) : 'LOCAL NÃO DEFINIDO';
+            }
+        }
+        
+        $this->data['matriz'] = $matriz;
+        $this->load->view('os/adicionarChecklist', $this->data);
+    }
+
+    public function salvarChecklist()
+    {
+        $idOs = $this->input->post('idOs');
+        $idContrato = $this->input->post('idContrato');
+        
+        $dataChecklist = [
+            'os_id' => $idOs,
+            'contratos_id' => $idContrato,
+            'data_criacao' => date('Y-m-d H:i:s'),
+            'usuarios_id' => $this->session->userdata('id_admin') ?: ($this->session->userdata('id') ?: 1),
+            'status' => 'Fechado',
+            'observacoes' => $this->input->post('observacoes_gerais'),
+            'assinatura_cliente' => $this->input->post('assinatura_cliente'),
+            'assinatura_tecnico' => $this->input->post('assinatura_tecnico'),
+            'nome_tecnico' => $this->input->post('nome_tecnico'),
+            'data_checklist' => date('Y-m-d'),
+            'obs_gerais' => $this->input->post('observacoes_gerais')
+        ];
+
+        $this->db->insert('os_checklists', $dataChecklist);
+        $checklist_id = $this->db->insert_id();
+
+        $rawChecks = $this->input->post('checks_data', false);
+        if (!$rawChecks && isset($_POST['checks_data'])) {
+            $rawChecks = $_POST['checks_data'];
+        }
+        $checksData = json_decode($rawChecks, true);
+        $countInseridos = 0;
+
+        $debugLog = "Data: " . date('Y-m-d H:i:s') . "\n";
+        $debugLog .= "Raw Checks: " . var_export($rawChecks, true) . "\n";
+        $debugLog .= "Decoded: " . var_export($checksData, true) . "\n";
+
+        if ($checksData && is_array($checksData)) {
+            foreach ($checksData as $item) {
+                $inserted = $this->db->insert('os_checklists_itens', [
+                    'checklist_id' => $checklist_id,
+                    'sistema' => isset($item['sistema']) ? $item['sistema'] : '',
+                    'local' => isset($item['local']) ? $item['local'] : '',
+                    'check_desc' => isset($item['check_desc']) ? $item['check_desc'] : '',
+                    'status' => isset($item['status']) ? $item['status'] : 'O',
+                    'obs_local' => isset($item['obs_local']) ? $item['obs_local'] : '',
+                    'os_local' => isset($item['os_local']) ? $item['os_local'] : '',
+                    'descricao' => isset($item['check_desc']) ? $item['check_desc'] : ''
+                ]);
+                if (!$inserted) {
+                    $debugLog .= "DB Error on insert: " . print_r($this->db->error(), true) . "\n";
+                } else {
+                    $countInseridos++;
+                }
+            }
+        } else {
+            $debugLog .= "checksData not array or empty!\n";
+        }
+        $debugLog .= "Count Inseridos: $countInseridos\n";
+        file_put_contents(FCPATH . 'scratch/checklist_debug.log', $debugLog);
+
+        $this->session->set_flashdata('success', 'Checklist salvo com sucesso!');
+        echo json_encode(['result' => true, 'idChecklist' => $checklist_id, 'itens' => $countInseridos]);
+    }
+
+    public function visualizarChecklist($idOs = null)
+    {
+        if (!$idOs) {
+            redirect(site_url('os'));
+        }
+
+        $this->data['result'] = $this->os_model->getById($idOs);
+
+        $this->load->model('tecnicos_os_model');
+        $tecnicosOS = $this->tecnicos_os_model->getById($idOs);
+        $nomeTecnicoResp = '';
+        if (!empty($tecnicosOS)) {
+            $nomeTecnicoResp = $tecnicosOS[0]->tecnicoName ?? ($tecnicosOS[0]->nome ?? '');
+        }
+        $this->data['tecnicoResp'] = !empty($nomeTecnicoResp) ? $nomeTecnicoResp : ($this->data['result']->nome ?? '');
+
+        $this->db->where('os_id', $idOs);
+        $checklist = $this->db->get('os_checklists')->row();
+        
+        if (!$checklist) {
+            $this->session->set_flashdata('error', 'Checklist não encontrado para esta OS.');
+            redirect(site_url('os/editar/' . $idOs));
+        }
+        
+        $this->data['checklist'] = $checklist;
+        
+        $this->db->where('checklist_id', $checklist->idChecklist);
+        $itens = $this->db->get('os_checklists_itens')->result();
+        
+        $matriz = [];
+        foreach($itens as $item) {
+            $sis = $item->sistema;
+            $loc = $item->local;
+            
+            if(!isset($matriz[$sis])) {
+                $matriz[$sis] = ['locais' => [], 'checks' => []];
+            }
+            if(!in_array($item->check_desc, $matriz[$sis]['checks'])) {
+                $matriz[$sis]['checks'][] = $item->check_desc;
+            }
+            if(!isset($matriz[$sis]['locais'][$loc])) {
+                $matriz[$sis]['locais'][$loc] = [
+                    'obs_local' => $item->obs_local,
+                    'os_local' => $item->os_local,
+                    'checks' => []
+                ];
+            }
+            $matriz[$sis]['locais'][$loc]['checks'][$item->check_desc] = $item->status;
+        }
+        
+        $this->data['matriz'] = $matriz;
+        $this->load->view('os/visualizarChecklist', $this->data);
+    }
+    
+    public function editarChecklist($idOs = null)
+    {
+        // Por simplicidade, caso queira editar o mesmo checklist (sobreescrevendo)
+        // Redirecionando para visualizar por enquanto, ou podemos implementar edição real
+        $this->visualizarChecklist($idOs);
+    }
+
+    public function imprimirChecklist($idOs = null)
+    {
+        $this->data['autoPrint'] = true;
+        $this->visualizarChecklist($idOs);
     }
 }

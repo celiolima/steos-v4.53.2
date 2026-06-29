@@ -1,0 +1,57 @@
+# Documentação: jquery-ui-1.9.2.custom.js
+
+## 1. Identificação
+- **Caminho:** `e:\DEV\EMISSOR DE NOTAS\STEOS\assets\js\jquery-ui\js\jquery-ui-1.9.2.custom.js`
+- **Tipo:** Asset_JS
+- **Módulo:** assets_js
+
+## 2. Propósito
+Responsável pelo processamento e lógica pertinente à camada de Asset_JS do módulo de assets js.
+
+## 3. Dependências
+N/A
+
+## 4. Estrutura Interna
+- **Funções JS exportadas/disponíveis:**
+  - `escape()`
+  - `modifier()`
+  - `animComplete()`
+  - `_normalizeArguments()`
+  - `filteredUi()`
+  - `styleDifference()`
+  - `run()`
+  - `parseCss()`
+  - `complete()`
+  - `checkFocus()`
+  - `reduce()`
+  - `bindHover()`
+  - `show()`
+  - `clamp()`
+  - `done()`
+  - `focusable()`
+  - `removeDescribedBy()`
+  - `standardSpeed()`
+  - `Datepicker()`
+  - `getOffsets()`
+  - `position()`
+  - `getElementStyles()`
+  - `getNextTabId()`
+  - `addDescribedBy()`
+  - `hue2rgb()`
+  - `visible()`
+  - `childComplete()`
+  - `extendRemove()`
+  - `handlerProxy()`
+  - `stringParse()`
+  - `isLocal()`
+  - `constrain()`
+
+## 5. Fluxo de Dados
+N/A
+
+## 6. Rotas Relacionadas
+N/A
+
+## 7. Observações e Regras de Negócio
+- Documentação autogerada para reconstrução.
+- Certifique-se de manter os padrões do CodeIgniter 3.
