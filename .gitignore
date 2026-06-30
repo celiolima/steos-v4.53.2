@@ -27,5 +27,5 @@ application/logs/*
 ci_sessions/
 
 uploads
-application/.env
+# application/.env
 assets/userImage
