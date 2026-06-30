@@ -53,7 +53,7 @@ services:
       - steosMySql
     restart: always
     command: >
-      /bin/sh -c "while ! mysqladmin ping -h steosMySql -u steos -psteos --silent 2>/dev/null; do echo 'Aguardando MySQL inicializar...'; sleep 3; done && if [ ! -d application/vendor/fakerphp/faker ]; then echo 'Faker/Autoload nao encontrado. Executando composer update...'; git config --global --add safe.directory /var/www/html 2>/dev/null; composer update; fi && php index.php tools migrate && if [ -f dados_banco_steos/dados_steos.sql ]; then
+      /bin/sh -c "while ! mysql -h steosMySql -u steos -psteos --skip-ssl -e 'SELECT 1;' >/dev/null 2>&1; do echo 'Aguardando MySQL inicializar...'; sleep 3; done && if [ ! -d application/vendor/fakerphp/faker ]; then echo 'Faker/Autoload nao encontrado. Executando composer update...'; git config --global --add safe.directory /var/www/html 2>/dev/null; composer update; fi && php index.php tools migrate && if [ -f dados_banco_steos/dados_steos.sql ]; then
         echo 'Iniciando importacao automatica dos dados...';
         mysql -h steosMySql -u steos -psteos --skip-ssl steos -N -e \"SET FOREIGN_KEY_CHECKS=0; SELECT CONCAT('TRUNCATE TABLE ', table_name, ';') FROM information_schema.tables WHERE table_schema='steos' AND table_name != 'migrations';\" > /tmp/truncate.sql &&
         mysql -h steosMySql -u steos -psteos --skip-ssl steos -e \"SET FOREIGN_KEY_CHECKS=0; SOURCE /tmp/truncate.sql;\" &&
