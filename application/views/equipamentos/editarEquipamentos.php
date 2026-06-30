@@ -31,18 +31,10 @@
                                     <input id="modelo" type="text" name="modelo" value="<?php echo $result->modelo; ?>" />
                                 </div>
                             </div>
-                            <div class="control-group" class="control-label">
+                            <div class="control-group">
                                 <label for="marcas" class="control-label">Marcas</label>
                                 <div class="controls">
-                                    <select id="marcas" name="marcas">
-                                        <option value="">Selecione...</option>
-                                        <?php
-                                        foreach ($marcas as $m) {
-                                            $selected = ($result->marcas == $m->marca) ? 'selected' : '';
-                                            echo '<option value="' . $m->marca . '" ' . $selected . '>' . $m->marca . '</option>';
-                                        }
-                                        ?>
-                                    </select>
+                                    <input id="marcas" type="text" name="marcas" value="<?php echo $result->marcas; ?>" placeholder="Digite a marca" />
                                 </div>
                             </div>
 

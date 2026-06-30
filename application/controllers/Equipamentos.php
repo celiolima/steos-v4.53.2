@@ -35,14 +35,20 @@ class Equipamentos extends MY_Controller
 
     public function gerenciar()
     {
+        $pesquisa = $this->input->get('pesquisa');
+
         $this->load->library('pagination');
 
         $this->data['configuration']['base_url'] = site_url('equipamentos/gerenciar/');
-        $this->data['configuration']['total_rows'] = $this->equipamentos_model->count('equipamentos');
+        $this->data['configuration']['total_rows'] = $this->equipamentos_model->count('equipamentos', $pesquisa);
+        if ($pesquisa) {
+            $this->data['configuration']['suffix'] = "?pesquisa={$pesquisa}";
+            $this->data['configuration']['first_url'] = base_url("index.php/equipamentos")."\?pesquisa={$pesquisa}";
+        }
 
         $this->pagination->initialize($this->data['configuration']);
 
-        $this->data['results'] = $this->equipamentos_model->get('equipamentos', '*', '', $this->data['configuration']['per_page'], $this->uri->segment(3));
+        $this->data['results'] = $this->equipamentos_model->get('equipamentos', '*', $pesquisa, $this->data['configuration']['per_page'], $this->uri->segment(3));
         $this->data['view'] = 'equipamentos/equipamentos';
         return $this->layout();
     }

@@ -62,7 +62,7 @@ exit; */
                 <span class="icon">
                     <i class="fas fa-diagnoses"></i>
                 </span>
-                <h5>Finaceiro</h5>
+                <h5>Financeiro</h5>
                 <!-- Botões -->
                 <div class="buttons">
                     <!-- <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
@@ -79,9 +79,9 @@ exit; */
                     <?php if ($lancamento == "0") { ?>
                         <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aLancamento')) { ?>
                             <a href="#modalReceita" data-toggle="modal" role="button" class="button btn btn-mini btn-success" style="width: 230px">
-                                <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2" title="Cadastrar nova receita ou despesa"> Despesa/Receita Avista</span></a>
+                                <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2" title="Cadastrar nova receita ou despesa"> Despesa/Receita à Vista</span></a>
                             <a href="#modalReceitaParcelada" data-toggle="modal" role="button" class="button btn btn-mini btn-success" style="width: 230px">
-                                <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2" title="Cadastrar nova receita ou despesa parcelada "> Despesa/Receita Parcelado</span></a>
+                                <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2" title="Cadastrar nova receita ou despesa parcelada "> Despesa/Receita Parcelada</span></a>
 
                         <?php } ?>
                     <?php } ?>
@@ -106,11 +106,11 @@ exit; */
                     <!--  Tabs -->
                     <ul class="nav nav-tabs">
                         <?php if ($lancamento == "0") { ?>
-                            <li class="active" id="tabDetalhes"><a href="#tab1" data-toggle="tab">Agenda Pagamentoa e Receitas</a></li>
+                            <li class="active" id="tabDetalhes"><a href="#tab1" data-toggle="tab">Agenda de Pagamentos e Receitas</a></li>
                         <?php } ?>
                         <li <?php if ($lancamento == "1") {
                                 echo 'class="active"';
-                            } ?> id="tabLancamentos"><a href="#tab2" data-toggle="tab">Lancamentos</a></li>
+                            } ?> id="tabLancamentos"><a href="#tab2" data-toggle="tab">Lançamentos</a></li>
                         <li id="tabGasolina"><a href="#tab3" data-toggle="tab">Gasolina</a></li>
                     </ul>
                     <div class="tab-content">
@@ -122,114 +122,117 @@ exit; */
                                         <div class="span12">
                                             <div class="widget-box2">
                                                 <div>
-                                                    <h5 class="cardHeader">Agenda Pagamentoa e Receitas</h5>
+                                                    <h5 class="cardHeader">Agenda de Pagamentos e Receitas</h5>
                                                 </div>
                                                 <div class="widget-content">
                                                     <table>
 
                                                         <form class="form-horizontal" method="get">
                                                             <div class="widget-content nopadding tab-content">
-                                                                <div class="span2">
-                                                                    <label>Receitas/Despesas</label>
-                                                                    <select style="padding-left: 30px; margin-left: 0" name="statusOsGet" id="statusOsGet" value="">
-                                                                        <option value="">Todos os Status</option>
-                                                                        <option value="receita">receita</option>
-                                                                        <option value="despesa">despesa</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="span2">
-                                                                    <label>Vencimento (de)</label>
-                                                                    <input class="datepicker" style="padding-left: 30px; margin-left: 0" id="vencimento_de_cal" placeholder="vencimento_de" required="required" name="vencimento_de_cal" type="text" value="<?= date('01/m/Y') ?>">
-                                                                </div>
-                                                                <div class="span2">
-                                                                    <label>Vencimento (até)</label>
-                                                                    <input class="datepicker" style="padding-left: 30px; margin-left: 0" id="vencimento_ate_cal" placeholder="vencimento_ate" required="required" name="vencimento_ate_cal" type="text" value="<?= date('31/12/Y') ?>">
-                                                                </div>
-                                                                <div class="span2">
-                                                                    <label>Status</label>
-                                                                    <select name="status" id="status" class="span12">
-                                                                        <option value="">Todos (Pendente e Pago)</option>
-                                                                        <option value="0" <?= $this->input->get('status') === '0' ? 'selected' : '' ?>>Pendente</option>
-                                                                        <option value="1" <?= $this->input->get('status') === '1' ? 'selected' : '' ?>>Pago</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="span4">
-                                                                    <label>Cliente/Fornecedor</label>
-                                                                    <input id="cliente_busca" type="text" class="span12" name="cliente" value="<?= $this->input->get('cliente') ?>">
-                                                                </div>
-                                                                <div class="span2" style="margin-left: 0">
-                                                                    <label>Centro de Gastos</label>
-                                                                    <select id="centro_de_gastos_bsca_cal" class="span12" name="centro_de_gastos_bsca" value="<?= $this->input->get('centro_de_gastos_bsca') ?>">
-                                                                        <option value="">Todos</option>
-                                                                        <option value="SERVICOS" <?= $this->input->get('centro_de_gastos_bsca') === 'SERVICOS' ? 'selected' : '' ?>>SERVICOS</option>
-                                                                        <option value="VENDAS" <?= $this->input->get('centro_de_gastos_bsca') === 'VENDAS' ? 'selected' : '' ?>>VENDAS</option>
-                                                                        <option value="OPERACIONAIS" <?= $this->input->get('centro_de_gastos_bsca') === 'OPERACIONAIS' ? 'selected' : '' ?>>OPERACIONAIS</option>
-                                                                        <option value="RH" <?= $this->input->get('centro_de_gastos_bsca') === 'RH' ? 'selected' : '' ?>>RH</option>
-                                                                        <option value="ADMINISTRATIVO" <?= $this->input->get('centro_de_gastos_bsca') === 'ADMINISTRATIVO' ? 'selected' : '' ?>>ADMINISTRATIVO</option>
-                                                                        <option value="MARKETING" <?= $this->input->get('centro_de_gastos_bsca') === 'MARKETING' ? 'selected' : '' ?>>MARKETING</option>
-                                                                        <option value="GASTOS FINANCEIROS" <?= $this->input->get('centro_de_gastos_bsca') === 'MARKETING' ? 'selected' : '' ?>>GASTOS FINANCEIROS</option>
-                                                                        <option value="INVESTISTIMENTOS" <?= $this->input->get('centro_de_gastos_bsca') === 'INVESTISTIMENTOS' ? 'selected' : '' ?>>INVESTISTIMENTOS</option>
-                                                                    </select>
+                                                                <div class="row-fluid">
+                                                                    <div class="span2" style="margin-left: 0">
+                                                                        <label>Receitas/Despesas</label>
+                                                                        <select style="padding-left: 30px;" name="statusOsGet" id="statusOsGet">
+                                                                            <option value="">Todos os Status</option>
+                                                                            <option value="receita" <?= ($this->input->get('statusOsGet') === 'receita' || $this->input->get('tipo') === 'receita') ? 'selected' : '' ?>>Receita</option>
+                                                                            <option value="despesa" <?= ($this->input->get('statusOsGet') === 'despesa' || $this->input->get('tipo') === 'despesa') ? 'selected' : '' ?>>Despesa</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Vencimento (de)</label>
+                                                                        <input class="datepicker" style="padding-left: 30px;" id="vencimento_de_cal" placeholder="vencimento_de" required="required" name="vencimento_de_cal" type="text" value="<?= $this->input->get('vencimento_de_cal') ?: ($this->input->get('vencimento_de') ?: date('01/m/Y')) ?>">
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Vencimento (até)</label>
+                                                                        <input class="datepicker" style="padding-left: 30px;" id="vencimento_ate_cal" placeholder="vencimento_ate" required="required" name="vencimento_ate_cal" type="text" value="<?= $this->input->get('vencimento_ate_cal') ?: ($this->input->get('vencimento_ate') ?: date('t/m/Y')) ?>">
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Status</label>
+                                                                        <select name="status" id="status" class="span12">
+                                                                            <option value="">Todos (Pendente e Pago)</option>
+                                                                            <option value="0" <?= $this->input->get('status') === '0' ? 'selected' : '' ?>>Pendente</option>
+                                                                            <option value="1" <?= $this->input->get('status') === '1' ? 'selected' : '' ?>>Pago</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="span4">
+                                                                        <label>Cliente/Fornecedor</label>
+                                                                        <input id="cliente_busca" type="text" class="span12" name="cliente" value="<?= $this->input->get('cliente') ?>">
+                                                                    </div>
                                                                 </div>
 
-                                                                <div class="span2" style="margin-left: 0">
-                                                                    <label>Classificaco Financeira</label>
-                                                                    <select id="classificacao_fin_bsca_cal" class="span12" name="classificacao_fin_bsca">
-                                                                        <option value="">Todos</option>
-                                                                        <?php foreach ($classificacao_financeira as $f) {
-                                                                            if ($this->input->get("classificacao_fin_bsca") === $f->nomeClassFin) {
-                                                                                echo '<option value="' . $f->nomeClassFin . '" selected >' . $f->nomeClassFin . '</option>';
-                                                                            } else {
-                                                                                echo '<option value="' . $f->nomeClassFin . '" >' . $f->nomeClassFin . '</option>';
-                                                                            }
-                                                                        } ?>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="span2" style="margin-left: 0">
-                                                                    <label>Grupo Finaceiro</label>
-                                                                    <select id="grupo_finaceiro_bsca_cal" class="span12" name="grupo_finaceiro_bsca" value="<?= $this->input->get('grupo_finaceiro_bsca') ?>">
-                                                                        <option value="">Todos</option>
-                                                                        <?php $grupoFinavceiro = "";
-                                                                        foreach ($classificacao_financeira as $f) {
-                                                                            if ($this->input->get("grupo_finaceiro_bsca") === $f->grupoFinaceiro) {
-                                                                                if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
-                                                                                    echo '<option value="' . $f->grupoFinaceiro . '" selected>' . $f->grupoFinaceiro . '</option>';
+                                                                <div class="row-fluid" style="margin-top: 10px;">
+                                                                    <div class="span2" style="margin-left: 0;">
+                                                                        <label>Centro de Gastos</label>
+                                                                        <select id="centro_de_gastos_bsca_cal" class="span12" name="centro_de_gastos_bsca">
+                                                                            <option value="">Todos</option>
+                                                                            <option value="SERVICOS" <?= $this->input->get('centro_de_gastos_bsca') === 'SERVICOS' ? 'selected' : '' ?>>SERVICOS</option>
+                                                                            <option value="VENDAS" <?= $this->input->get('centro_de_gastos_bsca') === 'VENDAS' ? 'selected' : '' ?>>VENDAS</option>
+                                                                            <option value="OPERACIONAIS" <?= $this->input->get('centro_de_gastos_bsca') === 'OPERACIONAIS' ? 'selected' : '' ?>>OPERACIONAIS</option>
+                                                                            <option value="RH" <?= $this->input->get('centro_de_gastos_bsca') === 'RH' ? 'selected' : '' ?>>RH</option>
+                                                                            <option value="ADMINISTRATIVO" <?= $this->input->get('centro_de_gastos_bsca') === 'ADMINISTRATIVO' ? 'selected' : '' ?>>ADMINISTRATIVO</option>
+                                                                            <option value="MARKETING" <?= $this->input->get('centro_de_gastos_bsca') === 'MARKETING' ? 'selected' : '' ?>>MARKETING</option>
+                                                                            <option value="GASTOS FINANCEIROS" <?= $this->input->get('centro_de_gastos_bsca') === 'GASTOS FINANCEIROS' ? 'selected' : '' ?>>GASTOS FINANCEIROS</option>
+                                                                            <option value="INVESTISTIMENTOS" <?= $this->input->get('centro_de_gastos_bsca') === 'INVESTISTIMENTOS' ? 'selected' : '' ?>>INVESTIMENTOS</option>
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div class="span2">
+                                                                        <label>Classificação Financeira</label>
+                                                                        <select id="classificacao_fin_bsca_cal" class="span12" name="classificacao_fin_bsca">
+                                                                            <option value="">Todos</option>
+                                                                            <?php foreach ($classificacao_financeira as $f) {
+                                                                                if ($this->input->get("classificacao_fin_bsca") === $f->nomeClassFin) {
+                                                                                    echo '<option value="' . $f->nomeClassFin . '" selected >' . $f->nomeClassFin . '</option>';
+                                                                                } else {
+                                                                                    echo '<option value="' . $f->nomeClassFin . '" >' . $f->nomeClassFin . '</option>';
                                                                                 }
-                                                                            } else {
-                                                                                if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
-                                                                                    echo '<option value="' . $f->grupoFinaceiro . '">' . $f->grupoFinaceiro . '</option>';
+                                                                            } ?>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Grupo Financeiro</label>
+                                                                        <select id="grupo_finaceiro_bsca_cal" class="span12" name="grupo_finaceiro_bsca">
+                                                                            <option value="">Todos</option>
+                                                                            <?php $grupoFinavceiro = "";
+                                                                            foreach ($classificacao_financeira as $f) {
+                                                                                if ($this->input->get("grupo_finaceiro_bsca") === $f->grupoFinaceiro) {
+                                                                                    if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
+                                                                                        echo '<option value="' . $f->grupoFinaceiro . '" selected>' . $f->grupoFinaceiro . '</option>';
+                                                                                    }
+                                                                                } else {
+                                                                                    if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
+                                                                                        echo '<option value="' . $f->grupoFinaceiro . '">' . $f->grupoFinaceiro . '</option>';
+                                                                                    }
                                                                                 }
-                                                                            }
-                                                                            $grupoFinavceiro = $f->grupoFinaceiro;
-                                                                        } ?>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="span2" style="margin-left: 0">
-                                                                    <label>Forma de Pagamento</label>
-                                                                    <select id="forma_pgto_bsca_cal" class="span12" name="forma_pgto_bsca" value="<?= $this->input->get('forma_pgto_bsca') ?>">
-                                                                        <option value="">Todos</option>
-                                                                        <option value="Dinheiro" <?= $this->input->get('forma_pgto_bsca') === 'Dinheiro' ? 'selected' : '' ?>>Dinheiro</option>
-                                                                        <option value="Pix" <?= $this->input->get('forma_pgto_bsca') === 'Pix' ? 'selected' : '' ?>>Pix</option>
-                                                                        <option value="Boleto" <?= $this->input->get('forma_pgto_bsca') === 'Boleto' ? 'selected' : '' ?>>Boleto</option>
-                                                                        <option value="Cartão de Crédito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Crédito' ? 'selected' : '' ?>>Cartão de Crédito</option>
-                                                                        <option value="Cartão de Débito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Débito' ? 'selected' : '' ?>>Cartão de Débito</option>
-                                                                        <option value="Cheque" <?= $this->input->get('forma_pgto_bsca') === 'Cheque' ? 'selected' : '' ?>>Cheque</option>
-                                                                        <option value="Cheque Pré-datado" <?= $this->input->get('forma_pgto_bsca') === 'Cheque Pré-datado' ? 'selected' : '' ?>>Cheque Pré-datado</option>
-                                                                        <option value="Depósito" <?= $this->input->get('forma_pgto_bsca') === 'Depósito' ? 'selected' : '' ?>>Depósito</option>
-                                                                        <option value="Transferência DOC" <?= $this->input->get('forma_pgto_bsca') === 'Transferência DOC' ? 'selected' : '' ?>>Transferência DOC</option>
-                                                                        <option value="Transferência TED" <?= $this->input->get('forma_pgto_bsca') === 'Transferência TED' ? 'selected' : '' ?>>Transferência TED</option>
-                                                                        <option value="Promissória" <?= $this->input->get('forma_pgto_bsca') === 'Promissória' ? 'selected' : '' ?>>Promissória</option>
-                                                                    </select>
-                                                                </div>
+                                                                                $grupoFinavceiro = $f->grupoFinaceiro;
+                                                                            } ?>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Forma de Pagamento</label>
+                                                                        <select id="forma_pgto_bsca_cal" class="span12" name="forma_pgto_bsca">
+                                                                            <option value="">Todos</option>
+                                                                            <option value="Dinheiro" <?= $this->input->get('forma_pgto_bsca') === 'Dinheiro' ? 'selected' : '' ?>>Dinheiro</option>
+                                                                            <option value="Pix" <?= $this->input->get('forma_pgto_bsca') === 'Pix' ? 'selected' : '' ?>>Pix</option>
+                                                                            <option value="Boleto" <?= $this->input->get('forma_pgto_bsca') === 'Boleto' ? 'selected' : '' ?>>Boleto</option>
+                                                                            <option value="Cartão de Crédito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Crédito' ? 'selected' : '' ?>>Cartão de Crédito</option>
+                                                                            <option value="Cartão de Débito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Débito' ? 'selected' : '' ?>>Cartão de Débito</option>
+                                                                            <option value="Cheque" <?= $this->input->get('forma_pgto_bsca') === 'Cheque' ? 'selected' : '' ?>>Cheque</option>
+                                                                            <option value="Cheque Pré-datado" <?= $this->input->get('forma_pgto_bsca') === 'Cheque Pré-datado' ? 'selected' : '' ?>>Cheque Pré-datado</option>
+                                                                            <option value="Depósito" <?= $this->input->get('forma_pgto_bsca') === 'Depósito' ? 'selected' : '' ?>>Depósito</option>
+                                                                            <option value="Transferência DOC" <?= $this->input->get('forma_pgto_bsca') === 'Transferência DOC' ? 'selected' : '' ?>>Transferência DOC</option>
+                                                                            <option value="Transferência TED" <?= $this->input->get('forma_pgto_bsca') === 'Transferência TED' ? 'selected' : '' ?>>Transferência TED</option>
+                                                                            <option value="Promissória" <?= $this->input->get('forma_pgto_bsca') === 'Promissória' ? 'selected' : '' ?>>Promissória</option>
+                                                                        </select>
+                                                                    </div>
 
-
-
-                                                                <div class="span2">
-                                                                    <label>.</label>
-                                                                    <button type="button" class="button btn btn-mini btn-warning" id="btn-calendar">
-                                                                        <span class="button__icon"><i class='bx bx-search-alt'></i></span>
-                                                                        <span class="button__text2">Pesquisar</span>
-                                                                    </button>
+                                                                    <div class="span2">
+                                                                        <label>&nbsp;</label>
+                                                                        <button type="button" class="button btn btn-mini btn-warning" id="btn-calendar" style="min-width: 120px;">
+                                                                            <span class="button__icon"><i class='bx bx-search-alt'></i></span>
+                                                                            <span class="button__text2">Pesquisar</span>
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </form>
@@ -277,120 +280,124 @@ exit; */
 
                                         <div class="span12" style="margin-left: 0;margin-top: 1rem;">
                                             <form action="<?php echo current_url(); ?>" method="get">
-                                                <div class="span2" style="margin-left: 0">
-                                                    <label>Período</label>
-                                                    <select id="periodo" name="periodo" class="span12">
-                                                        <option value="mes" <?= $this->input->get('periodo') === 'mes' ? 'selected' : '' ?>>Mês</option>
-                                                        <option value="dia" <?= $this->input->get('periodo') === 'dia' ? 'selected' : '' ?>>Dia</option>
-                                                        <option value="semana" <?= $this->input->get('periodo') === 'semana' ? 'selected' : '' ?>>Semana
-                                                        </option>
-                                                        <option value="ano" <?= $this->input->get('periodo') === 'ano' ? 'selected' : '' ?>>Ano</option>
-                                                    </select>
+                                                <div class="row-fluid">
+                                                    <div class="span2" style="margin-left: 0">
+                                                        <label>Período</label>
+                                                        <select id="periodo" name="periodo" class="span12">
+                                                            <option value="mes" <?= $this->input->get('periodo') === 'mes' ? 'selected' : '' ?>>Mês</option>
+                                                            <option value="dia" <?= $this->input->get('periodo') === 'dia' ? 'selected' : '' ?>>Dia</option>
+                                                            <option value="semana" <?= $this->input->get('periodo') === 'semana' ? 'selected' : '' ?>>Semana
+                                                            </option>
+                                                            <option value="ano" <?= $this->input->get('periodo') === 'ano' ? 'selected' : '' ?>>Ano</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="span2">
+                                                        <label>Vencimento (de)</label>
+                                                        <input id="vencimento_de" type="text" class="span12 datepicker" name="vencimento_de" value="<?= $this->input->get('vencimento_de') ? $this->input->get('vencimento_de') : date('01/m/Y') ?>">
+                                                    </div>
+
+                                                    <div class="span2">
+                                                        <label>Vencimento (até)</label>
+                                                        <input id="vencimento_ate" type="text" class="span12 datepicker" name="vencimento_ate" value="<?= $this->input->get('vencimento_ate') ? $this->input->get('vencimento_ate') : date('t/m/Y') ?>">
+                                                    </div>
+
+                                                    <div class="span1">
+                                                        <label>Tipo</label>
+                                                        <select name="tipo" class="span12">
+                                                            <option value="">Todos</option>
+                                                            <option value="receita" <?= $this->input->get('tipo') === 'receita' ? 'selected' : '' ?>>Receita
+                                                            </option>
+                                                            <option value="despesa" <?= $this->input->get('tipo') === 'despesa' ? 'selected' : '' ?>>Despesa
+                                                            </option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="span1">
+                                                        <label>Status</label>
+                                                        <select name="status" class="span12">
+                                                            <option value="">Todos</option>
+                                                            <option value="0" <?= $this->input->get('status') === '0' ? 'selected' : '' ?>>Pendente</option>
+                                                            <option value="1" <?= $this->input->get('status') === '1' ? 'selected' : '' ?>>Pago</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="span4">
+                                                        <label>Cliente/Fornecedor</label>
+                                                        <input id="cliente_lanc" type="text" class="span12" name="cliente" value="<?= $this->input->get('cliente') ?>">
+                                                    </div>
                                                 </div>
 
-                                                <div class="span2">
-                                                    <label>Vencimento (de)</label>
-                                                    <input id="vencimento_de" type="text" class="span12 datepicker" name="vencimento_de" value="<?= $this->input->get('vencimento_de') ? $this->input->get('vencimento_de') : date('01/m/Y') ?>">
-                                                </div>
+                                                <div class="row-fluid" style="margin-top: 10px;">
+                                                    <div class="span2" style="margin-left: 0;">
+                                                        <label>Centro de Gastos</label>
+                                                        <select id="centro_de_gastos_bsca" class="span12" name="centro_de_gastos_bsca">
+                                                            <option value="">Todos</option>
+                                                            <option value="SERVICOS" <?= $this->input->get('centro_de_gastos_bsca') === 'SERVICOS' ? 'selected' : '' ?>>SERVICOS</option>
+                                                            <option value="VENDAS" <?= $this->input->get('centro_de_gastos_bsca') === 'VENDAS' ? 'selected' : '' ?>>VENDAS</option>
+                                                            <option value="OPERACIONAIS" <?= $this->input->get('centro_de_gastos_bsca') === 'OPERACIONAIS' ? 'selected' : '' ?>>OPERACIONAIS</option>
+                                                            <option value="RH" <?= $this->input->get('centro_de_gastos_bsca') === 'RH' ? 'selected' : '' ?>>RH</option>
+                                                            <option value="ADMINISTRATIVO" <?= $this->input->get('centro_de_gastos_bsca') === 'ADMINISTRATIVO' ? 'selected' : '' ?>>ADMINISTRATIVO</option>
+                                                            <option value="MARKETING" <?= $this->input->get('centro_de_gastos_bsca') === 'MARKETING' ? 'selected' : '' ?>>MARKETING</option>
+                                                            <option value="GASTOS FINANCEIROS" <?= $this->input->get('centro_de_gastos_bsca') === 'GASTOS FINANCEIROS' ? 'selected' : '' ?>>GASTOS FINANCEIROS</option>
+                                                            <option value="INVESTISTIMENTOS" <?= $this->input->get('centro_de_gastos_bsca') === 'INVESTISTIMENTOS' ? 'selected' : '' ?>>INVESTIMENTOS</option>
+                                                        </select>
+                                                    </div>
 
-                                                <div class="span2">
-                                                    <label>Vencimento (até)</label>
-                                                    <input id="vencimento_ate" type="text" class="span12 datepicker" name="vencimento_ate" value="<?= $this->input->get('vencimento_ate') ? $this->input->get('vencimento_ate') : date('31/12/Y') ?>">
-                                                </div>
-
-                                                <div class="span1">
-                                                    <label>Tipo</label>
-                                                    <select name="tipo" class="span12">
-                                                        <option value="">Todos</option>
-                                                        <option value="receita" <?= $this->input->get('tipo') === 'receita' ? 'selected' : '' ?>>Receita
-                                                        </option>
-                                                        <option value="despesa" <?= $this->input->get('tipo') === 'despesa' ? 'selected' : '' ?>>Despesa
-                                                        </option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="span1">
-                                                    <label>Status</label>
-                                                    <select name="status" class="span12">
-                                                        <option value="">Todos</option>
-                                                        <option value="0" <?= $this->input->get('status') === '0' ? 'selected' : '' ?>>Pendente</option>
-                                                        <option value="1" <?= $this->input->get('status') === '1' ? 'selected' : '' ?>>Pago</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="span4">
-                                                    <label>Cliente/Fornecedor</label>
-                                                    <input id="cliente_lanc" type="text" class="span12" name="cliente" value="<?= $this->input->get('cliente') ?>">
-                                                </div>
-
-                                                <div class="span2" style="margin-left: 0">
-                                                    <label>Centro de Gastos</label>
-                                                    <select id="centro_de_gastos_bsca" class="span12" name="centro_de_gastos_bsca" value="<?= $this->input->get('centro_de_gastos_bsca') ?>">
-                                                        <option value="">Todos</option>
-                                                        <option value="SERVICOS" <?= $this->input->get('centro_de_gastos_bsca') === 'SERVICOS' ? 'selected' : '' ?>>SERVICOS</option>
-                                                        <option value="VENDAS" <?= $this->input->get('centro_de_gastos_bsca') === 'VENDAS' ? 'selected' : '' ?>>VENDAS</option>
-                                                        <option value="OPERACIONAIS" <?= $this->input->get('centro_de_gastos_bsca') === 'OPERACIONAIS' ? 'selected' : '' ?>>OPERACIONAIS</option>
-                                                        <option value="RH" <?= $this->input->get('centro_de_gastos_bsca') === 'RH' ? 'selected' : '' ?>>RH</option>
-                                                        <option value="ADMINISTRATIVO" <?= $this->input->get('centro_de_gastos_bsca') === 'ADMINISTRATIVO' ? 'selected' : '' ?>>ADMINISTRATIVO</option>
-                                                        <option value="MARKETING" <?= $this->input->get('centro_de_gastos_bsca') === 'MARKETING' ? 'selected' : '' ?>>MARKETING</option>
-                                                        <option value="GASTOS FINANCEIROS" <?= $this->input->get('centro_de_gastos_bsca') === 'MARKETING' ? 'selected' : '' ?>>GASTOS FINANCEIROS</option>
-                                                        <option value="INVESTISTIMENTOS" <?= $this->input->get('centro_de_gastos_bsca') === 'INVESTISTIMENTOS' ? 'selected' : '' ?>>INVESTISTIMENTOS</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="span2">
-                                                    <label>Classificaco Financeira</label>
-                                                    <select id="classificacao_fin_bsca" class="span12" name="classificacao_fin_bsca">
-                                                        <option value="">Todos</option>
-                                                        <?php foreach ($classificacao_financeira as $f) {
-                                                            if ($this->input->get("classificacao_fin_bsca") === $f->nomeClassFin) {
-                                                                echo '<option value="' . $f->nomeClassFin . '" selected >' . $f->nomeClassFin . '</option>';
-                                                            } else {
-                                                                echo '<option value="' . $f->nomeClassFin . '" >' . $f->nomeClassFin . '</option>';
-                                                            }
-                                                        } ?>
-                                                    </select>
-                                                </div>
-                                                <div class="span2" style="margin-left: 1">
-                                                    <label>Grupo Finaceiro</label>
-                                                    <select id="grupo_finaceiro_bsca" class="span12" name="grupo_finaceiro_bsca" value="<?= $this->input->get('grupo_finaceiro_bsca') ?>">
-                                                        <option value="">Todos</option>
-                                                        <?php $grupoFinavceiro = "";
-                                                        foreach ($classificacao_financeira as $f) {
-                                                            if ($this->input->get("grupo_finaceiro_bsca") === $f->grupoFinaceiro) {
-                                                                if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
-                                                                    echo '<option value="' . $f->grupoFinaceiro . '" selected>' . $f->grupoFinaceiro . '</option>';
+                                                    <div class="span2">
+                                                        <label>Classificação Financeira</label>
+                                                        <select id="classificacao_fin_bsca" class="span12" name="classificacao_fin_bsca">
+                                                            <option value="">Todos</option>
+                                                            <?php foreach ($classificacao_financeira as $f) {
+                                                                if ($this->input->get("classificacao_fin_bsca") === $f->nomeClassFin) {
+                                                                    echo '<option value="' . $f->nomeClassFin . '" selected >' . $f->nomeClassFin . '</option>';
+                                                                } else {
+                                                                    echo '<option value="' . $f->nomeClassFin . '" >' . $f->nomeClassFin . '</option>';
                                                                 }
-                                                            } else {
-                                                                if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
-                                                                    echo '<option value="' . $f->grupoFinaceiro . '">' . $f->grupoFinaceiro . '</option>';
+                                                            } ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="span2">
+                                                        <label>Grupo Financeiro</label>
+                                                        <select id="grupo_finaceiro_bsca" class="span12" name="grupo_finaceiro_bsca">
+                                                            <option value="">Todos</option>
+                                                            <?php $grupoFinavceiro = "";
+                                                            foreach ($classificacao_financeira as $f) {
+                                                                if ($this->input->get("grupo_finaceiro_bsca") === $f->grupoFinaceiro) {
+                                                                    if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
+                                                                        echo '<option value="' . $f->grupoFinaceiro . '" selected>' . $f->grupoFinaceiro . '</option>';
+                                                                    }
+                                                                } else {
+                                                                    if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
+                                                                        echo '<option value="' . $f->grupoFinaceiro . '">' . $f->grupoFinaceiro . '</option>';
+                                                                    }
                                                                 }
-                                                            }
-                                                            $grupoFinavceiro = $f->grupoFinaceiro;
-                                                        } ?>
-                                                    </select>
-                                                </div>
-                                                <div class="span2" style="margin-left: 1">
-                                                    <label>Forma de Pagamento</label>
-                                                    <select id="forma_pgto_bsca" class="span12" name="forma_pgto_bsca" value="<?= $this->input->get('forma_pgto_bsca') ?>">
-                                                        <option value="">Todos</option>
-                                                        <option value="Dinheiro" <?= $this->input->get('forma_pgto_bsca') === 'Dinheiro' ? 'selected' : '' ?>>Dinheiro</option>
-                                                        <option value="Pix" <?= $this->input->get('forma_pgto_bsca') === 'Pix' ? 'selected' : '' ?>>Pix</option>
-                                                        <option value="Boleto" <?= $this->input->get('forma_pgto_bsca') === 'Boleto' ? 'selected' : '' ?>>Boleto</option>
-                                                        <option value="Cartão de Crédito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Crédito' ? 'selected' : '' ?>>Cartão de Crédito</option>
-                                                        <option value="Cartão de Débito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Débito' ? 'selected' : '' ?>>Cartão de Débito</option>
-                                                        <option value="Cheque" <?= $this->input->get('forma_pgto_bsca') === 'Cheque' ? 'selected' : '' ?>>Cheque</option>
-                                                        <option value="Cheque Pré-datado" <?= $this->input->get('forma_pgto_bsca') === 'Cheque Pré-datado' ? 'selected' : '' ?>>Cheque Pré-datado</option>
-                                                        <option value="Depósito" <?= $this->input->get('forma_pgto_bsca') === 'Depósito' ? 'selected' : '' ?>>Depósito</option>
-                                                        <option value="Transferência DOC" <?= $this->input->get('forma_pgto_bsca') === 'Transferência DOC' ? 'selected' : '' ?>>Transferência DOC</option>
-                                                        <option value="Transferência TED" <?= $this->input->get('forma_pgto_bsca') === 'Transferência TED' ? 'selected' : '' ?>>Transferência TED</option>
-                                                        <option value="Promissória" <?= $this->input->get('forma_pgto_bsca') === 'Promissória' ? 'selected' : '' ?>>Promissória</option>
-                                                    </select>
-                                                </div>
-                                                <div class="span2 ">
-                                                    <label>Pesquisar</label>
-                                                    <button type="submit" class="button btn btn-primary btn-sm" style="min-width: 120px">
-                                                        <span class="button__icon"><i class='bx bx-filter-alt'></i></span><span class="button__text2">Filtrar</span></a></button>
+                                                                $grupoFinavceiro = $f->grupoFinaceiro;
+                                                            } ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="span2">
+                                                        <label>Forma de Pagamento</label>
+                                                        <select id="forma_pgto_bsca" class="span12" name="forma_pgto_bsca">
+                                                            <option value="">Todos</option>
+                                                            <option value="Dinheiro" <?= $this->input->get('forma_pgto_bsca') === 'Dinheiro' ? 'selected' : '' ?>>Dinheiro</option>
+                                                            <option value="Pix" <?= $this->input->get('forma_pgto_bsca') === 'Pix' ? 'selected' : '' ?>>Pix</option>
+                                                            <option value="Boleto" <?= $this->input->get('forma_pgto_bsca') === 'Boleto' ? 'selected' : '' ?>>Boleto</option>
+                                                            <option value="Cartão de Crédito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Crédito' ? 'selected' : '' ?>>Cartão de Crédito</option>
+                                                            <option value="Cartão de Débito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Débito' ? 'selected' : '' ?>>Cartão de Débito</option>
+                                                            <option value="Cheque" <?= $this->input->get('forma_pgto_bsca') === 'Cheque' ? 'selected' : '' ?>>Cheque</option>
+                                                            <option value="Cheque Pré-datado" <?= $this->input->get('forma_pgto_bsca') === 'Cheque Pré-datado' ? 'selected' : '' ?>>Cheque Pré-datado</option>
+                                                            <option value="Depósito" <?= $this->input->get('forma_pgto_bsca') === 'Depósito' ? 'selected' : '' ?>>Depósito</option>
+                                                            <option value="Transferência DOC" <?= $this->input->get('forma_pgto_bsca') === 'Transferência DOC' ? 'selected' : '' ?>>Transferência DOC</option>
+                                                            <option value="Transferência TED" <?= $this->input->get('forma_pgto_bsca') === 'Transferência TED' ? 'selected' : '' ?>>Transferência TED</option>
+                                                            <option value="Promissória" <?= $this->input->get('forma_pgto_bsca') === 'Promissória' ? 'selected' : '' ?>>Promissória</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="span2">
+                                                        <label>&nbsp;</label>
+                                                        <button type="submit" class="button btn btn-primary btn-sm" style="min-width: 120px">
+                                                            <span class="button__icon"><i class='bx bx-filter-alt'></i></span><span class="button__text2">Filtrar</span></button>
+                                                    </div>
                                                 </div>
                                             </form>
                                         </div>
@@ -452,7 +459,7 @@ exit; */
                                                                 echo '<td>' . $r->descricao . '</td>';
                                                                 echo '<td>' . $vencimento . '</td>';
                                                                 echo '<td>' . $status . '</td>';
-                                                                echo '<td>' . $r->observacoes . '</td>';
+                                                                echo '<td><div style="max-height: 80px; overflow-y: auto; max-width: 350px;">' . $r->observacoes . '</div></td>';
                                                                 echo '<td>' . $r->forma_pgto . '</td>';
                                                                 echo '<td> R$ ' . number_format($r->valor, 2, ',', '.') . '</td>'; //valor total sem o desconto
                                                                 echo  $r->tipo_desconto == "real" ? '<td>' . "R$ " . $r->desconto . '</td>' : ($r->tipo_desconto == "porcento" ? '<td>' . $r->desconto . " %" . '</td>' : '<td>' . "0" . '</td>'); // valor do desconto
@@ -1185,40 +1192,37 @@ exit; */
         <div class="tab-pane" id="tab22">
             <div class="span12" style="padding: 1%; margin-left: 0">
                 <div class="span12 well" style="padding: 1%; margin-left: 0" id="form-anexos">
-                    <form id="formAnexos" enctype="multipart/form-data" action="javascript:;" accept-charset="utf-8" s method="post" style="width:85%">
-                        <div class="span10">
-                            <input type="hidden" name="idOsServico" id="idOsServico" value="<?php //echo $result->idOs; 
-                                                                                            ?>" />
+                    <form id="formAnexos" enctype="multipart/form-data" action="javascript:;" accept-charset="utf-8" method="post">
+                        <div class="span6">
+                            <input type="hidden" name="idLancamento" id="idLancamentoAnexo" value="" />
                             <label for="">Anexo</label>
                             <input type="file" class="span12" name="userfile[]" multiple="multiple" size="20" />
                         </div>
-                        <div class="span2">
-                            <label for="">.</label>
-                            <button class="button btn btn-success">
-                                <span class="button__icon"><i class='bx bx-paperclip'></i></span><span class="button__text2">Anexar</span></button>
+
+                        <div class="span6" style="margin-left: 0; display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label for="">.</label>
+                                <button class="button btn btn-success" style="width: 100%;">
+                                    <span class="button__icon"><i class='bx bx-paperclip'></i></span><span class="button__text2">Anexar</span>
+                                </button>
+                            </div>
+
+                            <div style="flex: 1;">
+                                <label for="">.</label>
+                                <input type="hidden" name="img" />
+                                <label class="button btn btn-success" style="cursor: pointer; width: 100%; margin-bottom: 0;">
+                                    <span class="button__icon"><i class="fas fa-camera"></i></span>
+                                    <span class="button__text2"> Câmera Mobile</span>
+                                    <input type="file" name="userfile[]" accept="image/*" capture="environment" multiple="multiple" style="display: none;" onchange="$('#formAnexos').submit();" />
+                                </label>
+                            </div>
                         </div>
                     </form>
                 </div>
-                <!-- <div class="span12 pull-left" id="divAnexos" style="margin-left: 0">
-                                    <?php
-                                    /*  foreach ($anexos as $a) {
-                                        if ($a->thumb == null) {
-                                            $thumb = base_url() . 'assets/img/icon-file.png';
-                                            $link = base_url() . 'assets/img/icon-file.png';
-                                        } else {
-                                            $thumb = $a->url . '/thumbs/' . $a->thumb;
-                                            $link = $a->url . '/' . $a->anexo;
-                                        }
-                                        echo '<div class="span3" style="min-height: 150px; margin-left: 0">
-                                                    <a style="min-height: 150px;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal">
-                                                        <img src="' . $thumb . '" alt="">
-                                                    </a>
-                                                </div>';
-                                    } */
-                                    ?>
-                                </div> -->
+                <div class="span12 pull-left" id="divAnexos" style="margin-left: 0"></div>
             </div>
         </div>
+
 
         <!--casamentos-->
         <div class="tab-pane" id="tab33">
@@ -1610,10 +1614,62 @@ exit; */
             });
         });
 
+        function carregarAnexosLancamento(id) {
+            if (!id) return;
+            $("#divAnexos").html("<div class='progress progress-info progress-striped active'><div class='bar' style='width: 100%'></div></div>");
+            $.get("<?php echo base_url(); ?>index.php/financeiro/listarAnexos/" + id, function(data) {
+                $("#divAnexos").html(data);
+            });
+        }
+
+        $(document).on('click', '.anexo', function(event) {
+            event.preventDefault();
+            var link = $(this).attr('link');
+            var id = $(this).attr('imagem');
+            var url = '<?php echo base_url(); ?>index.php/financeiro/excluirAnexo/';
+            var ext = link.split('.').pop().toLowerCase();
+            
+            if (ext === 'pdf') {
+                $("#div-visualizar-anexo").html('<iframe src="' + link + '" width="100%" height="400px" style="border: none;"></iframe>');
+            } else if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'].includes(ext)) {
+                $("#div-visualizar-anexo").html('<img src="' + link + '" alt="">');
+            } else {
+                $("#div-visualizar-anexo").html('<div><i class="fas fa-file-alt" style="font-size: 100px; color: #555;"></i><br><br>Documento</div>');
+            }
+            $("#excluir-anexo").attr('link', url + id);
+            $("#download").attr('href', "<?php echo base_url(); ?>index.php/financeiro/downloadanexo/" + id);
+        });
+
+        $(document).on('click', '#excluir-anexo', function(event) {
+            event.preventDefault();
+            var link = $(this).attr('link');
+            var idLanc = $("#idLancamentoAnexo").val();
+            $('#modal-anexo').modal('hide');
+            $("#divAnexos").html("<div class='progress progress-info progress-striped active'><div class='bar' style='width: 100%'></div></div>");
+
+            $.ajax({
+                type: "POST",
+                url: link,
+                dataType: 'json',
+                data: "idLancamento=" + idLanc,
+                success: function(data) {
+                    if (data.result == true) {
+                        carregarAnexosLancamento(idLanc);
+                    } else {
+                        Swal.fire({
+                            type: "error",
+                            title: "Atenção",
+                            text: data.mensagem
+                        });
+                    }
+                }
+            });
+        });
+
         $("#formAnexos").validate({
             submitHandler: function(form) {
-                //var dados = $( form ).serialize();
                 var dados = new FormData(form);
+                var idLanc = $("#idLancamentoAnexo").val();
                 $("#form-anexos").hide('1000');
                 $("#divAnexos").html("<div class='progress progress-info progress-striped active'><div class='bar' style='width: 100%'></div></div>");
                 $.ajax({
@@ -1627,15 +1683,20 @@ exit; */
                     dataType: 'json',
                     success: function(data) {
                         if (data.result == true) {
-                            $("#divAnexos").load("<?php echo current_url(); ?> #divAnexos");
-                            $("#userfile").val('');
-
+                            carregarAnexosLancamento(idLanc);
+                            $("#formAnexos")[0].reset();
                         } else {
-                            $("#divAnexos").html('<div class="alert fade in"><button type="button" class="close" data-dismiss="alert">×</button><strong>Atenção!</strong> ' + data.mensagem + '</div>');
+                            var msg = data.mensagem;
+                            if (data.errors && data.errors.upload) {
+                                msg += " " + data.errors.upload.join(', ');
+                            }
+                            $("#divAnexos").html('<div class="alert fade in"><button type="button" class="close" data-dismiss="alert">×</button><strong>Atenção!</strong> ' + msg + '</div>');
+                            setTimeout(function() { carregarAnexosLancamento(idLanc); }, 4000);
                         }
                     },
                     error: function() {
-                        $("#divAnexos").html('<div class="alert alert-danger fade in"><button type="button" class="close" data-dismiss="alert">×</button><strong>Atenção!</strong> Ocorreu um erro. Verifique se você anexou o(s) arquivo(s).</div>');
+                        $("#divAnexos").html('<div class="alert alert-danger fade in"><button type="button" class="close" data-dismiss="alert">×</button><strong>Atenção!</strong> Ocorreu um erro no servidor. Verifique se você anexou o(s) arquivo(s).</div>');
+                        setTimeout(function() { carregarAnexosLancamento(idLanc); }, 4000);
                     }
                 });
                 $("#form-anexos").show('1000');
@@ -1781,7 +1842,9 @@ exit; */
                     $("#divPagamentoEditar").hide();
                 }
 
-
+                var idLanc = $(this).attr('idLancamento');
+                $("#idLancamentoAnexo").val(idLanc);
+                carregarAnexosLancamento(idLanc);
             });
 
             $(document).on('click', '#btnExcluir', function(event) {
@@ -2115,20 +2178,19 @@ exit; */
 
                     var evento = info;
                     var ultimo = $(evento).get(-1);
-                    console.log(ultimo.despesas);
-                    var totReceitas = ultimo.receitas;
-                    var totDespesas = ultimo.despesas;
+                    var totReceitas = parseFloat(ultimo.receitas || 0);
+                    var totDespesas = parseFloat(ultimo.despesas || 0);
                     var tot = totReceitas - totDespesas;
 
-                    $('#despesasTot').html(ultimo.despesas);
-                    $('#receitasTot').html(ultimo.receitas);
+                    $('#despesasTot').html(totDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    $('#receitasTot').html(totReceitas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     if (tot >= 0) {
                         $('#tot').html(
-                            '<strong style="text-align: right; color: green" id="tot">R$' + tot + '</strong>'
+                            '<strong style="text-align: right; color: green" id="tot">R$ ' + tot.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</strong>'
                         );
                     } else {
                         $('#tot').html(
-                            '<strong style="text-align: right; color: red" id="tot">R$' + tot + '</strong>'
+                            '<strong style="text-align: right; color: red" id="tot">R$ ' + tot.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</strong>'
                         );
                     }
                 },
@@ -2184,9 +2246,48 @@ exit; */
         //console.log(teste.start);
 
         $('#btn-calendar').on('click', function() {
+            var dataDe = $('#vencimento_de_cal').val();
+            if (dataDe) {
+                var partes = dataDe.split('/');
+                if (partes.length === 3) {
+                    srcCalendar.gotoDate(partes[2] + '-' + partes[1] + '-' + partes[0]);
+                }
+            }
             srcCalendar.refetchEvents();
         });
         /********************************************************* */
+
+        $('#periodo').on('change', function() {
+            var val = $(this).val();
+            var hoje = new Date();
+            var dd = String(hoje.getDate()).padStart(2, '0');
+            var mm = String(hoje.getMonth() + 1).padStart(2, '0');
+            var yyyy = hoje.getFullYear();
+            
+            if (val === 'dia') {
+                $('#vencimento_de').val(dd + '/' + mm + '/' + yyyy);
+                $('#vencimento_ate').val(dd + '/' + mm + '/' + yyyy);
+            } else if (val === 'mes') {
+                var ultimoDia = new Date(yyyy, hoje.getMonth() + 1, 0).getDate();
+                $('#vencimento_de').val('01/' + mm + '/' + yyyy);
+                $('#vencimento_ate').val(String(ultimoDia).padStart(2, '0') + '/' + mm + '/' + yyyy);
+            } else if (val === 'ano') {
+                $('#vencimento_de').val('01/01/' + yyyy);
+                $('#vencimento_ate').val('31/12/' + yyyy);
+            } else if (val === 'semana') {
+                var curr = new Date();
+                var primeiro = new Date(curr.setDate(curr.getDate() - curr.getDay()));
+                var ultimo = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6));
+                var dP = String(primeiro.getDate()).padStart(2, '0');
+                var mP = String(primeiro.getMonth() + 1).padStart(2, '0');
+                var yP = primeiro.getFullYear();
+                var dU = String(ultimo.getDate()).padStart(2, '0');
+                var mU = String(ultimo.getMonth() + 1).padStart(2, '0');
+                var yU = ultimo.getFullYear();
+                $('#vencimento_de').val(dP + '/' + mP + '/' + yP);
+                $('#vencimento_ate').val(dU + '/' + mU + '/' + yU);
+            }
+        });
 
     });
 </script>

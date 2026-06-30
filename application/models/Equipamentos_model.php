@@ -16,7 +16,18 @@ class Equipamentos_model extends CI_Model
         $this->db->order_by('idEquipamentos', 'desc');
         $this->db->limit($perpage, $start);
         if ($where) {
-            $this->db->where($where);
+            if (is_array($where)) {
+                $this->db->where($where);
+            } else {
+                $this->db->group_start();
+                $this->db->like('equipamento', $where);
+                $this->db->or_like('num_serie', $where);
+                $this->db->or_like('modelo', $where);
+                $this->db->or_like('cor', $where);
+                $this->db->or_like('marcas', $where);
+                $this->db->or_like('descricao', $where);
+                $this->db->group_end();
+            }
         }
         $query = $this->db->get();
         return !$one ? $query->result() : $query->row();
@@ -49,8 +60,23 @@ class Equipamentos_model extends CI_Model
         return $this->db->affected_rows() == '1';
     }
 
-    public function count($table)
+    public function count($table, $where = '')
     {
+        if ($where) {
+            if (is_array($where)) {
+                $this->db->where($where);
+            } else {
+                $this->db->group_start();
+                $this->db->like('equipamento', $where);
+                $this->db->or_like('num_serie', $where);
+                $this->db->or_like('modelo', $where);
+                $this->db->or_like('cor', $where);
+                $this->db->or_like('marcas', $where);
+                $this->db->or_like('descricao', $where);
+                $this->db->group_end();
+            }
+            return $this->db->count_all_results($table);
+        }
         return $this->db->count_all($table);
     }
 }

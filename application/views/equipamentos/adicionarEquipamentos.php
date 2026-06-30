@@ -63,17 +63,10 @@ exit; */
                                     <input id="modelo" type="text" name="modelo" value="<?php echo set_value('modelo'); ?>" />
                                 </div>
                             </div>
-                            <div class="control-group" class="control-label">
+                            <div class="control-group">
                                 <label for="marcas" class="control-label">Marcas</label>
                                 <div class="controls">
-                                    <select id="marcas" name="marcas">
-                                        <option value="">Selecione...</option>
-                                        <?php
-                                        foreach ($marcas as $m) {
-                                            echo '<option>' . $m->marca . '</option>';
-                                        }
-                                        ?>
-                                    </select>
+                                    <input id="marcas" type="text" name="marcas" value="<?php echo set_value('marcas'); ?>" placeholder="Digite a marca" />
                                 </div>
                             </div>
 

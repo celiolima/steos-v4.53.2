@@ -156,9 +156,14 @@ class Financeiro_model extends CI_Model
 
     public function autoCompleteClienteReceita($q)
     {
-        $this->db->select('idClientes, nomeCliente');
-        $this->db->limit(5);
+        $this->db->select('idClientes, nomeCliente, documento, telefone, celular');
+        $this->db->limit(25);
+        $this->db->group_start();
         $this->db->like('nomeCliente', $q);
+        $this->db->or_like('telefone', $q);
+        $this->db->or_like('celular', $q);
+        $this->db->or_like('documento', $q);
+        $this->db->group_end();
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
@@ -166,5 +171,21 @@ class Financeiro_model extends CI_Model
             }
             echo json_encode($row_set);
         }
+    }
+
+    public function anexar($lancamento, $anexo, $url, $thumb, $path)
+    {
+        $this->db->set('anexo', $anexo);
+        $this->db->set('url', $url);
+        $this->db->set('thumb', $thumb);
+        $this->db->set('path', $path);
+        $this->db->set('os_Lancamentos', $lancamento);
+        return $this->db->insert('anexos');
+    }
+
+    public function getAnexos($idLancamento)
+    {
+        $this->db->where('os_Lancamentos', $idLancamento);
+        return $this->db->get('anexos')->result();
     }
 }

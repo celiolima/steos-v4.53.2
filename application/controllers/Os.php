@@ -1127,6 +1127,119 @@ class Os extends MY_Controller
         }
     }
 
+    public function autoCompleteEquipamentos()
+    {
+        if ($this->input->get('term')) {
+            $q = strtolower($this->input->get('term'));
+            $this->os_model->autoCompleteEquipamentos($q);
+        }
+    }
+
+    public function adicionarEquipamentoAjax()
+    {
+        $data = [
+            'equipamento'   => $this->input->post('tipoEquipamento'),
+            'descricao'     => $this->input->post('descricao'),
+            'modelo'        => $this->input->post('modelo'),
+            'marcas'        => $this->input->post('marcas'),
+            'num_serie'     => $this->input->post('serial'),
+            'cor'           => $this->input->post('cor'),
+            'voltagem'      => $this->input->post('voltagem'),
+            'potencia'      => $this->input->post('potencia'),
+        ];
+
+        if (empty($data['equipamento']) || empty($data['modelo']) || empty($data['num_serie'])) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['result' => false, 'message' => 'Os campos Tipo Equipamento, Modelo e Serial são obrigatórios.']));
+        }
+
+        if ($id = $this->os_model->add('equipamentos', $data, true)) {
+            log_info('Adicionou um equipamento via modal OS');
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'result'      => true,
+                    'id'          => $id,
+                    'equipamento' => $data['equipamento'],
+                    'num_serie'   => $data['num_serie'],
+                    'modelo'      => $data['modelo'],
+                    'cor'         => $data['cor'],
+                    'descricao'   => $data['descricao'],
+                    'potencia'    => $data['potencia'],
+                    'voltagem'    => $data['voltagem'],
+                    'marcas'      => $data['marcas'],
+                    'message'     => 'Equipamento cadastrado com sucesso!'
+                ]));
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['result' => false, 'message' => 'Erro ao cadastrar equipamento no banco de dados.']));
+    }
+
+    public function adicionarClienteAjax()
+    {
+        $this->load->model('clientes_model');
+
+        $nomeCliente = $this->input->post('nomeCliente');
+        if (empty($nomeCliente)) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['result' => false, 'message' => 'O campo Nome/Razão Social é obrigatório.']));
+        }
+
+        $email = $this->input->post('email');
+        if ($email && $this->clientes_model->emailExists($email)) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['result' => false, 'message' => 'Este e-mail já está sendo utilizado por outro cliente.']));
+        }
+
+        $documento = $this->input->post('documento');
+        $cpf_cnpj = preg_replace('/[^\p{L}\p{N}\s]/', '', $documento);
+        $pessoa_fisica = (strlen($cpf_cnpj) == 11);
+        $senhaCliente = $this->input->post('senha') ? $this->input->post('senha') : ($cpf_cnpj ? $cpf_cnpj : '123456');
+
+        $data = [
+            'nomeCliente'   => $nomeCliente,
+            'contato'       => $this->input->post('contato'),
+            'pessoa_fisica' => $pessoa_fisica,
+            'documento'     => $documento,
+            'telefone'      => $this->input->post('telefone'),
+            'celular'       => $this->input->post('celular'),
+            'email'         => $email,
+            'senha'         => password_hash($senhaCliente, PASSWORD_DEFAULT),
+            'rua'           => $this->input->post('rua'),
+            'numero'        => $this->input->post('numero'),
+            'complemento'   => $this->input->post('complemento'),
+            'bairro'        => $this->input->post('bairro'),
+            'cidade'        => $this->input->post('cidade'),
+            'estado'        => $this->input->post('estado'),
+            'cep'           => $this->input->post('cep'),
+            'dataCadastro'  => date('Y-m-d'),
+            'fornecedor'    => $this->input->post('fornecedor') ? 1 : 0,
+        ];
+
+        $this->db->insert('clientes', $data);
+        if ($this->db->affected_rows() == 1) {
+            $id = $this->db->insert_id();
+            log_info('Adicionou um cliente via modal OS');
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'result'      => true,
+                    'id'          => $id,
+                    'nomeCliente' => $nomeCliente,
+                    'message'     => 'Cliente cadastrado com sucesso!'
+                ]));
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['result' => false, 'message' => 'Erro ao cadastrar cliente no banco de dados.']));
+    }
+
     public function adicionarProduto()
     {
         $this->load->library('form_validation');

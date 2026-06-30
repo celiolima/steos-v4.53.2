@@ -7,6 +7,22 @@
 <script src='<?= base_url(); ?>assets/js/fullcalendar/locales/pt-br.js'></script>
 
 <link href='<?= base_url(); ?>assets/css/fullcalendar.min.css' rel='stylesheet' />
+<style>
+/* Otimização de toque (touch) para arrastar eventos em dispositivos móveis */
+.fc-event {
+    touch-action: none !important;
+    cursor: grab !important;
+}
+.fc-event:active {
+    cursor: grabbing !important;
+}
+@media (max-width: 768px) {
+    .fc-header-toolbar, .fc-toolbar {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+}
+</style>
 <link rel="stylesheet" type="text/css" href="<?= base_url(); ?>assets/js/dist/jquery.jqplot.min.css" />
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/custom.css" />
 
@@ -1237,12 +1253,26 @@ if ($this->permission->checkPermission($this->session->userdata('permissao'), 'd
         var srcCalendarEl = document.getElementById('source-calendar');
         var srcCalendar = new FullCalendar.Calendar(srcCalendarEl, {
             locale: 'pt-br',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
             height: 500,
-            editable: false,
+            editable: true,
+            longPressDelay: 100, // Reduz o tempo de toque prolongado para 100ms (mobile drag rápido)
+            eventLongPressDelay: 100,
+            selectLongPressDelay: 100,
+            dragScroll: true,
             selectable: false,
             businessHours: true,
             dayMaxEvents: true, // allow "more" link when too many events
-            displayEventTime: false,
+            displayEventTime: true,
             events: {
                 url: "<?= base_url() . "index.php/steos/calendario"; ?>",
                 method: 'GET',
@@ -1283,7 +1313,71 @@ if ($this->permission->checkPermission($this->session->userdata('permissao'), 'd
                 $('#eventUrl').attr('href', event.url);
                 $('#calendarModal').modal();
             },
+            eventDrop: function(info) {
+                salvarNovaDataEvento(info);
+            },
+            eventResize: function(info) {
+                salvarNovaDataEvento(info);
+            },
         });
+
+        function salvarNovaDataEvento(info) {
+            var eventObj = info.event.extendedProps;
+            if (!eventObj.editar) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ type: "error", title: "Atenção", text: "Esta O.S. não pode ser editada ou você não tem permissão." });
+                } else {
+                    swal("Atenção", "Esta O.S. não pode ser editada ou você não tem permissão.", "error");
+                }
+                info.revert();
+                return;
+            }
+
+            var pad = function(num) { return String(num).padStart(2, '0'); };
+            var formatDateTime = function(dt) {
+                if (!dt) return null;
+                return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()) + ' ' + pad(dt.getHours()) + ':' + pad(dt.getMinutes()) + ':' + pad(dt.getSeconds());
+            };
+
+            var startStr = formatDateTime(info.event.start);
+            var endStr = formatDateTime(info.event.end || info.event.start);
+
+            $.ajax({
+                url: "<?= base_url() . "index.php/steos/atualizarDataOs"; ?>",
+                type: 'POST',
+                data: {
+                    idOs: eventObj.id,
+                    dataInicial: startStr,
+                    dataFinal: endStr,
+                    novaData: endStr
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.result) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ type: "success", title: "Sucesso", text: response.message, timer: 2000, showConfirmButton: false });
+                        } else {
+                            swal("Sucesso", response.message, "success");
+                        }
+                    } else {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ type: "error", title: "Atenção", text: response.message });
+                        } else {
+                            swal("Atenção", response.message, "error");
+                        }
+                        info.revert();
+                    }
+                },
+                error: function() {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ type: "error", title: "Erro", text: "Falha ao comunicar com o servidor." });
+                    } else {
+                        swal("Erro", "Falha ao comunicar com o servidor.", "error");
+                    }
+                    info.revert();
+                }
+            });
+        }
 
         srcCalendar.render();
 

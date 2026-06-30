@@ -49,8 +49,8 @@ class Financeiro extends MY_Controller
         }
 
         $where = '';
-        $vencimento_de = $this->input->get('vencimento_de') ?: date('d/m/Y');
-        $vencimento_ate = $this->input->get('vencimento_ate') ?: date('d/m/Y');
+        $vencimento_de = $this->input->get('vencimento_de') ?: date('01/m/Y');
+        $vencimento_ate = $this->input->get('vencimento_ate') ?: date('t/m/Y');
 
         $cliente = $this->input->get('cliente');
         $tipo = $this->input->get('tipo');
@@ -64,22 +64,25 @@ class Financeiro extends MY_Controller
 
         if (!empty($vencimento_de)) {
             $date = DateTime::createFromFormat('d/m/Y', $vencimento_de);
-
-            if (empty($where)) {
+            if ($date) {
                 $dateString = $date->format('Y-m-d');
-                $where = "data_vencimento >= '$dateString'";
-            } else {
-                $where .= " AND data_vencimento >= '$date'";
+                if (empty($where)) {
+                    $where = "data_vencimento >= '$dateString'";
+                } else {
+                    $where .= " AND data_vencimento >= '$dateString'";
+                }
             }
         }
 
         if (!empty($vencimento_ate)) {
-            $date = DateTime::createFromFormat('d/m/Y', $vencimento_ate)->format('Y-m-d');
-
-            if (empty($where)) {
-                $where = "data_vencimento <= '$date'";
-            } else {
-                $where .= " AND data_vencimento <= '$date'";
+            $date = DateTime::createFromFormat('d/m/Y', $vencimento_ate);
+            if ($date) {
+                $dateString = $date->format('Y-m-d');
+                if (empty($where)) {
+                    $where = "data_vencimento <= '$dateString'";
+                } else {
+                    $where .= " AND data_vencimento <= '$dateString'";
+                }
             }
         }
 
@@ -227,23 +230,26 @@ class Financeiro extends MY_Controller
 
         if (!empty($vencimento_de)) {
             $date = DateTime::createFromFormat('d/m/Y', $vencimento_de);
-
-            if (empty($where)) {
+            if ($date) {
                 $dateString = $date->format('Y-m-d');
-                $where = "data_vencimento >= '$dateString'";
-            } else {
-                $where .= " AND data_vencimento >= '$date'";
+                if (empty($where)) {
+                    $where = "data_vencimento >= '$dateString'";
+                } else {
+                    $where .= " AND data_vencimento >= '$dateString'";
+                }
             }
         }
 
 
         if (!empty($vencimento_ate)) {
-            $date = DateTime::createFromFormat('d/m/Y', $vencimento_ate)->format('Y-m-d');
-
-            if (empty($where)) {
-                $where = "data_vencimento <= '$date'";
-            } else {
-                $where .= " AND data_vencimento <= '$date'";
+            $date = DateTime::createFromFormat('d/m/Y', $vencimento_ate);
+            if ($date) {
+                $dateString = $date->format('Y-m-d');
+                if (empty($where)) {
+                    $where = "data_vencimento <= '$dateString'";
+                } else {
+                    $where .= " AND data_vencimento <= '$dateString'";
+                }
             }
         }
 
@@ -1212,11 +1218,15 @@ class Financeiro extends MY_Controller
         $this->load->library('upload');
         $this->load->library('image_lib');
 
-        $directory = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'anexos' . DIRECTORY_SEPARATOR . date('m-Y') . DIRECTORY_SEPARATOR . 'OS-' . $this->input->post('idOsServico');
+        $idLancamento = $this->input->post('idLancamento');
+        if (!$idLancamento) {
+            echo json_encode(['result' => false, 'mensagem' => 'ID do lançamento não informado.']);
+            return;
+        }
 
-        // If it exist, check if it's a directory
+        $directory = FCPATH . 'assets' . DIRECTORY_SEPARATOR . 'anexos' . DIRECTORY_SEPARATOR . date('m-Y') . DIRECTORY_SEPARATOR . 'LAN-' . $idLancamento;
+
         if (!is_dir($directory . DIRECTORY_SEPARATOR . 'thumbs')) {
-            // make directory for images and thumbs
             try {
                 mkdir($directory . DIRECTORY_SEPARATOR . 'thumbs', 0755, true);
             } catch (Exception $e) {
@@ -1227,7 +1237,7 @@ class Financeiro extends MY_Controller
 
         $upload_conf = [
             'upload_path' => $directory,
-            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt', // formatos permitidos para anexos de os
+            'allowed_types' => 'jpg|png|gif|jpeg|JPG|PNG|GIF|JPEG|pdf|PDF|cdr|CDR|docx|DOCX|txt|heic|HEIC|webp|WEBP',
             'max_size' => 0,
         ];
 
@@ -1247,16 +1257,20 @@ class Financeiro extends MY_Controller
         $success = [];
 
         foreach ($_FILES as $field_name => $file) {
+            if (empty($file['name'])) {
+                continue;
+            }
+
             if (!$this->upload->do_upload($field_name)) {
                 $error['upload'][] = $this->upload->display_errors();
             } else {
                 $upload_data = $this->upload->data();
-
-                // Gera um nome de arquivo aleatório mantendo a extensão original
                 $new_file_name = uniqid() . '.' . pathinfo($upload_data['file_name'], PATHINFO_EXTENSION);
                 $new_file_path = $upload_data['file_path'] . $new_file_name;
 
                 rename($upload_data['full_path'], $new_file_path);
+
+                $url_path = base_url('assets' . DIRECTORY_SEPARATOR . 'anexos' . DIRECTORY_SEPARATOR . date('m-Y') . DIRECTORY_SEPARATOR . 'LAN-' . $idLancamento);
 
                 if ($upload_data['is_image'] == 1) {
                     $resize_conf = [
@@ -1272,18 +1286,14 @@ class Financeiro extends MY_Controller
                         $error['resize'][] = $this->image_lib->display_errors();
                     } else {
                         $success[] = $upload_data;
-                        $this->load->model('Os_model');
-                        $result = $this->Os_model->anexar($this->input->post('idOsServico'), $new_file_name, base_url('assets' . DIRECTORY_SEPARATOR . 'anexos' . DIRECTORY_SEPARATOR . date('m-Y') . DIRECTORY_SEPARATOR . 'OS-' . $this->input->post('idOsServico')), 'thumb_' . $new_file_name, $directory);
+                        $result = $this->financeiro_model->anexar($idLancamento, $new_file_name, $url_path, 'thumb_' . $new_file_name, $directory);
                         if (!$result) {
                             $error['db'][] = 'Erro ao inserir no banco de dados.';
                         }
                     }
                 } else {
                     $success[] = $upload_data;
-
-                    $this->load->model('Os_model');
-
-                    $result = $this->Os_model->anexar($this->input->post('idOsServico'), $new_file_name, base_url('assets' . DIRECTORY_SEPARATOR . 'anexos' . DIRECTORY_SEPARATOR . date('m-Y') . DIRECTORY_SEPARATOR . 'OS-' . $this->input->post('idOsServico')), '', $directory);
+                    $result = $this->financeiro_model->anexar($idLancamento, $new_file_name, $url_path, '', $directory);
                     if (!$result) {
                         $error['db'][] = 'Erro ao inserir no banco de dados.';
                     }
@@ -1294,9 +1304,41 @@ class Financeiro extends MY_Controller
         if (count($error) > 0) {
             echo json_encode(['result' => false, 'mensagem' => 'Ocorreu um erro ao processar os arquivos.', 'errors' => $error]);
         } else {
-            log_info('Adicionou anexo(s) a uma OS. ID (OS): ' . $this->input->post('idOsServico'));
+            log_info('Adicionou anexo(s) ao lançamento financeiro ID: ' . $idLancamento);
             echo json_encode(['result' => true, 'mensagem' => 'Arquivo(s) anexado(s) com sucesso.']);
         }
+    }
+
+    public function listarAnexos($idLancamento = null)
+    {
+        if ($idLancamento == null || !is_numeric($idLancamento)) {
+            echo '';
+            return;
+        }
+        $anexos = $this->financeiro_model->getAnexos($idLancamento);
+        $html = '';
+        foreach ($anexos as $a) {
+            $ext = strtolower(pathinfo($a->anexo, PATHINFO_EXTENSION));
+            if ($a->thumb == null) {
+                $link = $a->url . '/' . $a->anexo;
+                if ($ext == 'pdf') {
+                    $thumb_content = '<div style="height: 150px; display: flex; align-items: center; justify-content: center; background: #f9f9f9;"><i class="fas fa-file-pdf" style="font-size: 80px; color: #e74c3c;"></i></div>';
+                } else {
+                    $thumb = base_url() . 'assets/img/icon-file.png';
+                    $thumb_content = '<img src="' . $thumb . '" alt="' . $a->anexo . '" style="max-height: 150px;">';
+                }
+            } else {
+                $thumb = $a->url . '/thumbs/' . $a->thumb;
+                $link = $a->url . '/' . $a->anexo;
+                $thumb_content = '<img src="' . $thumb . '" alt="' . $a->anexo . '" style="max-height: 150px;">';
+            }
+            $html .= '<div class="span3" style="min-height: 150px; margin-left: 0; margin-bottom: 10px;">
+                        <a style="min-height: 150px; display: block; border: 1px solid #ddd; overflow: hidden; background: #fff;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal">
+                            ' . $thumb_content . '
+                        </a>
+                      </div>';
+        }
+        echo $html;
     }
 
     public function excluirAnexo($id = null)
@@ -1306,16 +1348,17 @@ class Financeiro extends MY_Controller
         } else {
             $this->db->where('idAnexos', $id);
             $file = $this->db->get('anexos', 1)->row();
-            $idOs = $this->input->post('idOs');
+            $idLancamento = $this->input->post('idLancamento');
 
-            unlink($file->path . DIRECTORY_SEPARATOR . $file->anexo);
-
-            if ($file->thumb != null) {
-                unlink($file->path . DIRECTORY_SEPARATOR . 'thumbs' . DIRECTORY_SEPARATOR . $file->thumb);
+            if ($file) {
+                @unlink($file->path . DIRECTORY_SEPARATOR . $file->anexo);
+                if ($file->thumb != null) {
+                    @unlink($file->path . DIRECTORY_SEPARATOR . 'thumbs' . DIRECTORY_SEPARATOR . $file->thumb);
+                }
             }
 
-            if ($this->os_model->delete('anexos', 'idAnexos', $id) == true) {
-                log_info('Removeu anexo de uma OS. ID (OS): ' . $idOs);
+            if ($this->financeiro_model->delete('anexos', 'idAnexos', $id) == true) {
+                log_info('Removeu anexo do lançamento financeiro ID: ' . $idLancamento);
                 echo json_encode(['result' => true, 'mensagem' => 'Anexo excluído com sucesso.']);
             } else {
                 echo json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']);

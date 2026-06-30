@@ -383,10 +383,12 @@ class Os_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->limit(25);
+        $this->db->group_start();
         $this->db->like('nomeCliente', $q);
         $this->db->or_like('telefone', $q);
         $this->db->or_like('celular', $q);
         $this->db->or_like('documento', $q); // STEOS: busca por documento também
+        $this->db->group_end();
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
@@ -404,9 +406,14 @@ class Os_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->limit(25);
+        $this->db->group_start();
         $this->db->like('equipamento', $q);
         $this->db->or_like('num_serie', $q);
         $this->db->or_like('cor', $q);
+        $this->db->or_like('modelo', $q);
+        $this->db->or_like('descricao', $q);
+        $this->db->or_like('marcas', $q);
+        $this->db->group_end();
         $query = $this->db->get('equipamentos');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {

@@ -268,8 +268,118 @@
      </div>
  </div>
  <!-- Modal adiciona cliete-->
- <div id="modal-adicionaclietes" class="modal hide fade " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-
+ <div id="modal-adicionaclietes" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+     <div class="row-fluid" style="margin-top:0">
+         <div class="span12">
+             <div class="widget-box">
+                 <div class="widget-title" style="margin: -20px 0 0">
+                     <span class="icon">
+                         <i class="fas fa-user"></i>
+                     </span>
+                     <h5>Cadastro de Cliente</h5>
+                 </div>
+                 <form action="<?php echo current_url(); ?>" id="formCliente" method="post" class="form-horizontal">
+                     <div class="widget-content nopadding tab-content" style="max-height: 400px; overflow-y: auto;">
+                         <div class="span12">
+                             <div class="control-group">
+                                 <label for="documento" class="control-label">CPF/CNPJ</label>
+                                 <div class="controls">
+                                     <input id="documento" class="cpfcnpj" type="text" name="documento" />
+                                     <button id="buscar_info_cnpj" class="btn btn-xs" type="button">Buscar(CNPJ)</button>
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="nomeCliente" class="control-label">Nome/Razão Social<span class="required">*</span></label>
+                                 <div class="controls">
+                                     <input id="nomeCliente" type="text" name="nomeCliente" required />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="contato" class="control-label">Contato:</label>
+                                 <div class="controls">
+                                     <input class="contato" type="text" name="contato" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="telefone" class="control-label">Telefone</label>
+                                 <div class="controls">
+                                     <input id="telefone" type="text" name="telefone" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="celular" class="control-label">Celular</label>
+                                 <div class="controls">
+                                     <input id="celular" type="text" name="celular" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="email" class="control-label">Email</label>
+                                 <div class="controls">
+                                     <input id="email" type="text" name="email" autocomplete="off" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label class="control-label">Tipo de Cliente</label>
+                                 <div class="controls">
+                                     <label for="fornecedor" class="btn btn-default">Fornecedor
+                                         <input type="checkbox" id="fornecedor" name="fornecedor" value="1">
+                                     </label>
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="cep" class="control-label">CEP</label>
+                                 <div class="controls">
+                                     <input id="cep" type="text" name="cep" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="rua" class="control-label">Rua</label>
+                                 <div class="controls">
+                                     <input id="rua" type="text" name="rua" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="numero" class="control-label">Número</label>
+                                 <div class="controls">
+                                     <input id="numero" type="text" name="numero" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="complemento" class="control-label">Complemento</label>
+                                 <div class="controls">
+                                     <input id="complemento" type="text" name="complemento" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="bairro" class="control-label">Bairro</label>
+                                 <div class="controls">
+                                     <input id="bairro" type="text" name="bairro" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="cidade" class="control-label">Cidade</label>
+                                 <div class="controls">
+                                     <input id="cidade" type="text" name="cidade" />
+                                 </div>
+                             </div>
+                             <div class="control-group">
+                                 <label for="estado" class="control-label">Estado</label>
+                                 <div class="controls">
+                                     <select id="estado" name="estado">
+                                         <option value="">Selecione...</option>
+                                     </select>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="modal-footer" style="display:flex;justify-content: center; gap: 10px;">
+                         <button type="submit" class="button btn btn-mini btn-success"><span class="button__icon"><i class='bx bx-save'></i></span> <span class="button__text2">Salvar</span></button>
+                         <button type="button" data-dismiss="modal" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Cancelar</span></button>
+                     </div>
+                 </form>
+             </div>
+         </div>
+     </div>
  </div>
  <!--fim Modal adiciona clietes-->
 
@@ -308,19 +418,12 @@
                                          <input id="modelo" type="text" name="modelo" value="<?php echo set_value('modelo'); ?>" />
                                      </div>
                                  </div>
-                                 <div class="control-group" class="control-label">
-                                     <label for="marcas" class="control-label">Marcas</label>
-                                     <div class="controls">
-                                         <select id="marcas" name="marcas">
-                                             <option value="">Selecione...</option>
-                                             <?php
-                                                /*  foreach ($marcas as $m) {
-                                                                                                    echo '<option>' . $m->marca . '</option>';
-                                                                                                } */
-                                                ?>
-                                         </select>
-                                     </div>
-                                 </div>
+                                 <div class="control-group">
+                                      <label for="marcas" class="control-label">Marcas</label>
+                                      <div class="controls">
+                                          <input id="marcas" type="text" name="marcas" value="<?php echo set_value('marcas'); ?>" placeholder="Digite a marca" />
+                                      </div>
+                                  </div>
                                  <div class="control-group">
                                      <label for="serial" class="control-label">Serial<span class="required">*</span></label>
                                      <div class="controls">
@@ -364,13 +467,13 @@
                          </div>
 
                          <div class="form-actions">
-                             <div class="span12">
-                                 <div class="span6 offset3" style="display: flex;justify-content: center">
-                                     <button type="submit" class="button btn btn-mini btn-success" style="max-width: 160px"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
-                                     <a href="<?php echo base_url() ?>index.php/equipamentos" id="" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
-                                 </div>
-                             </div>
-                         </div>
+                              <div class="span12">
+                                  <div class="span6 offset3" style="display: flex;justify-content: center; gap: 10px;">
+                                      <button type="submit" class="button btn btn-mini btn-success" style="max-width: 160px"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
+                                      <button type="button" data-dismiss="modal" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></button>
+                                  </div>
+                              </div>
+                          </div>
                      </form>
                  </div>
              </div>
@@ -397,15 +500,20 @@
             source: "<?php echo base_url(); ?>index.php/os/autoCompleteCliente",
             minLength: 1,
             select: function(event, ui) {
-                $("#clientes_id").val(ui.item.id);
-                // Buscar contratos atrelados a este cliente
-                $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: ui.item.id}, function(data) {
-                    var options = '<option value="">Nenhum Contrato</option>';
-                    for (var i = 0; i < data.length; i++) {
-                        options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
-                    }
-                    $("#contratos_id").html(options);
-                });
+                if (ui.item && ui.item.id) {
+                    $("#clientes_id").val(ui.item.id);
+                    // Buscar contratos atrelados a este cliente
+                    $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: ui.item.id}, function(data) {
+                        var options = '<option value="">Nenhum Contrato</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
+                        }
+                        $("#contratos_id").html(options);
+                    });
+                }
+            },
+            open: function(event, ui) {
+                $('.ui-autocomplete').append('<li class="ui-menu-item" role="presentation"><a href="#modal-adicionaclietes" id="btn-adicionaCliente" role="button" data-toggle="modal" class="button btn btn-success" style="width: 90%; margin: 4px auto; display: flex; justify-content: center; align-items: center;"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cadastrar Novo Cliente</span></a></li>');
             }
         });
 
@@ -428,13 +536,60 @@
              source: "<?php echo base_url(); ?>index.php/os/autoCompleteEquipamentos",
              minLength: 1,
              select: function(event, ui) {
-                 console.log(ui.item);
-                 addEquipamentosAutocomplete(i, ui.item);
+                 if (ui.item && ui.item.id) {
+                     addEquipamentosAutocomplete(i, ui.item);
+                 }
              },
              open: function(event, ui) {
-                 //$('.ui-autocomplete').append('<li><a href="javascript:alert(\'redirecting...\')">See All Result</a></li>'); //See all results
-                 $('.ui-autocomplete').append('<li><a href="javascript:abreModal()" ><button type="button" class="btn btn-primary"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Equipamentos</button></a></li > ');
+                 $('.ui-autocomplete').append('<li class="ui-menu-item" role="presentation"><a href="#modal-adicionaEquipamentos" id="btn-adicionaEquipamentos" role="button" data-toggle="modal" class="button btn btn-success" style="width: 90%; margin: 4px auto; display: flex; justify-content: center; align-items: center;"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cadastrar Novo Equipamento</span></a></li>');
              }
+         });
+
+         $('#formEquipamentos').on('submit', function(e) {
+             e.preventDefault();
+             var form = $(this);
+             $.ajax({
+                 url: '<?php echo base_url(); ?>index.php/os/adicionarEquipamentoAjax',
+                 type: 'POST',
+                 data: form.serialize(),
+                 dataType: 'json',
+                 success: function(response) {
+                     if (response.result == true) {
+                         $('#modal-adicionaEquipamentos').modal('hide');
+                         form[0].reset();
+                         Swal.fire({
+                             type: 'success',
+                             title: 'Sucesso',
+                             text: response.message
+                         });
+                         var item = {
+                             id: response.id,
+                             equipamento: response.equipamento,
+                             num_serie: response.num_serie,
+                             modelo: response.modelo,
+                             cor: response.cor,
+                             descricao: response.descricao,
+                             potencia: response.potencia,
+                             voltagem: response.voltagem,
+                             marcas: response.marcas
+                         };
+                         addEquipamentosAutocomplete(i, item);
+                     } else {
+                         Swal.fire({
+                             type: 'error',
+                             title: 'Erro',
+                             text: response.message
+                         });
+                     }
+                 },
+                 error: function() {
+                     Swal.fire({
+                         type: 'error',
+                         title: 'Erro',
+                         text: 'Erro de comunicação ao salvar o equipamento.'
+                     });
+                 }
+             });
          });
 
          $("#formOs").validate({
@@ -536,16 +691,58 @@
              $('#' + button_id + 'addEquipamentos').remove();
              //$("#addEquipamentos").hide();
          });
-         /*  $('#submit').click(function() {
-              $.ajax({
-                  url: "name.php",
-                  method: "POST",
-                  data: $('#add_name').serialize(),
-                  success: function(data) {
-                      alert(data);
-                      $('#add_name')[0].reset();
-                  }
-              });
-          }); */
+         $('#formCliente').on('submit', function(e) {
+             e.preventDefault();
+             var form = $(this);
+             $.ajax({
+                 url: '<?php echo base_url(); ?>index.php/os/adicionarClienteAjax',
+                 type: 'POST',
+                 data: form.serialize(),
+                 dataType: 'json',
+                 success: function(response) {
+                     if (response.result == true) {
+                         $('#modal-adicionaclietes').modal('hide');
+                         form[0].reset();
+                         Swal.fire({
+                             type: 'success',
+                             title: 'Sucesso',
+                             text: response.message
+                         });
+                         setTimeout(function() {
+                             $("#cliente").val(response.nomeCliente).trigger('change');
+                             $("#clientes_id").val(response.id).trigger('change');
+                         }, 400);
+                         $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: response.id}, function(data) {
+                             var options = '<option value="">Nenhum Contrato</option>';
+                             for (var j = 0; j < data.length; j++) {
+                                 options += '<option value="' + data[j].id + '">' + data[j].nome + '</option>';
+                             }
+                             $("#contratos_id").html(options);
+                         });
+                     } else {
+                         Swal.fire({
+                             type: 'error',
+                             title: 'Erro',
+                             text: response.message
+                         });
+                     }
+                 },
+                 error: function() {
+                     Swal.fire({
+                         type: 'error',
+                         title: 'Erro',
+                         text: 'Erro de comunicação ao salvar o cliente.'
+                     });
+                 }
+             });
+         });
+
+         $.getJSON('<?php echo base_url() ?>assets/json/estados.json', function(data) {
+             for (var idx in data.estados) {
+                 $('#estado').append(new Option(data.estados[idx].nome, data.estados[idx].sigla));
+             }
+         });
      });
  </script>
+ <script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
+ <script src="<?php echo base_url() ?>assets/js/funcoes.js"></script>

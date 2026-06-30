@@ -714,8 +714,9 @@ class Steos extends MY_Controller
             }
             return [
                 'title' => "OS: {$os->idOs}, Cliente: {$os->nomeCliente}",
-                'start' => $os->dataFinal,
-                'end' => $os->dataFinal,
+                'start' => date('Y-m-d\TH:i:s', strtotime($os->dataInicial)),
+                'end' => date('Y-m-d\TH:i:s', strtotime($os->dataFinal)),
+                'allDay' => false,
                 'color' => $cor,
                 'extendedProps' => [
                     'id' => $os->idOs,
@@ -741,6 +742,46 @@ class Steos extends MY_Controller
             ->set_status_header(200)
             ->set_output(json_encode($events));
         //->set_output(json_encode($data));
+    }
+
+    public function atualizarDataOs()
+    {
+        if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+        }
+
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
+            echo json_encode(['result' => false, 'message' => 'Você não tem permissão para editar O.S.']);
+            return;
+        }
+
+        $idOs = $this->input->post('idOs');
+        $novaData = $this->input->post('novaData');
+        $dataInicialPost = $this->input->post('dataInicial');
+        $dataFinalPost = $this->input->post('dataFinal');
+
+        $this->load->model('os_model');
+        if (!$this->os_model->isEditable($idOs)) {
+            echo json_encode(['result' => false, 'message' => 'Esta O.S. não pode ser editada (Faturada ou Cancelada).']);
+            return;
+        }
+
+        $dadosAtualizar = [];
+        if ($dataInicialPost) {
+            $dadosAtualizar['dataInicial'] = date('Y-m-d H:i:s', strtotime($dataInicialPost));
+        }
+        if ($dataFinalPost) {
+            $dadosAtualizar['dataFinal'] = date('Y-m-d H:i:s', strtotime($dataFinalPost));
+        } elseif ($novaData) {
+            $dadosAtualizar['dataFinal'] = date('Y-m-d H:i:s', strtotime($novaData));
+        }
+
+        if (!empty($dadosAtualizar) && $this->os_model->edit('os', $dadosAtualizar, 'idOs', $idOs)) {
+            log_info('Alterou a data da OS ID: ' . $idOs . ' via Calendário.');
+            echo json_encode(['result' => true, 'message' => 'Horário da O.S. atualizado com sucesso!']);
+        } else {
+            echo json_encode(['result' => false, 'message' => 'Erro ao atualizar data no banco de dados.']);
+        }
     }
 
     private function desconto(

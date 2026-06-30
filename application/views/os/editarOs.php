@@ -119,28 +119,29 @@ if (!empty($lancamentos)) {
                                             <?php echo $result->idOs; ?>
                                         </h3>
 
-                                        <!--  CLIENTE -->
-                                        <div class="span6" style="padding: 0; margin: 0">
-                                            <div class="span12" style="padding: 0; margin: 0">
-                                                <div class="span5" style="padding: 0; margin: 0">
-                                                    <label for="cliente">Cliente<span class="required">*</span></label>
-                                                    <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" />
-                                                    <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
+                                        <!-- CLIENTE, CONTRATO E MAPS -->
+                                        <div class="span6" style="padding: 0; margin: 0;">
+                                            <div style="display: flex; align-items: flex-end; gap: 10px; width: 100%; flex-wrap: wrap;">
+                                                <div style="flex: 2; min-width: 150px; margin: 0;">
+                                                    <label for="cliente" style="margin-bottom: 4px;">Cliente<span class="required">*</span></label>
+                                                    <input id="cliente" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" style="width: 100%; box-sizing: border-box; margin: 0; height: 30px;" />
+                                                    <input id="clientes_id" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
                                                     <input id="valor" type="hidden" name="valor" value="" />
                                                 </div>
-                                                <div class="span4" style="padding: 0; margin-left: 2%">
-                                                    <label for="contratos_id">Contrato Vinculado</label>
-                                                    <select id="contratos_id" name="contratos_id" class="span12">
+                                                <div style="flex: 2; min-width: 150px; margin: 0;">
+                                                    <label for="contratos_id" style="margin-bottom: 4px;">Contrato Vinculado</label>
+                                                    <select id="contratos_id" name="contratos_id" style="width: 100%; box-sizing: border-box; margin: 0; height: 30px;">
                                                         <option value="">Nenhum</option>
                                                         <?php if(isset($result->contratos_id) && $result->contratos_id != null) { ?>
                                                             <option value="<?php echo $result->contratos_id; ?>" selected>Manter Atual</option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
-                                                <div class="span3" style="padding: 0; margin: 0">
-                                                    <label for="map">Maps<span class="required">*</span></label>
-                                                    <a target="_blank" title="abra o endereço no Navegador" class="button btn btn-mini btn-inverse" href=" https://www.google.com/maps/search/<?php echo $result->rua . ',' . $result->numero . ' ' . $result->bairro ?>">
-                                                        <span class="button__icon"><i class='bx bx-map-alt'></i></span> <span class="button__text">Maps</span></a>
+                                                <div style="flex: 0 0 auto; margin: 0;">
+                                                    <label style="margin-bottom: 4px; visibility: hidden;">Maps</label>
+                                                    <a target="_blank" title="Abra o endereço no Navegador" class="button btn btn-mini btn-inverse" href="https://www.google.com/maps/search/<?php echo $result->rua . ',' . $result->numero . ' ' . $result->bairro ?>" style="margin: 0; white-space: nowrap; display: inline-flex; align-items: center; height: 30px;">
+                                                        <span class="button__icon"><i class='bx bx-map-alt'></i></span><span class="button__text2" style="padding: 0 8px;">Maps</span>
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -1591,6 +1592,123 @@ if (!empty($lancamentos)) {
 </div>
 
 
+<!-- Modal adiciona cliete-->
+<div id="modal-adicionaclietes" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="row-fluid" style="margin-top:0">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title" style="margin: -20px 0 0">
+                    <span class="icon">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    <h5>Cadastro de Cliente</h5>
+                </div>
+                <form action="<?php echo current_url(); ?>" id="formCliente" method="post" class="form-horizontal">
+                    <div class="widget-content nopadding tab-content" style="max-height: 400px; overflow-y: auto;">
+                        <div class="span12">
+                            <div class="control-group">
+                                <label for="documento" class="control-label">CPF/CNPJ</label>
+                                <div class="controls">
+                                    <input id="documento" class="cpfcnpj" type="text" name="documento" />
+                                    <button id="buscar_info_cnpj" class="btn btn-xs" type="button">Buscar(CNPJ)</button>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="nomeCliente" class="control-label">Nome/Razão Social<span class="required">*</span></label>
+                                <div class="controls">
+                                    <input id="nomeCliente" type="text" name="nomeCliente" required />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="contato" class="control-label">Contato:</label>
+                                <div class="controls">
+                                    <input class="contato" type="text" name="contato" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="telefone" class="control-label">Telefone</label>
+                                <div class="controls">
+                                    <input id="telefone" type="text" name="telefone" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="celular" class="control-label">Celular</label>
+                                <div class="controls">
+                                    <input id="celular" type="text" name="celular" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="email" class="control-label">Email</label>
+                                <div class="controls">
+                                    <input id="email" type="text" name="email" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Tipo de Cliente</label>
+                                <div class="controls">
+                                    <label for="fornecedor" class="btn btn-default">Fornecedor
+                                        <input type="checkbox" id="fornecedor" name="fornecedor" value="1">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="cep" class="control-label">CEP</label>
+                                <div class="controls">
+                                    <input id="cep" type="text" name="cep" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="rua" class="control-label">Rua</label>
+                                <div class="controls">
+                                    <input id="rua" type="text" name="rua" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="numero" class="control-label">Número</label>
+                                <div class="controls">
+                                    <input id="numero" type="text" name="numero" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="complemento" class="control-label">Complemento</label>
+                                <div class="controls">
+                                    <input id="complemento" type="text" name="complemento" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="bairro" class="control-label">Bairro</label>
+                                <div class="controls">
+                                    <input id="bairro" type="text" name="bairro" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="cidade" class="control-label">Cidade</label>
+                                <div class="controls">
+                                    <input id="cidade" type="text" name="cidade" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="estado" class="control-label">Estado</label>
+                                <div class="controls">
+                                    <select id="estado" name="estado">
+                                        <option value="">Selecione...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display:flex;justify-content: center; gap: 10px;">
+                        <button type="submit" class="button btn btn-mini btn-success"><span class="button__icon"><i class='bx bx-save'></i></span> <span class="button__text2">Salvar</span></button>
+                        <button type="button" data-dismiss="modal" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Cancelar</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--fim Modal adiciona clietes-->
+
+
 <!-- Modal Equipamentos-->
 <div id="modal-adicionaEquipamentos" class="modal hide fade " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="row-fluid" style="margin-top:0">
@@ -1626,17 +1744,10 @@ if (!empty($lancamentos)) {
                                         <input id="modelo" type="text" name="modelo" value="<?php echo set_value('modelo'); ?>" />
                                     </div>
                                 </div>
-                                <div class="control-group" class="control-label">
+                                <div class="control-group">
                                     <label for="marcas" class="control-label">Marcas</label>
                                     <div class="controls">
-                                        <select id="marcas" name="marcas">
-                                            <option value="">Selecione...</option>
-                                            <?php
-                                            /*  foreach ($marcas as $m) {
-                                                                                                    echo '<option>' . $m->marca . '</option>';
-                                                                                                } */
-                                            ?>
-                                        </select>
+                                        <input id="marcas" type="text" name="marcas" value="<?php echo set_value('marcas'); ?>" placeholder="Digite a marca" />
                                     </div>
                                 </div>
                                 <div class="control-group">
@@ -1683,9 +1794,9 @@ if (!empty($lancamentos)) {
 
                         <div class="form-actions">
                             <div class="span12">
-                                <div class="span6 offset3" style="display: flex;justify-content: center">
+                                <div class="span6 offset3" style="display: flex;justify-content: center; gap: 10px;">
                                     <button type="submit" class="button btn btn-mini btn-success" style="max-width: 160px"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></button>
-                                    <a href="<?php echo base_url() ?>index.php/equipamentos" id="" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
+                                    <button type="button" data-dismiss="modal" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></button>
                                 </div>
                             </div>
                         </div>
@@ -2260,15 +2371,20 @@ if (!empty($lancamentos)) {
             source: "<?php echo base_url(); ?>index.php/os/autoCompleteCliente",
             minLength: 1,
             select: function(event, ui) {
-                $("#clientes_id").val(ui.item.id);
-                // Buscar contratos atrelados a este cliente
-                $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: ui.item.id}, function(data) {
-                    var options = '<option value="">Nenhum Contrato</option>';
-                    for (var i = 0; i < data.length; i++) {
-                        options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
-                    }
-                    $("#contratos_id").html(options);
-                });
+                if (ui.item && ui.item.id) {
+                    $("#clientes_id").val(ui.item.id);
+                    // Buscar contratos atrelados a este cliente
+                    $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: ui.item.id}, function(data) {
+                        var options = '<option value="">Nenhum Contrato</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
+                        }
+                        $("#contratos_id").html(options);
+                    });
+                }
+            },
+            open: function(event, ui) {
+                $('.ui-autocomplete').append('<li class="ui-menu-item" role="presentation"><a href="#modal-adicionaclietes" id="btn-adicionaCliente" role="button" data-toggle="modal" class="button btn btn-success" style="width: 90%; margin: 4px auto; display: flex; justify-content: center; align-items: center;"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cadastrar Novo Cliente</span></a></li>');
             }
         });
 
@@ -2293,18 +2409,60 @@ if (!empty($lancamentos)) {
             source: "<?php echo base_url(); ?>index.php/os/autoCompleteEquipamentos",
             minLength: 1,
             select: function(event, ui) {
-
-                addEquipamentosAutocomplete(i, ui.item);
-
+                if (ui.item && ui.item.id) {
+                    addEquipamentosAutocomplete(i, ui.item);
+                }
             },
             open: function(event, ui) {
-                //$('.ui-autocomplete').append('<li><a href="javascript:alert(\'redirecting...\')">See All Result</a></li>'); //See all results
-                //$('.ui-autocomplete').append('<li><a href="javascript:abreModal()" ><button type="button" class="btn btn-primary"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Equipamentos</button></a></li > ');
-
-                $('.ui-autocomplete').append('<a href="#modal-adicionaEquipamentos" id="btn-adicionaEquipamentos" role="button" data-toggle="modal" class="button btn btn-success" > <span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Adicionar Equpamento</span></a>');
-
-                //$('.ui-autocomplete').append('<li><a href="<?php echo site_url() ?>/equipamentos/adicionar" ><button type="button" class="btn btn-primary"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Equipamentos</button></a></li > ');
+                $('.ui-autocomplete').append('<li class="ui-menu-item" role="presentation"><a href="#modal-adicionaEquipamentos" id="btn-adicionaEquipamentos" role="button" data-toggle="modal" class="button btn btn-success" style="width: 90%; margin: 4px auto; display: flex; justify-content: center; align-items: center;"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cadastrar Novo Equipamento</span></a></li>');
             }
+        });
+
+        $('#formEquipamentos').on('submit', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            $.ajax({
+                url: '<?php echo base_url(); ?>index.php/os/adicionarEquipamentoAjax',
+                type: 'POST',
+                data: form.serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    if (response.result == true) {
+                        $('#modal-adicionaEquipamentos').modal('hide');
+                        form[0].reset();
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Sucesso',
+                            text: response.message
+                        });
+                        var item = {
+                            id: response.id,
+                            equipamento: response.equipamento,
+                            num_serie: response.num_serie,
+                            modelo: response.modelo,
+                            cor: response.cor,
+                            descricao: response.descricao,
+                            potencia: response.potencia,
+                            voltagem: response.voltagem,
+                            marcas: response.marcas
+                        };
+                        addEquipamentosAutocomplete(i, item);
+                    } else {
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Erro',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Erro',
+                        text: 'Erro de comunicação ao salvar o equipamento.'
+                    });
+                }
+            });
         });
 
         $('#termoGarantia').on('change', function() {
@@ -3355,5 +3513,59 @@ if (!empty($lancamentos)) {
     $('#add_receita').mouseover(function(event) {
         valorParcelas();
     });
+
+    $('#formCliente').on('submit', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        $.ajax({
+            url: '<?php echo base_url(); ?>index.php/os/adicionarClienteAjax',
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(response) {
+                if (response.result == true) {
+                    $('#modal-adicionaclietes').modal('hide');
+                    form[0].reset();
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Sucesso',
+                        text: response.message
+                    });
+                    setTimeout(function() {
+                        $("#cliente").val(response.nomeCliente).trigger('change');
+                        $("#clientes_id").val(response.id).trigger('change');
+                    }, 400);
+                    $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: response.id}, function(data) {
+                        var options = '<option value="">Nenhum Contrato</option>';
+                        for (var j = 0; j < data.length; j++) {
+                            options += '<option value="' + data[j].id + '">' + data[j].nome + '</option>';
+                        }
+                        $("#contratos_id").html(options);
+                    });
+                } else {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Erro',
+                        text: response.message
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    type: 'error',
+                    title: 'Erro',
+                    text: 'Erro de comunicação ao salvar o cliente.'
+                });
+            }
+        });
+    });
+
+    $.getJSON('<?php echo base_url() ?>assets/json/estados.json', function(data) {
+        for (var idx in data.estados) {
+            $('#estado').append(new Option(data.estados[idx].nome, data.estados[idx].sigla));
+        }
+    });
     //***** */
 </script>
+<script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
+<script src="<?php echo base_url() ?>assets/js/funcoes.js"></script>
