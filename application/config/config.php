@@ -346,7 +346,7 @@ $config['cache_query_string'] = false;
 | https://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = $_ENV['APP_ENCRYPTION_KEY'];
+$config['encryption_key'] = $_ENV['APP_ENCRYPTION_KEY'] ?? 'steos-default-secret-key-2026';
 
 /*
 |--------------------------------------------------------------------------
@@ -514,7 +514,7 @@ $config['proxy_ips'] = $_ENV['APP_PROXY_IPS'] ?? '';
 |          for backwards compatibility purposes!
 |
 */
-$config['global_xss_filtering'] = $_ENV['GLOBAL_XSS_FILTERING'] ? filter_var($_ENV['GLOBAL_XSS_FILTERING'], FILTER_VALIDATE_BOOLEAN) : true;
+$config['global_xss_filtering'] = isset($_ENV['GLOBAL_XSS_FILTERING']) ? filter_var($_ENV['GLOBAL_XSS_FILTERING'], FILTER_VALIDATE_BOOLEAN) : true;
 
 /*
 |--------------------------------------------------------------------------

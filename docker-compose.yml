@@ -75,6 +75,11 @@ services:
       - MYSQL_USER=steos
       - MYSQL_PASSWORD=steos
       - MYSQL_DATABASE=steos
+      - DB_HOSTNAME=steosMySql
+      - DB_USERNAME=steos
+      - DB_PASSWORD=steos
+      - DB_DATABASE=steos
+      - APP_ENCRYPTION_KEY=steos-default-secret-key-2026
 
       - CI_ENVIRONMENT=development # Ativa o modo debug do CodeIgniter 4
       #- APP_BASEURL=http://localhost:8080/ # Adicione esta linha (opcional, mas recomendado para CI4)
