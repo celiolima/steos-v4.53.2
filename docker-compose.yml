@@ -33,7 +33,7 @@ services:
       MEMORY_LIMIT: 512M
       MAX_EXECUTION_TIME: 3600
     ports:
-      - "9081:80"
+      - "9080:80"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.steosMyadmin.rule=Host(`steosMyadmin.stesistemas.com`) || Host(`www.steosMyadmin.stesistemas.com`)" # Troque pelo seu dominio ou subdominio
@@ -62,12 +62,12 @@ services:
         echo 'Importacao concluida com sucesso!';
       fi && apache2-foreground"
     ports:
-      - "9080:80"
+      - "8080:80"
     volumes:
       # DESENVOLVIMENTO: mapeia código local diretamente
-      - .:/var/www/html:cached # cached para melhor performance
+      #- .:/var/www/html:cached # cached para melhor performance
       # PRODUÇÃO: volume separado para uploads se necessário
-      # - steos_data:/var/www/html:cached # cached para melhor performance
+      - steos_data:/var/www/html
     networks:
       - steos
     environment:
