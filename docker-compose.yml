@@ -1,34 +1,34 @@
 services:
-  steosdemoMySql:
+  steosMySql:
     image: mysql:8.0
-    container_name: steosdemo_mysql
+    container_name: steos_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: steosdemo
-      MYSQL_DATABASE: steosdemo
-      MYSQL_USER: steosdemo
-      MYSQL_PASSWORD: steosdemo
+      MYSQL_ROOT_PASSWORD: steos
+      MYSQL_DATABASE: steos
+      MYSQL_USER: steos
+      MYSQL_PASSWORD: steos
     ports:
-      - "3300:3306"
+      - "3306:3306"
     volumes:
-      - steosdemo_mysql_data:/var/lib/mysql
+      - steos_mysql_data:/var/lib/mysql
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     networks:
-      - steosdemo
+      - steos
 
-  steosdemoMyadmin:
+  steosMyadmin:
     image: phpmyadmin:latest
-    container_name: steosdemo_phpmyadmin
+    container_name: steos_phpmyadmin
     restart: unless-stopped
     depends_on:
-      - steosdemoMySql
+      - steosMySql
     environment:
       PMA_ARBITRARY: 1
-      PMA_HOST: steosdemoMySql
-      PMA_USER: steosdemo
-      PMA_PASSWORD: steosdemo
+      PMA_HOST: steosMySql
+      PMA_USER: steos
+      PMA_PASSWORD: steos
       UPLOAD_LIMIT: 256M
       MEMORY_LIMIT: 512M
       MAX_EXECUTION_TIME: 3600
@@ -36,29 +36,29 @@ services:
       - "9081:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.steosdemoMyadmin.rule=Host(`steosdemoMyadmin.stesistemas.com`) || Host(`www.steosdemoMyadmin.stesistemas.com`)" # Troque pelo seu dominio ou subdominio
-      - "traefik.http.routers.steosdemoMyadmin.entrypoints=websecure"
-      - "traefik.http.routers.steosdemoMyadmin.tls.certresolver=le"
-      - "traefik.http.services.steosdemoMyadmin.loadbalancer.server.port=80"
-      - "traefik.http.routers.steosdemoMyadmin.tls=true"
+      - "traefik.http.routers.steosMyadmin.rule=Host(`steosMyadmin.stesistemas.com`) || Host(`www.steosMyadmin.stesistemas.com`)" # Troque pelo seu dominio ou subdominio
+      - "traefik.http.routers.steosMyadmin.entrypoints=websecure"
+      - "traefik.http.routers.steosMyadmin.tls.certresolver=le"
+      - "traefik.http.services.steosMyadmin.loadbalancer.server.port=80"
+      - "traefik.http.routers.steosMyadmin.tls=true"
     networks:
-      - steosdemo
+      - steos
 
-  steosdemo:
+  steos:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: steosdemo
+    container_name: steos
     depends_on:
-      - steosdemoMySql
+      - steosMySql
     restart: always
     command: >
-      /bin/sh -c "php index.php tools migrate && if [ -f dados_banco_steosdemo/dados_steosdemo.sql ]; then
+      /bin/sh -c "php index.php tools migrate && if [ -f dados_banco_steos/dados_steos.sql ]; then
         echo 'Iniciando importacao automatica dos dados...';
-        mysql -h steosdemoMySql -u steosdemo -psteosdemo --skip-ssl steosdemo -N -e \"SET FOREIGN_KEY_CHECKS=0; SELECT CONCAT('TRUNCATE TABLE ', table_name, ';') FROM information_schema.tables WHERE table_schema='steosdemo' AND table_name != 'migrations';\" > /tmp/truncate.sql &&
-        mysql -h steosdemoMySql -u steosdemo -psteosdemo --skip-ssl steosdemo -e \"SET FOREIGN_KEY_CHECKS=0; SOURCE /tmp/truncate.sql;\" &&
-        mysql -h steosdemoMySql -u steosdemo -psteosdemo --skip-ssl steosdemo < dados_banco_steosdemo/dados_steosdemo.sql &&
-        mv dados_banco_steosdemo/dados_steosdemo.sql dados_banco_steosdemo/dados_steosdemo.sql.imported &&
+        mysql -h steosMySql -u steos -psteos --skip-ssl steos -N -e \"SET FOREIGN_KEY_CHECKS=0; SELECT CONCAT('TRUNCATE TABLE ', table_name, ';') FROM information_schema.tables WHERE table_schema='steos' AND table_name != 'migrations';\" > /tmp/truncate.sql &&
+        mysql -h steosMySql -u steos -psteos --skip-ssl steos -e \"SET FOREIGN_KEY_CHECKS=0; SOURCE /tmp/truncate.sql;\" &&
+        mysql -h steosMySql -u steos -psteos --skip-ssl steos < dados_banco_steos/dados_steos.sql &&
+        mv dados_banco_steos/dados_steos.sql dados_banco_steos/dados_steos.sql.imported &&
         echo 'Importacao concluida com sucesso!';
       fi && apache2-foreground"
     ports:
@@ -67,32 +67,32 @@ services:
       # DESENVOLVIMENTO: mapeia código local diretamente
       - .:/var/www/html:cached # cached para melhor performance
       # PRODUÇÃO: volume separado para uploads se necessário
-      # - steosdemo_data:/var/www/html:cached # cached para melhor performance
+      # - steos_data:/var/www/html:cached # cached para melhor performance
     networks:
-      - steosdemo
+      - steos
     environment:
-      - MYSQL_HOST=steosdemoMySql
-      - MYSQL_USER=steosdemo
-      - MYSQL_PASSWORD=steosdemo
-      - MYSQL_DATABASE=steosdemo
+      - MYSQL_HOST=steosMySql
+      - MYSQL_USER=steos
+      - MYSQL_PASSWORD=steos
+      - MYSQL_DATABASE=steos
 
       - CI_ENVIRONMENT=development # Ativa o modo debug do CodeIgniter 4
       #- APP_BASEURL=http://localhost:8080/ # Adicione esta linha (opcional, mas recomendado para CI4)
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.steosdemo.rule=Host(`steosdemo.stesistemas.com`)"
-      - "traefik.http.routers.steosdemo.entrypoints=websecure"
-      - "traefik.http.routers.steosdemo.tls=true"
-      - "traefik.http.routers.steosdemo.tls.certresolver=le"
+      - "traefik.http.routers.steos.rule=Host(`steos.stesistemas.com`)"
+      - "traefik.http.routers.steos.entrypoints=websecure"
+      - "traefik.http.routers.steos.tls=true"
+      - "traefik.http.routers.steos.tls.certresolver=le"
 
       # INSTRUÇÃO PARA O TRAEFIK:
       # A imagem php:7.4-apache roda internamente na porta 80
-      - "traefik.http.services.steosdemo.loadbalancer.server.port=80"
+      - "traefik.http.services.steos.loadbalancer.server.port=80"
 
 networks:
-  steosdemo:
+  steos:
     external: true
     #driver: bridge
 volumes:
-  steosdemo_mysql_data:
-  steosdemo_data:
+  steos_mysql_data:
+  steos_data:
