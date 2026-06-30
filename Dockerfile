@@ -40,6 +40,10 @@ WORKDIR /var/www/html
 # 6. Copiar os arquivos do projeto
 COPY . /var/www/html/
 
+# 6.5 Instalar o Composer e as dependências do projeto (gera application/vendor)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install --no-dev --optimize-autoloader
+
 # 7. Dar permissão para o Apache na pasta do projeto e na pasta 'writable' (essencial para logs e cache do CI4)
 RUN chown -R www-data:www-data /var/www/html 
 
