@@ -36,7 +36,7 @@ services:
       - "9081:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.steosMyadmin.rule=Host(`steosMyadmin.stesistemas.com`) || Host(`www.steosMyadmin.stesistemas.com`)" # Troque pelo seu dominio ou subdominio
+      - "traefik.http.routers.steosMyadmin.rule=Host(`steosdemomyadmin.stesistemas.com`) || Host(`www.steosdemomyadmin.stesistemas.com`)" # Troque pelo seu dominio ou subdominio
       - "traefik.http.routers.steosMyadmin.entrypoints=websecure"
       - "traefik.http.routers.steosMyadmin.tls.certresolver=le"
       - "traefik.http.services.steosMyadmin.loadbalancer.server.port=80"
@@ -80,7 +80,7 @@ services:
       #- APP_BASEURL=http://localhost:8080/ # Adicione esta linha (opcional, mas recomendado para CI4)
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.steos.rule=Host(`steos.stesistemas.com`)"
+      - "traefik.http.routers.steos.rule=Host(`steosdemo.stesistemas.com`)"
       - "traefik.http.routers.steos.entrypoints=websecure"
       - "traefik.http.routers.steos.tls=true"
       - "traefik.http.routers.steos.tls.certresolver=le"
