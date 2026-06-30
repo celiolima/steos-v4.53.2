@@ -1,5 +1,5 @@
 # Dockerfile
-FROM php:8.2-apache
+FROM php:8.4-apache
 
 # Copiar seu php.ini
 COPY ./dockerUtils/php.ini /usr/local/etc/php/php.ini
