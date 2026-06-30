@@ -67,7 +67,7 @@ services:
       # DESENVOLVIMENTO: mapeia código local diretamente
       #- .:/var/www/html:cached # cached para melhor performance
       # PRODUÇÃO: volume separado para uploads se necessário
-      # - steos_data:/var/www/html:cached # cached para melhor performance
+      - steos_data:/var/www/html:cached # cached para melhor performance
     networks:
       - steos
     environment:
