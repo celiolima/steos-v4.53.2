@@ -38,7 +38,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.steosMyadmin.rule=Host(`steosdemomyadmin.stesistemas.com`) || Host(`www.steosdemomyadmin.stesistemas.com`)" # Troque pelo seu dominio ou subdominio
       - "traefik.http.routers.steosMyadmin.entrypoints=websecure"
-      - "traefik.http.routers.steosMyadmin.tls.certresolver=le"
+      - "traefik.http.routers.steosMyadmin.tls.certresolver=letsencrypt"
       - "traefik.http.services.steosMyadmin.loadbalancer.server.port=80"
       - "traefik.http.routers.steosMyadmin.tls=true"
     networks:
@@ -83,7 +83,7 @@ services:
       - "traefik.http.routers.steos.rule=Host(`steosdemo.stesistemas.com`)"
       - "traefik.http.routers.steos.entrypoints=websecure"
       - "traefik.http.routers.steos.tls=true"
-      - "traefik.http.routers.steos.tls.certresolver=le"
+      - "traefik.http.routers.steos.tls.certresolver=letsencrypt"
 
       # INSTRUÇÃO PARA O TRAEFIK:
       # A imagem php:7.4-apache roda internamente na porta 80
