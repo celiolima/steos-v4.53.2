@@ -1,0 +1,64 @@
+docker-compose up -d
+
+docker ps -a
+docker logs -f [id]
+docker images
+docker image prune -a
+
+docker volume create meu_volume	      Cria um novo volume.
+docker volume ls
+docker volume inspect meu_volume
+docker volume prune -a
+
+docker network create proxy 
+docker network ls
+docker network inspect minha-rede-bridge
+docker network rm minha-rede-bridge
+
+docker system prune
+
+1. O Método "Tudo em Um"
+
+    Se você quer parar e remover todos os containers (incluindo os que ainda estão rodando) com um único comando:
+    docker rm -f $(docker ps -aq)
+
+    # Verifique certificados
+    docker exec traefik cat /acme/acme.json | jq .
+
+    Verificações:
+    bash
+    # Verifique os logs
+    docker-compose logs -f portainer-ce
+
+    # Verifique certificados
+    docker exec traefik ls -la /acme/
+
+    # Teste o acesso
+    curl -I https://portainer.seu-dominio.com
+
+    # Verifique health check
+    docker-compose ps
+
+2.Para remover completamente:
+
+    bash
+    docker-compose down -v
+    docker volume rm portainer_data
+
+
+3.Git
+
+…or create a new repository on the command line
+echo "# stack" >> README.md
+git init
+git add README.md
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/celiolima/estacionamentoV1.git
+git push -u origin main
+
+…or push an existing repository from the command line
+git remote add origin https://github.com/celiolima/estacionamentoV1.git
+git branch -M main
+git push -u origin main
