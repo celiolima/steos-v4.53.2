@@ -1,3 +1,18 @@
+
+--subindo o projeto pelo terminal da vps
+
+cd /docker && rm -rf steos && git clone https://github.com/celiolima/steos-v4.53.2.git steos && cd steos && docker compose up -d --build
+
+-- atualizando o projeto
+
+cd /docker/steos && git pull origin main && docker compose up -d
+
+ou
+
+cd /docker/steos && git pull origin main && docker compose down -v && docker compose up -d --build    --> apaga volumes
+
+
+
 docker-compose up -d
 
 docker ps -a

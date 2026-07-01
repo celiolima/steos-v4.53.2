@@ -29,14 +29,14 @@ services:
       PMA_HOST: steosMySql
       PMA_USER: steos
       PMA_PASSWORD: steos
-      UPLOAD_LIMIT: 256M
+      UPLOAD_LIMIT: 512M
       MEMORY_LIMIT: 512M
       MAX_EXECUTION_TIME: 3600
     ports:
       - "9080:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.steosMyadmin.rule=Host(`steosdemomyadmin.stesistemas.com`) || Host(`www.steosdemomyadmin.stesistemas.com`)" # Troque pelo seu dominio ou subdominio
+      - "traefik.http.routers.steosMyadmin.rule=Host(`steosmyadmin.stesistemas.com`) || Host(`www.steosmyadmin.stesistemas.com`)" # Troque pelo seu dominio ou subdominio
       - "traefik.http.routers.steosMyadmin.entrypoints=websecure"
       - "traefik.http.routers.steosMyadmin.tls.certresolver=letsencrypt"
       - "traefik.http.services.steosMyadmin.loadbalancer.server.port=80"
@@ -56,8 +56,9 @@ services:
       /bin/sh -c "while ! mysql -h steosMySql -u steos -psteos --skip-ssl -e 'SELECT 1;' >/dev/null 2>&1; do echo 'Aguardando MySQL inicializar...'; sleep 3; done && if [ ! -d application/vendor/fakerphp/faker ]; then echo 'Faker/Autoload nao encontrado. Executando composer update...'; git config --global --add safe.directory /var/www/html 2>/dev/null; composer update; fi && php index.php tools migrate && if [ -f dados_banco_steos/dados_steos.sql ]; then
         echo 'Iniciando importacao automatica dos dados...';
         mysql -h steosMySql -u root -psteos --skip-ssl steos -N -e \"SET FOREIGN_KEY_CHECKS=0; SELECT CONCAT('TRUNCATE TABLE ', table_name, ';') FROM information_schema.tables WHERE table_schema='steos' AND table_name != 'migrations';\" > /tmp/truncate.sql &&
-        mysql -h steosMySql -u root -psteos --skip-ssl --init-command=\"SET SESSION FOREIGN_KEY_CHECKS=0;\" steos < /tmp/truncate.sql &&
-        mysql -h steosMySql -u root -psteos --skip-ssl --init-command=\"SET SESSION FOREIGN_KEY_CHECKS=0; SET SESSION sql_mode='';\" steos < dados_banco_steos/dados_steos.sql &&
+        mysql -h steosMySql -u root -psteos --skip-ssl --default-character-set=utf8mb4 --init-command=\"SET NAMES utf8mb4; SET SESSION FOREIGN_KEY_CHECKS=0;\" steos < /tmp/truncate.sql &&
+        mysql -h steosMySql -u root -psteos --skip-ssl --default-character-set=utf8mb4 --init-command=\"SET NAMES utf8mb4; SET SESSION FOREIGN_KEY_CHECKS=0; SET SESSION sql_mode='';\" steos < dados_banco_steos/dados_steos.sql &&
+        mysql -h steosMySql -u root -psteos --skip-ssl --default-character-set=utf8mb4 steos -e \"UPDATE os SET status = UNHEX('4E65676F636961C3A7C3A36F') WHERE HEX(status) LIKE '4E65676F636961%'; UPDATE os SET status = UNHEX('412053616972207C2041677561726420436F6E636C7573C3A36F') WHERE HEX(status) LIKE '412053616972207C20416775617264%'; UPDATE os SET status = UNHEX('4F72C3A7616D656E746F') WHERE HEX(status) LIKE '4F72%'; UPDATE os SET status = UNHEX('4D616E7574656EC3A7C3A36F2050726576656E74697661') WHERE HEX(status) LIKE '4D616E7574656E%'; UPDATE os SET status = UNHEX('416775617264616E646F205065C3A76173') WHERE HEX(status) LIKE '416775617264616E646F205065%';\" &&
         mv dados_banco_steos/dados_steos.sql dados_banco_steos/dados_steos.sql.imported &&
         echo 'Importacao concluida com sucesso!';
       fi && apache2-foreground"
@@ -67,7 +68,7 @@ services:
       # DESENVOLVIMENTO: mapeia código local diretamente
       #- .:/var/www/html:cached # cached para melhor performance
       # PRODUÇÃO: volume separado para uploads se necessário
-      - steos_data:/var/www/html:cached # cached para melhor performance
+      - steos_data:/var/www/html/assets:cached # cached para melhor performance
     networks:
       - steos
     environment:
@@ -85,7 +86,7 @@ services:
       #- APP_BASEURL=http://localhost:8080/ # Adicione esta linha (opcional, mas recomendado para CI4)
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.steos.rule=Host(`steosdemo.stesistemas.com`)"
+      - "traefik.http.routers.steos.rule=Host(`steos.stesistemas.com`)"
       - "traefik.http.routers.steos.entrypoints=websecure"
       - "traefik.http.routers.steos.tls=true"
       - "traefik.http.routers.steos.tls.certresolver=letsencrypt"

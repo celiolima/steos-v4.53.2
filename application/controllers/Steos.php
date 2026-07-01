@@ -668,6 +668,9 @@ class Steos extends MY_Controller
         $start = $this->input->get('start') ?: null;
         $end = $this->input->get('end') ?: null;
         $tecnicos = $this->input->get('tecnicos') ?: null;
+        if ($this->session->userdata('permissao') != '1' && $this->session->userdata('permissao') != '2') {
+            $tecnicos = $this->session->userdata('tecnico') ?: $this->session->userdata('nome_admin');
+        }
 
         $allOs = $this->steos_model->calendario(
             $start,
@@ -714,14 +717,16 @@ class Steos extends MY_Controller
             }
             return [
                 'title' => "OS: {$os->idOs}, Cliente: {$os->nomeCliente}",
-                'start' => date('Y-m-d\TH:i:s', strtotime($os->dataInicial)),
-                'end' => date('Y-m-d\TH:i:s', strtotime($os->dataFinal)),
-                'allDay' => false,
+                'start' => $os->dataFinal,
+                'end' => $os->dataFinal,
                 'color' => $cor,
                 'extendedProps' => [
                     'id' => $os->idOs,
                     'cliente' => '<b>Cliente:</b> ' . $os->nomeCliente,
-                    'endereco' => '<b>Edereço:</b> ' . $os->rua . ',' . $os->numero . '-' . $os->bairro . '<a target="_blank" title="abra o endereço no Navegador" class="button btn btn-mini btn-inverse" href=" https://www.google.com/maps/search/' . $os->rua . ',' . $os->numero . '-' . $os->bairro . '"><span class="button__icon"><i class="bx bx-map-alt"></i></span> <span class="button__text">Maps</span>',
+                    'endereco' => '<b>Endereço:</b> ' . trim($os->rua . ', ' . $os->numero . ' - ' . $os->bairro, ', - ') . '<div style="margin: 4px 0 6px 0;"><a target="_blank" title="Abra o endereço no Navegador" class="button btn btn-mini btn-inverse" href="https://www.google.com/maps/search/' . urlencode(trim($os->rua . ', ' . $os->numero . ' ' . $os->bairro)) . '" style="white-space: nowrap; display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 4px;"><span class="button__icon" style="margin-right: 5px;"><i class="bx bx-map-alt"></i></span> <span class="button__text2">Maps</span></a></div>',
+                    'contato' => !empty($os->contato) ? '<b>Contato:</b> ' . $os->contato : '',
+                    'telefone' => '<b>Telefone/Celular:</b> ' . trim($os->telefone . (!empty($os->celular) ? ' / ' . $os->celular : ''), ' /'),
+                    'tecnico' => !empty($os->tecnicos) ? '<b>Técnico(s):</b> ' . $os->tecnicos : '<b>Técnico:</b> Não atribuído',
                     'dataInicial' => '<b>Data Inicial:</b> ' . date('d/m/Y H:i:s', strtotime($os->dataInicial)),
                     'dataFinal' => '<b>Data Final:</b> ' . date('d/m/Y H:i:s', strtotime($os->dataFinal)),
                     'garantia' => '<b>Garantia:</b> ' . $os->garantia . ' dias',

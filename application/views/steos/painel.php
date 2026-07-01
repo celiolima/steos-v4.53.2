@@ -135,11 +135,12 @@
             </div>
             <div class="widget-content">
                 <table>
-                    <div id='source-calendar'>
-                        <form method="post">
-                            <select style="padding-left: 30px" class="span12" name="statusOsGet" id="statusOsGet" value="">
+                    <form method="post" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                        <select style="padding-left: 15px;" class="span5" name="statusOsGet" id="statusOsGet">
+                            <?php if ($this->session->userdata('permissao') == '1' || $this->session->userdata('permissao') == '2') { ?>
                                 <option value="">Todos os Status</option>
-                                <option value="Aberto">Aberto</option>
+                                <option value="A Sair | Aguard Conclusão" selected>A Sair | Aguard Conclusão</option>
+                                <option value="Manutenção Preventiva">Manutenção Preventiva</option>
                                 <option value="Faturado">Faturado</option>
                                 <option value="Negociação">Negociação</option>
                                 <option value="Orçamento">Orçamento</option>
@@ -148,10 +149,31 @@
                                 <option value="Cancelado">Cancelado</option>
                                 <option value="Aguardando Peças">Aguardando Peças</option>
                                 <option value="Aprovado">Aprovado</option>
-                            </select>
-                            <button type="button" class="btn-xs" id="btn-calendar"><i class="bx bx-search iconX2"></i></button>
-                        </form>
-                    </div>
+                            <?php } else { ?>
+                                <option value="">Todos os Status</option>
+                                <option value="A Sair | Aguard Conclusão" selected>A Sair | Aguard Conclusão</option>
+                                <option value="Manutenção Preventiva">Manutenção Preventiva</option>
+                                <option value="Em Andamento">Em Andamento</option>
+                                <option value="Finalizado">Finalizado</option>
+                                <option value="Aprovado">Aprovado</option>
+                            <?php } ?>
+                        </select>
+                        <select style="padding-left: 15px;" name="tecnicosGet" id="tecnicosGet" class="span5">
+                            <?php if ($this->session->userdata('permissao') == '1' || $this->session->userdata('permissao') == '2') { ?>
+                                <option value="">Todos técnicos</option>
+                                <?php foreach ($tecnicos as $tecnico) {
+                                    echo '<option value="' . $tecnico->nome . '">' . $tecnico->nome . '</option>';
+                                } ?>
+                            <?php } else { ?>
+                                <option selected value="<?= $this->session->userdata('tecnico') ?: $this->session->userdata('nome_admin') ?>"><?= $this->session->userdata('tecnico') ?: $this->session->userdata('nome_admin') ?></option>
+                            <?php } ?>
+                        </select>
+                        <button type="button" class="button btn btn-mini btn-warning" id="btn-calendar" style="display: inline-flex; align-items: center; gap: 5px;">
+                            <span class="button__icon"><i class='bx bx-search-alt'></i></span>
+                            <span class="button__text2">Pesquisar</span>
+                        </button>
+                    </form>
+                    <div id='source-calendar'></div>
                 </table>
             </div>
         </div>
@@ -1139,7 +1161,11 @@
     <div class="modal-body">
         <div class="span5" id="divFormStatusOS" style="margin-left: 0"></div>
         <h4><b>OS:</b> <span id="modalId" class="modal-id"></span></h4>
-        <h5 id="modalCliente" class="modal-cliente"></h5>
+        <h5 id="modalCliente" class="modal-cliente" style="margin-bottom: 4px;"></h5>
+        <div id="modalEndereco" class="modal-Endereco"></div>
+        <div id="modalContato" class="modal-Contato"></div>
+        <div id="modalTelefone" class="modal-Telefone"></div>
+        <div id="modalTecnico" class="modal-Tecnico" style="margin-bottom: 10px;"></div>
         <div id="modalDataInicial" class="modal-DataInicial"></div>
         <div id="modalDataFinal" class="modal-DataFinal"></div>
         <div id="modalGarantia" class="modal-Garantia"></div>
@@ -1279,6 +1305,7 @@ if ($this->permission->checkPermission($this->session->userdata('permissao'), 'd
                 extraParams: function() { // a function that returns an object
                     return {
                         status: $("#statusOsGet").val(),
+                        tecnicos: $("#tecnicosGet").val(),
                     };
                 },
                 failure: function() {
@@ -1299,6 +1326,10 @@ if ($this->permission->checkPermission($this->session->userdata('permissao'), 'd
                     $('#linkExcluir').hide();
                 }
                 $('#modalCliente').html(eventObj.cliente);
+                $('#modalEndereco').html(eventObj.endereco);
+                $('#modalContato').html(eventObj.contato);
+                $('#modalTelefone').html(eventObj.telefone);
+                $('#modalTecnico').html(eventObj.tecnico);
                 $('#modalDataInicial').html(eventObj.dataInicial);
                 $('#modalDataFinal').html(eventObj.dataFinal);
                 $('#modalGarantia').html(eventObj.garantia);
@@ -1381,7 +1412,12 @@ if ($this->permission->checkPermission($this->session->userdata('permissao'), 'd
 
         srcCalendar.render();
 
-        $('#btn-calendar').on('click', function() {
+        $('#btn-calendar').on('click', function(e) {
+            e.preventDefault();
+            srcCalendar.refetchEvents();
+        });
+
+        $('#statusOsGet, #tecnicosGet').on('change', function() {
             srcCalendar.refetchEvents();
         });
     });

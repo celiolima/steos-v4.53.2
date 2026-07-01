@@ -151,7 +151,8 @@ class Steos_model extends CI_Model
     {
         $this->db->select(
             'os.*,
-            clientes.nomeCliente,  clientes.rua,  clientes.numero,  clientes.bairro,
+            clientes.nomeCliente, clientes.rua, clientes.numero, clientes.bairro, clientes.contato, clientes.telefone, clientes.celular,
+            COALESCE((SELECT GROUP_CONCAT(DISTINCT t.tecnicoName SEPARATOR \', \') FROM tecnicos_os t WHERE t.os_id = os.idOs), \'\') AS tecnicos,
             COALESCE((SELECT SUM(produtos_os.preco * produtos_os.quantidade ) FROM produtos_os WHERE produtos_os.os_id = os.idOs), 0) totalProdutos,
             COALESCE((SELECT SUM(servicos_os.preco * servicos_os.quantidade ) FROM servicos_os WHERE servicos_os.os_id = os.idOs), 0) totalServicos'
         );
