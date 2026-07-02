@@ -1350,6 +1350,13 @@ if ($this->permission->checkPermission($this->session->userdata('permissao'), 'd
             eventResize: function(info) {
                 salvarNovaDataEvento(info);
             },
+            eventDidMount: function(info) {
+                var props = info.event.extendedProps;
+                if (props && props.manutPreventiva && props.status && props.status.indexOf('A Sair | Aguard Conclusão') !== -1) {
+                    info.el.style.backgroundColor = '#AEB404';
+                    info.el.style.borderColor = '#AEB404';
+                }
+            },
         });
 
         function salvarNovaDataEvento(info) {

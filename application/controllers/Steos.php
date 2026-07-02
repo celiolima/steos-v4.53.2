@@ -682,7 +682,7 @@ class Steos extends MY_Controller
         $events = array_map(function ($os) {
             switch ($os->status) {
                 case 'A Sair | Aguard Conclusão':
-                    $cor = '#00cd00';
+                    $cor = (!empty($os->manutPreventiva) && $os->manutPreventiva == 1) ? '#AEB404' : '#00cd00';
                     break;
                 case 'Manutenção Preventiva':
                     $cor = '#AEB404';
@@ -731,6 +731,7 @@ class Steos extends MY_Controller
                     'dataFinal' => '<b>Data Final:</b> ' . date('d/m/Y H:i:s', strtotime($os->dataFinal)),
                     'garantia' => '<b>Garantia:</b> ' . $os->garantia . ' dias',
                     'status' => '<b>Status da OS:</b> ' . $os->status,
+                    'manutPreventiva' => (!empty($os->manutPreventiva) && $os->manutPreventiva == 1),
                     'description' => '<b>Descrição/Produto:</b> ' . strip_tags(html_entity_decode($os->descricaoProduto)),
                     'defeito' => '<b>Defeito:</b> ' . strip_tags(html_entity_decode($os->defeito)),
                     'observacoes' => '<b>Observações:</b> ' . strip_tags(html_entity_decode($os->observacoes)),
