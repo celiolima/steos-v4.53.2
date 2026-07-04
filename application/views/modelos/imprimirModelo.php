@@ -88,7 +88,7 @@
                                                 <<<< /td>
                                         </tr> <?php
                                             } else { ?> <tr>
-                                            <td style="width: 25%"><img src=" <?php echo $emitente->url_logo; ?> "></td>
+                                            <td style="width: 25%"><img src="<?php echo base_url('assets/uploads/' . basename($emitente->url_logo)); ?>" style="max-height: 100px"></td>
                                             <td> <span style="font-size: 20px; ">
                                                     <?php echo $emitente->nome; ?></span> <br />
                                                 <span>

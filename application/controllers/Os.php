@@ -434,7 +434,7 @@ class Os extends MY_Controller
                     ];
 
                     $dataOs = $this->os_model->getById($this->input->post('idOs'));
-                    if ((int)$dataOs->produtos_subTotal == 0 || (int)$dataOs->servicos_subTotal == 0) {
+                    if ((int)$dataOs->produtos_subTotal == 0 && (int)$dataOs->servicos_subTotal == 0) {
                         $data2 = [
                             'signature' => 1,
                             'status' => 'Finalizado'

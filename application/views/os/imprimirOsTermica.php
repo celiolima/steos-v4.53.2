@@ -90,7 +90,7 @@ $totalProdutos = 0; ?>
                                             <td colspan="5" class="alert">Você precisa configurar os dados do emitente. >>><a href="<?php echo base_url(); ?>index.php/steos/emitente">Configurar</a>
                                                 <<<< /td>
                                         </tr> <?php } else { ?>
-                                        <td style="width: 25% ;text-align: center"><img src="<?php echo $emitente->url_logo; ?>" style="max-height: 100px"></td>
+                                        <td style="width: 25% ;text-align: center"><img src="<?php echo base_url('assets/uploads/' . basename($emitente->url_logo)); ?>" style="max-height: 100px"></td>
                                         <tr>
                                             <td colspan="5" style="text-align: center; font-size: 11px;">
                                                 <span style="font-size: 12px; text-transform: uppercase"><b><?php echo $emitente->nome; ?></b></br></span>
@@ -388,7 +388,7 @@ $totalProdutos = 0; ?>
                                                     <<<< /td>
                                             </tr>
                                         <?php } else { ?>
-                                            <td style="width: 25% ;text-align: center"><img src="<?php echo $emitente->url_logo; ?>" style="max-height: 100px"></td>
+                                             <td style="width: 25% ;text-align: center"><img src="<?php echo base_url('assets/uploads/' . basename($emitente->url_logo)); ?>" style="max-height: 100px"></td>
                                             <tr>
                                                 <td colspan="5" style="text-align: center; font-size: 11px;">
                                                     <span style="font-size: 12px; text-transform: uppercase"><b><?php echo $emitente->nome; ?></b></br></span>

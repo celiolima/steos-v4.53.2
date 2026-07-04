@@ -64,7 +64,7 @@
                                             <<< </td>
                                     </tr> <?php } else { ?>
                                     <tr>
-                                        <td style="width: 25%"><img src=" <?php echo $emitente->url_logo; ?> " style="max-height: 100px"></td>
+                                        <td style="width: 25%"><img src="<?php echo base_url('assets/uploads/' . basename($emitente->url_logo)); ?>" style="max-height: 100px"></td>
                                         <td style="width: 50%">
                                             <span style="font-size: 20px;"><?php echo $emitente->nome; ?></span></br>
                                             <?php if ($emitente->cnpj != "00.000.000/0000-00") { ?><span class="icon"><i class="fas fa-fingerprint" style="margin:5px 1px"></i> <?php echo $emitente->cnpj; ?></span></br><?php } ?>

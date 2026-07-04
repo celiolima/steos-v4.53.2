@@ -55,7 +55,7 @@
                                                     </tr>
                                                 <?php } else { ?>
                                                     <tr>
-                                                        <td style="width: 25%"><img src=" <?php echo $emitente[0]->url_logo; ?> "></td>
+                                                        <td style="width: 25%"><img src="<?php echo base_url('assets/uploads/' . basename($emitente[0]->url_logo)); ?>" style="max-height: 100px"></td>
                                                         <td><span style="font-size: 20px; "> <?php echo $emitente[0]->nome; ?></span> </br>
                                                             <span><?php echo $emitente[0]->cnpj; ?> </br> <?php echo $emitente[0]->rua . ', nº:' . $emitente[0]->numero . ', ' . $emitente[0]->bairro . ' - ' . $emitente[0]->cidade . ' - ' . $emitente[0]->uf; ?> </span> </br>
                                                             <span> E-mail: <?php echo $emitente[0]->email . ' - Fone: ' . $emitente[0]->telefone; ?></span>

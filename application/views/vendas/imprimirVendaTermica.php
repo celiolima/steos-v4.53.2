@@ -32,7 +32,7 @@
                                     <tr>
                                         <td colspan="5" class="alert">Você precisa configurar os dados do emitente. >>><a href="<?php echo base_url(); ?>index.php/steos/emitente">Configurar</a>
                                             <<<</td> </tr> <?php } else { ?> 
-                                    <td style="width: 25%; text-align: center;"><img src="<?php echo $emitente->url_logo; ?>" style="max-height: 100px"></td>
+                                    <td style="width: 25%; text-align: center;"><img src="<?php echo base_url('assets/uploads/' . basename($emitente->url_logo)); ?>" style="max-height: 100px"></td>
                                     <tr>
                                         <td colspan="4" style="text-align: center;"> <span style="font-size: 20px;">
                                                 <b><?php echo $emitente->nome; ?></b></span> </br><span>

@@ -26,7 +26,7 @@
                                         <td colspan="3" class="alert">Você precisa configurar os dados do emitente. >>><a href="<?php echo base_url(); ?>index.php/steos/emitente">Configurar</a>
                                             <<<</td> </tr> <?php
                                 } else { ?> <tr>
-                                        <td style="width: 25%"><img src=" <?php echo $emitente->url_logo; ?> "></td>
+                                        <td style="width: 25%"><img src="<?php echo base_url('assets/uploads/' . basename($emitente->url_logo)); ?>" style="max-height: 100px"></td>
                                         <td> <span style="font-size: 20px; ">
                                                 <?php echo $emitente->nome; ?></span> </br><span>
                                                 <?php echo $emitente->cnpj; ?> </br>
