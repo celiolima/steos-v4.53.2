@@ -104,6 +104,7 @@
                         <div class="tab-pane" id="tab2">
 
                             <div class="span12" id="divProdutos" style="margin-left: 0">
+                                <div class="table-responsive">
                                 <table class="table table-bordered" id="tblProdutos">
                                     <thead>
                                         <tr>
@@ -133,6 +134,7 @@ foreach ($produtos as $p) {
                                         </tr>
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
 
                         </div>
@@ -142,6 +144,7 @@ foreach ($produtos as $p) {
                             <div class="span12" style="padding: 1%; margin-left: 0">
 
                                 <div class="span12" id="divServicos" style="margin-left: 0">
+                                    <div class="table-responsive">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
@@ -171,6 +174,7 @@ foreach ($servicos as $s) {
                                             </tr>
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
 
                             </div>
@@ -225,9 +229,6 @@ foreach ($servicos as $s) {
                     </div>
 
                 </div>
-
-
-                .
 
             </div>
 

@@ -21,6 +21,117 @@
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/funcoesGlobal.js"></script>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/csrf.js"></script>
+    <style>
+        /* Ajustes de Responsividade e Visão Mobile - Conecte */
+        @media (max-width: 767px) {
+            .widget-content, .table-responsive {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                width: 100% !important;
+            }
+            .table {
+                width: 100% !important;
+                max-width: none !important;
+            }
+            /* Em tabelas comuns de listagem (não faturas/relatórios), evitar quebra de linha em datas/valores */
+            .table:not(.invoice-head table):not(.invoice-content table) th, 
+            .table:not(.invoice-head table):not(.invoice-content table) td {
+                white-space: nowrap !important;
+                vertical-align: middle !important;
+            }
+            /* Colunas longas (Observações e Responsável) com quebra de linha normal nas listagens */
+            .table:not(.invoice-head table):not(.invoice-content table) td:nth-child(6), 
+            .table:not(.invoice-head table):not(.invoice-content table) td:nth-child(2) {
+                white-space: normal !important;
+                min-width: 180px;
+            }
+            /* =========================================================
+               AJUSTES PARA TELAS DE VISUALIZAÇÃO E RELATÓRIOS (OS / Vendas)
+               ========================================================= */
+            /* Permitir quebra normal de texto e palavras nas faturas e visualizações */
+            .invoice-content table, .invoice-content table th, .invoice-content table td,
+            .invoice-head table, .invoice-head table th, .invoice-head table td {
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+            }
+            /* Cabeçalho da OS/Venda (Logo | Emitente | Nº OS): empilhar verticalmente em cards limpos */
+            .invoice-head table, .invoice-head tbody, .invoice-head tr, .invoice-head td {
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+                box-sizing: border-box !important;
+            }
+            .invoice-head td {
+                padding: 8px 0 !important;
+            }
+            .invoice-head td img {
+                margin: 0 auto !important;
+                max-height: 80px !important;
+            }
+            .invoice-head td:nth-child(2) {
+                border-top: 1px dashed #ccc !important;
+                border-bottom: 1px dashed #ccc !important;
+                margin: 10px 0 !important;
+                padding: 12px 5px !important;
+            }
+            /* Tabelas de Status, Datas, Descrições e Equipamentos: transformar em blocos/cards responsivos */
+            .invoice-content .table-condensed, .invoice-content .table-condensed tbody,
+            .invoice-content .table-condensed tr, .invoice-content .table-condensed td,
+            .invoice-content .table-bordered:not(#tblProdutos):not(#tabela):not(.tbl-produtos):not(.tbl-servicos) td,
+            .invoice-content .table-bordered:not(#tblProdutos):not(#tabela):not(.tbl-produtos):not(.tbl-servicos) th {
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                text-align: left !important;
+            }
+            .invoice-content .table-condensed td,
+            .invoice-content .table-bordered:not(#tblProdutos):not(#tabela):not(.tbl-produtos):not(.tbl-servicos) td {
+                padding: 8px 10px !important;
+                border-top: none !important;
+                border-bottom: 1px solid #eee !important;
+            }
+            .invoice-content .table-condensed tr,
+            .invoice-content .table-bordered:not(#tblProdutos):not(#tabela):not(.tbl-produtos):not(.tbl-servicos) tr {
+                border: 1px solid #ddd !important;
+                margin-bottom: 12px !important;
+                border-radius: 6px !important;
+                background: #fafafa !important;
+            }
+            /* Tabelas financeiras de Produtos e Serviços: manter estrutura de colunas com scroll horizontal */
+            #tblProdutos, .tbl-produtos, .tbl-servicos {
+                display: table !important;
+                width: 100% !important;
+            }
+            #tblProdutos th, #tblProdutos td, .tbl-produtos th, .tbl-produtos td, .tbl-servicos th, .tbl-servicos td {
+                display: table-cell !important;
+                white-space: nowrap !important;
+            }
+            /* Formulários de busca e filtros no mobile */
+            form[method="get"] .span3, form[method="get"] .span4, form[method="get"] .span2,
+            .form-pesquisa-os .span3, .form-pesquisa-os .span4, .form-pesquisa-os .span2 {
+                margin-left: 0 !important;
+                margin-bottom: 8px !important;
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+            form[method="get"] input, form[method="get"] select, form[method="get"] button, form[method="get"] a.button {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 5px !important;
+                box-sizing: border-box;
+            }
+            form[method="get"] .span4 input.datepicker {
+                width: 48% !important;
+                display: inline-block !important;
+            }
+            /* Ajuste dos botões de ação na tabela no mobile */
+            .table td a.btn, .table td a.btn-nwe, .table td a.btn-nwe3, .table td a.btn-nwe4 {
+                display: inline-block;
+                margin-bottom: 3px;
+            }
+        }
+    </style>
 </head>
 
 <body>

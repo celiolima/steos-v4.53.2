@@ -137,6 +137,22 @@ class Os_model extends CI_Model
             }
             $this->db->where('os.dataInicial <=', $ate);
         }
+
+        // 12. Período de Conclusão/Fechamento (Data Final da OS)
+        if (!empty($where['data_fech_de'])) {
+            $fDe = $where['data_fech_de'];
+            if (strpos($fDe, ':') === false) {
+                $fDe .= ' 00:00:00';
+            }
+            $this->db->where('os.dataFinal >=', $fDe);
+        }
+        if (!empty($where['data_fech_ate'])) {
+            $fAte = $where['data_fech_ate'];
+            if (strpos($fAte, ':') === false) {
+                $fAte .= ' 23:59:59';
+            }
+            $this->db->where('os.dataFinal <=', $fAte);
+        }
     }
 
     // ─── GET OS (STEOS DOMINANTE) ─────────────────────────────
@@ -515,7 +531,7 @@ class Os_model extends CI_Model
     // ─── UTILIDADES ──────────────────────────────────────────
     public function criarTextoWhats($textoBase, $troca)
     {
-        $procura   = ['{CLIENTE_NOME}', '{NUMERO_OS}', '{STATUS_OS}', '{VALOR_OS}', '{DESCRI_PRODUTOS}', '{EMITENTE}', '{TELEFONE_EMITENTE}', '{OBS_OS}', '{DEFEITO_OS}', '{LAUDO_OS}', '{DATA_FINAL}', '{DATA_INICIAL}', '{DATA_GARANTIA}'];
+        $procura   = ['{CLIENTE_NOME}', '{NUMERO_OS}', '{STATUS_OS}', '{VALOR_OS}', '{DESCRI_PRODUTOS}', '{EMITENTE}', '{TELEFONE_EMITENTE}', '{OBS_OS}', '{DEFEITO_OS}', '{LAUDO_OS}', '{DATA_FINAL}', '{DATA_INICIAL}', '{DATA_GARANTIA}', '{CLIENTE_EMAIL}', '{EMAIL_CLIENTE}', '{APP_URL}', '{URL_SISTEMA}', '{URL_APP}'];
         $textoBase = str_replace($procura, $troca, $textoBase);
         $textoBase = strip_tags($textoBase);
         $textoBase = htmlentities(urlencode($textoBase));

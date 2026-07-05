@@ -38,6 +38,15 @@ $totalProdutos = 0;
                         <span style="font-weight: bold;">Tel: <?= $emitente->telefone ?></span></br>
                         <span style="font-weight: bold;"><?= $emitente->email ?></span></br>
                         <span style="word-break: break-word;">Responsável: <b><?= $result->nome ?></b></span>
+                        <?php if (!empty($tecnicos_os)) : ?>
+                            </br><span style="word-break: break-word;">Técnico(s): <b><?php
+                                $tecNomes = [];
+                                foreach ($tecnicos_os as $tecnico) {
+                                    $tecNomes[] = $tecnico->nome;
+                                }
+                                echo implode(', ', $tecNomes);
+                            ?></b></span>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </header>
@@ -114,6 +123,15 @@ $totalProdutos = 0;
                     </div>
                 <?php endif; ?>
 
+                <?php if ($result->defeito_encontrado) : ?>
+                    <div class="subtitle">DEFEITO ENCONTRADO</div>
+                    <div class="dados">
+                        <div>
+                            <?= printSafeHtml($result->defeito_encontrado) ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($result->observacoes) : ?>
                     <div class="subtitle">OBSERVAÇÕES</div>
                     <div class="dados">
@@ -129,6 +147,74 @@ $totalProdutos = 0;
                         <div>
                             <?= printSafeHtml($result->laudoTecnico) ?>
                         </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($result->garantias_id != null) : ?>
+                    <div class="subtitle">TERMO DE GARANTIA</div>
+                    <div class="dados">
+                        <div>
+                            <?= printSafeHtml($result->textoGarantia) ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($equipamentos != null) : ?>
+                    <div class="subtitle">EQUIPAMENTOS</div>
+                    <div class="tabela">
+                        <?php foreach ($equipamentos as $equipamento) : ?>
+                            <table class="table table-bordered mb-3">
+                                <thead>
+                                    <tr class="table-secondary">
+                                        <th colspan="2"><?= $equipamento->equipamento ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><b>Número de Série:</b> <?= $equipamento->serie ?></td>
+                                        <td><b>Modelo:</b> <?= $equipamento->modelo ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Cor:</b> <?= $equipamento->cor ?></td>
+                                        <td><b>Descrição:</b> <?= $equipamento->descricao ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Potência:</b> <?= $equipamento->potecia ?></td>
+                                        <td><b>Voltagem:</b> <?= $equipamento->voltagem ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Marca:</b> <?= $equipamento->marca ?></td>
+                                        <td><b>Local:</b> <?= $equipamento->local ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Defeito Reclamado:</b><br/> <?= $equipamento->defeito_declarado ?></td>
+                                        <td><b>Defeito Encontrado:</b><br/> <?= $equipamento->defeito_encontrado ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($anotacoes)) : ?>
+                    <div class="subtitle">ANOTAÇÕES</div>
+                    <div class="tabela">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr class="table-secondary">
+                                    <th>Anotação</th>
+                                    <th>Data/Hora</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($anotacoes as $a) : ?>
+                                    <tr>
+                                        <td><?= $a->anotacao ?></td>
+                                        <td><?= date('d/m/Y H:i:s', strtotime($a->data_hora)) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 <?php endif; ?>
 
@@ -244,6 +330,44 @@ $totalProdutos = 0;
                         </div>
                     </div>
                 <?php endif; ?>
+
+                <?php $tipoModelo = "avista";
+                if (!empty($modelos)) :
+                    foreach ($modelos as $modelo) :
+                        if ($result->status == "Negociação") :
+                            if ($tipoModelo == "avista" && $modelo->refModelo == "VENDA AVISTA") :
+                                echo '<div class="subtitle">' . $modelo->refModelo . '</div><div class="dados"><div>' . htmlspecialchars_decode($modelo->textoModelo) . '</div></div>';
+                            endif;
+                            if ($tipoModelo == "prazo" && $modelo->refModelo == "VENDA A PRAZO") :
+                                echo '<div class="subtitle">' . $modelo->refModelo . '</div><div class="dados"><div>' . htmlspecialchars_decode($modelo->textoModelo) . '</div></div>';
+                            endif;
+                        endif;
+                        if ($result->status == "A Sair | Aguard Conclusão" && $modelo->refModelo == "CHECKLIST") :
+                            echo '<div class="subtitle">' . $modelo->refModelo . '</div><div class="dados"><div>' . htmlspecialchars_decode($modelo->textoModelo) . '</div></div>';
+                        endif;
+                    endforeach;
+                endif; ?>
+
+                <?php if ($result->status == "Finalizado" && !empty($assinatura)) : ?>
+                    <div class="subtitle">ASSINATURA DIGITAL</div>
+                    <div class="tabela">
+                        <table class="table table-bordered text-center">
+                            <tbody>
+                                <tr>
+                                    <td width="20%"><b>Documento</b><br/>
+                                        <?= $assinatura->doc ?>
+                                    </td>
+                                    <td width="40%"><b>Assinatura do Cliente</b><br/>
+                                        <img src="<?= $assinatura->assinatura ?>" style="max-height: 80px; max-width: 80%;">
+                                    </td>
+                                    <td width="40%"><b>Nome</b><br/>
+                                        <?= $assinatura->nameAssinatura ?>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </section>
             <footer>
                 <div class="detalhes">
@@ -257,3 +381,9 @@ $totalProdutos = 0;
                 </div>
             </footer>
         </div>
+    </div>
+    <script type="text/javascript">
+        window.print();
+    </script>
+</body>
+</html>

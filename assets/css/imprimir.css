@@ -232,6 +232,90 @@ footer .vendedor {
     margin: 0.5cm;
 }
 
+/* Ajustes de Responsividade para Visualização em Tela de Dispositivos Móveis */
+@media screen and (max-width: 767px) {
+    body {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 8px !important;
+        box-sizing: border-box !important;
+        background: #f8f9fa !important;
+    }
+    .main-page {
+        width: 100% !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 12px !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    header {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        padding: 15px 10px !important;
+    }
+    header .emitente {
+        padding: 12px 0 !important;
+        text-align: center !important;
+        border-top: 1px dashed #ccc !important;
+        border-bottom: 1px dashed #ccc !important;
+        margin: 10px 0 !important;
+        width: 100% !important;
+    }
+    header .contatoEmitente {
+        text-align: center !important;
+        max-width: 100% !important;
+        margin-top: 8px !important;
+        width: 100% !important;
+    }
+    section .title {
+        flex-direction: column !important;
+        padding: 10px !important;
+        height: auto !important;
+        text-align: center !important;
+    }
+    section .title .emissao {
+        position: static !important;
+        margin-top: 6px !important;
+        display: block !important;
+        font-size: 13px !important;
+    }
+    section .dados {
+        flex-direction: column !important;
+        word-wrap: break-word !important;
+    }
+    section .pagamento {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    section .pagamento .table {
+        width: 100% !important;
+        margin-top: 15px !important;
+    }
+    .tabela, .table-responsive {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+    }
+    .table th, .table td {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
+    footer .detalhes {
+        flex-direction: column !important;
+    }
+    footer .assinaturas, footer .vendedor {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    footer .assinaturas span, footer .vendedor span {
+        width: 90% !important;
+        margin-top: 40px !important;
+    }
+}
+
 @media print {
     html, body {
         width: 210mm;

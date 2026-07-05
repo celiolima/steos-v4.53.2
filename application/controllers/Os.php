@@ -38,6 +38,8 @@ class Os extends MY_Controller
         $vendedor = $this->input->get('vendedor');
         $inputDe = $this->input->get('data');
         $inputAte = $this->input->get('data2');
+        $inputFechDe = $this->input->get('data_fech_de');
+        $inputFechAte = $this->input->get('data_fech_ate');
         $afaturar = $this->input->get('afaturar');
         $manPrevnt = $this->input->get('manPrevnt');
 
@@ -61,14 +63,26 @@ class Os extends MY_Controller
                 $where_array['ate'] = $ateArr[2] . '-' . $ateArr[1] . '-' . $ateArr[0];
             }
         }
+        if ($inputFechDe) {
+            $fechDeArr = explode('/', $inputFechDe);
+            if (count($fechDeArr) == 3) {
+                $where_array['data_fech_de'] = $fechDeArr[2] . '-' . $fechDeArr[1] . '-' . $fechDeArr[0];
+            }
+        }
+        if ($inputFechAte) {
+            $fechAteArr = explode('/', $inputFechAte);
+            if (count($fechAteArr) == 3) {
+                $where_array['data_fech_ate'] = $fechAteArr[2] . '-' . $fechAteArr[1] . '-' . $fechAteArr[0];
+            }
+        }
         if ($afaturar == "1") { $where_array['afaturar'] = 1; }
         if ($manPrevnt == "1") { $where_array['manPrevnt'] = 1; }
 
         $this->data['configuration']['base_url'] = site_url('os/gerenciar/');
         $this->data['configuration']['total_rows'] = $this->os_model->count('os', $where_array);
         if (count($where_array) > 0) {
-            $this->data['configuration']['suffix'] = "?pesquisa={$pesquisa}&status={$status}&data={$inputDe}&data2={$inputAte}&os={$os}&tecnico={$tecnico}&local={$local}&observacao={$observacao}&tipo={$tipo}&vendedor={$vendedor}&afaturar={$afaturar}&manPrevnt={$manPrevnt}";
-            $this->data['configuration']['first_url'] = base_url("index.php/os/gerenciar")."\?pesquisa={$pesquisa}&status={$status}&data={$inputDe}&data2={$inputAte}&os={$os}&tecnico={$tecnico}&local={$local}&observacao={$observacao}&tipo={$tipo}&vendedor={$vendedor}&afaturar={$afaturar}&manPrevnt={$manPrevnt}";
+            $this->data['configuration']['suffix'] = "?pesquisa={$pesquisa}&status={$status}&data={$inputDe}&data2={$inputAte}&data_fech_de={$inputFechDe}&data_fech_ate={$inputFechAte}&os={$os}&tecnico={$tecnico}&local={$local}&observacao={$observacao}&tipo={$tipo}&vendedor={$vendedor}&afaturar={$afaturar}&manPrevnt={$manPrevnt}";
+            $this->data['configuration']['first_url'] = base_url("index.php/os/gerenciar")."\?pesquisa={$pesquisa}&status={$status}&data={$inputDe}&data2={$inputAte}&data_fech_de={$inputFechDe}&data_fech_ate={$inputFechAte}&os={$os}&tecnico={$tecnico}&local={$local}&observacao={$observacao}&tipo={$tipo}&vendedor={$vendedor}&afaturar={$afaturar}&manPrevnt={$manPrevnt}";
         }
 
         $this->pagination->initialize($this->data['configuration']);
@@ -434,20 +448,23 @@ class Os extends MY_Controller
                     ];
 
                     $dataOs = $this->os_model->getById($this->input->post('idOs'));
+                    $dataHoraFechamento = date('Y-m-d H:i:s');
                     if ((int)$dataOs->produtos_subTotal == 0 && (int)$dataOs->servicos_subTotal == 0) {
                         $data2 = [
                             'signature' => 1,
                             'status' => 'Finalizado'
                         ];
-                        $this->os_model->edit('os', $data2, 'idOs', $this->input->post('idOs'));
                     } else {
                         $data2 = [
                             'signature' => 1,
                             'afaturar' => 1,
                             'status' => 'Finalizado'
                         ];
-                        $this->os_model->edit('os', $data2, 'idOs', $this->input->post('idOs'));
                     }
+                    if ($dataOs->dataFinal != $dataHoraFechamento) {
+                        $data2['dataFinal'] = $dataHoraFechamento;
+                    }
+                    $this->os_model->edit('os', $data2, 'idOs', $this->input->post('idOs'));
 
                     $idRetornado = $this->os_model->add('assinatura', $dataAssinatura, true);
                     $instert = $this->os_model->getByIdAssinatura($idRetornado);
@@ -717,6 +734,7 @@ class Os extends MY_Controller
         $this->data['modelos'] = $this->modelos_model->getAll();
 
         $this->data['result'] = $this->os_model->getById($this->uri->segment(3));
+        $this->data['assinatura'] = $this->os_model->getByIdAssinaturaExtr($this->uri->segment(3));
         $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
         $this->data['emitente'] = $this->steos_model->getEmitente();
@@ -869,6 +887,7 @@ class Os extends MY_Controller
         $this->data['modelos'] = $this->modelos_model->getAll();
 
         $this->data['result'] = $this->os_model->getById($this->uri->segment(3));
+        $this->data['assinatura'] = $this->os_model->getByIdAssinaturaExtr($this->uri->segment(3));
         $this->data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $this->data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
         $this->data['anexos'] = $this->os_model->getAnexos($this->uri->segment(3));
@@ -1199,7 +1218,7 @@ class Os extends MY_Controller
         $documento = $this->input->post('documento');
         $cpf_cnpj = preg_replace('/[^\p{L}\p{N}\s]/', '', $documento);
         $pessoa_fisica = (strlen($cpf_cnpj) == 11);
-        $senhaCliente = $this->input->post('senha') ? $this->input->post('senha') : ($cpf_cnpj ? $cpf_cnpj : '123456');
+        $senhaCliente = $this->input->post('senha') ? $this->input->post('senha') : 'steas@123';
 
         $data = [
             'nomeCliente'   => $nomeCliente,

@@ -22,6 +22,7 @@ class Conecte_model extends CI_Model
 
     public function getLastOs($cliente)
     {
+        $this->db->select('os.*, usuarios.nome, COALESCE((SELECT SUM(produtos_os.preco * produtos_os.quantidade ) FROM produtos_os WHERE produtos_os.os_id = os.idOs), 0) totalProdutos, COALESCE((SELECT SUM(servicos_os.preco * servicos_os.quantidade ) FROM servicos_os WHERE servicos_os.os_id = os.idOs), 0) totalServicos', false);
         $this->db->from('os');
         $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
         $this->db->where('clientes_id', $cliente);
@@ -84,6 +85,47 @@ class Conecte_model extends CI_Model
         return $result;
     }
 
+    protected function _applyOsFilters($where = [])
+    {
+        if (empty($where) || !is_array($where)) {
+            return;
+        }
+
+        // 1. Número da OS
+        if (!empty($where['os'])) {
+            $os_clean = preg_replace('/[^0-9,]/', '', $where['os']);
+            if (strpos($os_clean, ',') !== false) {
+                $os_arr = array_filter(explode(',', $os_clean));
+                if (!empty($os_arr)) {
+                    $this->db->where_in('os.idOs', $os_arr);
+                }
+            } elseif (!empty($os_clean)) {
+                $this->db->where('os.idOs', $os_clean);
+            }
+        }
+
+        // 2. Técnico / Responsável
+        if (!empty($where['tecnico']) && $where['tecnico'] !== 'Todos' && $where['tecnico'] !== 'Todos técnicos') {
+            $this->db->where("(usuarios.nome = " . $this->db->escape($where['tecnico']) . " OR EXISTS (SELECT 1 FROM tecnicos_os WHERE tecnicos_os.os_id = os.idOs AND tecnicos_os.tecnicoName = " . $this->db->escape($where['tecnico']) . "))", null, false);
+        }
+
+        // 3. Período (Data Inicial e Final)
+        if (!empty($where['de'])) {
+            $de = $where['de'];
+            if (strpos($de, ':') === false) {
+                $de .= ' 00:00:00';
+            }
+            $this->db->where('os.dataInicial >=', $de);
+        }
+        if (!empty($where['ate'])) {
+            $ate = $where['ate'];
+            if (strpos($ate, ':') === false) {
+                $ate .= ' 23:59:59';
+            }
+            $this->db->where('os.dataInicial <=', $ate);
+        }
+    }
+
     public function getOs($table, $fields, $where, $perpage, $start, $one, $array, $cliente)
     {
         $this->db->select($fields);
@@ -93,7 +135,11 @@ class Conecte_model extends CI_Model
         $this->db->limit($perpage, $start);
         $this->db->order_by('idOs', 'desc');
         if ($where) {
-            $this->db->where($where);
+            if (is_array($where)) {
+                $this->_applyOsFilters($where);
+            } else {
+                $this->db->where($where);
+            }
         }
 
         $query = $this->db->get();
@@ -116,11 +162,22 @@ class Conecte_model extends CI_Model
         return $this->db->get()->row();
     }
 
-    public function count($table, $cliente)
+    public function count($table, $cliente, $where = '')
     {
+        $this->db->from($table);
+        if ($table === 'os') {
+            $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
+        }
         $this->db->where('clientes_id', $cliente);
+        if ($where) {
+            if (is_array($where) && $table === 'os') {
+                $this->_applyOsFilters($where);
+            } else {
+                $this->db->where($where);
+            }
+        }
 
-        return $this->db->count_all_results($table);
+        return $this->db->count_all_results();
     }
 
     public function getDados()

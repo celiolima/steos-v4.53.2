@@ -19,6 +19,59 @@
     <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/funcoesGlobal.js"></script>
     <script type="text/javascript" src="<?= base_url(); ?>assets/js/csrf.js"></script>
+    <style>
+        /* Ajustes de Responsividade e Visão Mobile - Minha OS (Link Externo) */
+        @media (max-width: 767px) {
+            .widget-content, .table-responsive {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                width: 100% !important;
+            }
+            .invoice-content table, .invoice-content table th, .invoice-content table td,
+            .invoice-head table, .invoice-head table th, .invoice-head table td {
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+            }
+            .invoice-head table, .invoice-head tbody, .invoice-head tr, .invoice-head td {
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+                box-sizing: border-box !important;
+            }
+            .invoice-head td:nth-child(2) {
+                border-top: 1px dashed #ccc !important;
+                border-bottom: 1px dashed #ccc !important;
+                margin: 10px 0 !important;
+                padding: 12px 5px !important;
+            }
+            .invoice-content .table-condensed td,
+            .invoice-content .table-bordered:not(#tblProdutos) td {
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                text-align: left !important;
+                padding: 8px 10px !important;
+                border-top: none !important;
+                border-bottom: 1px solid #eee !important;
+            }
+            .invoice-content .table-condensed tr,
+            .invoice-content .table-bordered:not(#tblProdutos) tr {
+                border: 1px solid #ddd !important;
+                margin-bottom: 12px !important;
+                border-radius: 6px !important;
+                background: #fafafa !important;
+            }
+            #tblProdutos {
+                display: table !important;
+                width: 100% !important;
+            }
+            #tblProdutos th, #tblProdutos td {
+                display: table-cell !important;
+                white-space: nowrap !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -149,6 +202,7 @@
 
                                         <?php if ($produtos != null || $servicos != null) { ?>
                                             <br />
+                                            <div class="table-responsive">
                                             <table class="table table-condensed" id="tblProdutos">
                                                 <thead>
                                                     <tr>
@@ -191,6 +245,7 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                            </div>
                                         <?php } ?>
                                     </div>
                                 </div>

@@ -311,6 +311,8 @@
                                 <select class="span12" name="notifica_whats_select" id="notifica_whats_select" value="">
                                     <option value="0">Selecione...</option>
                                     <option value="{CLIENTE_NOME}">Nome do Cliente</option>
+                                    <option value="{CLIENTE_EMAIL}">E-mail do Cliente</option>
+                                    <option value="{APP_URL}">URL do Sistema</option>
                                     <option value="{NUMERO_OS}">Número da OS</option>
                                     <option value="{STATUS_OS}">Status da OS</option>
                                     <option value="{VALOR_OS}">Valor da OS</option>

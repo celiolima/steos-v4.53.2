@@ -31,7 +31,15 @@ $totalProdutos = 0; ?>
                                             <?php if ($emitente->cnpj != "00.000.000/0000-00") { ?><span class="icon"><i class="fas fa-fingerprint" style="margin:5px 1px"></i> <?php echo $emitente->cnpj; ?></span></br><?php } ?>
                                             <span class="icon"><i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> <?php echo $emitente->rua . ', ' . $emitente->numero . ', ' . $emitente->bairro . ' - ' . $emitente->cidade . ' - ' . $emitente->uf; ?></span></br>
                                             <span class="icon"><i class="fas fa-comments" style="margin:5px 1px"></i> E-mail: <?php echo $emitente->email . ' - Fone: ' . $emitente->telefone; ?></span></br>
-                                            <span class="icon"><i class="fas fa-user-check"></i> Responsável: <?php echo $result->nome ?>
+                                            <span class="icon"><i class="fas fa-user-check"></i> Responsável: <?php echo $result->nome ?></span></br>
+                                            <?php if (!empty($tecnicos_os)) {
+                                                echo '<span class="icon"><i class="fas fa-wrench"></i> Técnico(s): ';
+                                                $tecNomes = [];
+                                                foreach ($tecnicos_os as $tecnico) {
+                                                    $tecNomes[] = $tecnico->nome;
+                                                }
+                                                echo implode(', ', $tecNomes) . '</span></br>';
+                                            } ?>
                                         </td>
                                         <td style="width: 18%; text-align: center">
                                             <span><b>N° OS: </b><?php echo $result->idOs ?></span></br></br>
@@ -95,6 +103,15 @@ $totalProdutos = 0; ?>
                                         </tr>
                                     <?php } ?>
 
+                                    <?php if ($result->defeito_encontrado != null) { ?>
+                                        <tr>
+                                            <td>
+                                                <strong>DEFEITO ENCONTRADO: </strong><br>
+                                                <?php echo printSafeHtml($result->defeito_encontrado) ?>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+
                                     <?php if ($result->observacoes != null) { ?>
                                         <tr>
                                             <td>
@@ -123,6 +140,68 @@ $totalProdutos = 0; ?>
                                     <?php } ?>
                             <?php } ?>
                         </table>
+
+                        <?php if ($equipamentos != null) { ?>
+                            <h5><b>EQUIPAMENTOS</b></h5>
+                            <?php foreach ($equipamentos as $equipamento) { ?>
+                                <table class="table table-bordered" style="border: 1px solid #D2D4DE; border-radius: 5px;">
+                                    <thead>
+                                        <tr>
+                                            <td><strong><?php echo $equipamento->equipamento; ?></strong></td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Número de Série: <span style="color: green">&nbsp;<?php echo $equipamento->serie; ?></span></td>
+                                            <td>Modelo: <span style="color: green">&nbsp;<?php echo $equipamento->modelo; ?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cor: <span style="color: green">&nbsp;<?php echo $equipamento->cor; ?></span></td>
+                                            <td>Descrição: <span style="color: green">&nbsp;<?php echo $equipamento->descricao; ?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Potência: <span style="color: green">&nbsp;<?php echo $equipamento->potecia; ?></span></td>
+                                            <td>Voltagem: <span style="color: green">&nbsp;<?php echo $equipamento->voltagem; ?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Marca: <span style="color: green">&nbsp;<?php echo $equipamento->marca; ?></span></td>
+                                            <td>Local: <span style="color: green">&nbsp;<?php echo $equipamento->local; ?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>Defeito Reclamado</label>
+                                                <textarea disabled style="width:100%"><?php echo $equipamento->defeito_declarado; ?></textarea>
+                                            </td>
+                                            <td>
+                                                <label>Defeito Encontrado</label>
+                                                <textarea disabled style="width:100%"><?php echo $equipamento->defeito_encontrado; ?></textarea>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            <?php } ?>
+                        <?php } ?>
+
+                        <?php if (!empty($anotacoes)) { ?>
+                            <h5><b>ANOTAÇÕES</b></h5>
+                            <table class="table table-bordered" style="border: 1px solid #D2D4DE; border-radius: 5px;">
+                                <thead>
+                                    <tr>
+                                        <th>Anotação</th>
+                                        <th>Data/Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($anotacoes as $a) {
+                                        echo '<tr>';
+                                        echo '<td>' . $a->anotacao . '</td>';
+                                        echo '<td>' . date('d/m/Y H:i:s', strtotime($a->data_hora)) . '</td>';
+                                        echo '</tr>';
+                                    } ?>
+                                </tbody>
+                            </table>
+                        <?php } ?>
 
                         <?php if ($anexos != null) { ?>
                             <table class="table table-bordered table-condensed">
@@ -182,7 +261,7 @@ $totalProdutos = 0; ?>
                         <?php } ?>
 
                         <?php if ($servicos != null) { ?>
-                            <table class="table table-bordered table-condensed">
+                            <table class="table table-bordered table-condensed tbl-servicos">
                                 <thead>
                                     <tr>
                                         <th>SERVIÇO</th>
@@ -238,6 +317,44 @@ $totalProdutos = 0; ?>
                                 <?php } ?>
                             </thead>
                         </table>
+
+                        <?php $tipoModelo = "avista";
+                        if (!empty($modelos)) {
+                            foreach ($modelos as $modelo) {
+                                if ($result->status == "Negociação") {
+                                    if ($tipoModelo == "avista" && $modelo->refModelo == "VENDA AVISTA") {
+                                        echo '<table class="table table-condensed"><tbody><tr><td>' . htmlspecialchars_decode($modelo->textoModelo) . '</td></tr></tbody></table>';
+                                    }
+                                    if ($tipoModelo == "prazo" && $modelo->refModelo == "VENDA A PRAZO") {
+                                        echo '<table class="table table-condensed"><tbody><tr><td>' . htmlspecialchars_decode($modelo->textoModelo) . '</td></tr></tbody></table>';
+                                    }
+                                }
+                                if ($result->status == "A Sair | Aguard Conclusão" && $modelo->refModelo == "CHECKLIST") {
+                                    echo '<table class="table table-condensed"><tbody><tr><td>' . htmlspecialchars_decode($modelo->textoModelo) . '</td></tr></tbody></table>';
+                                }
+                            }
+                        } ?>
+
+                        <?php if ($result->status == "Finalizado" && !empty($assinatura)) { ?>
+                            <table class="table table-bordered table-condensed" style="padding-top: 20px">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 20%; padding: 0; text-align:center;">Documento<br/>
+                                            <a style="color: blue; width: 90%;"><?php echo $assinatura->doc; ?></a>
+                                            <hr style="color: blue; width: 90%;">
+                                        </td>
+                                        <td style="width: 40%; padding: 0; text-align:center;">Assinatura do Cliente<br/>
+                                            <img src="<?php echo $assinatura->assinatura; ?>" style="width: 70%;">
+                                            <hr style="color: blue; width: 90%;">
+                                        </td>
+                                        <td style="width: 40%; padding: 0; text-align:center;">Nome<br/>
+                                            <a style="color: blue; width: 90%;"><?php echo $assinatura->nameAssinatura; ?></a>
+                                            <hr style="color: blue; width: 90%;">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <?php } ?>
                     </div>
                 </div>
             </div>

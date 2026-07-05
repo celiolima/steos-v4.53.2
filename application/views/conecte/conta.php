@@ -24,6 +24,7 @@
                     </div>
                     <div class="collapse in accordion-body" id="collapseGOne">
                         <div class="widget-content">
+                            <div class="table-responsive">
                             <table class="table table-bordered">
                                 <tbody>
                                     <tr>
@@ -52,6 +53,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -66,6 +68,7 @@
                     </div>
                     <div class="collapse accordion-body" id="collapseGTwo">
                         <div class="widget-content">
+                            <div class="table-responsive">
                             <table class="table table-bordered">
                                 <tbody>
                                     <tr>
@@ -88,6 +91,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,6 +106,7 @@
                     </div>
                     <div class="collapse accordion-body" id="collapseGThree">
                         <div class="widget-content">
+                            <div class="table-responsive">
                             <table class="table table-bordered">
                                 <tbody>
                                     <tr>
@@ -143,6 +148,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>

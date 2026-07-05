@@ -52,6 +52,7 @@
             <h5>Últimas Ordens de Serviço</h5>
         </div>
         <div class="widget-content">
+            <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
             <table id="tabela" class="table table-bordered">
                 <thead>
                     <tr>
@@ -60,6 +61,9 @@
                         <th>Data Inicial</th>
                         <th>Data Final</th>
                         <th>Venc. da Garantia</th>
+                        <th>Observações</th>
+                        <th>Valor Total</th>
+                        <th>Valor com Desconto</th>
                         <th>Status</th>
                         <th style="text-align:right">Visualizar / Imprimir</th>
                     </tr>
@@ -91,6 +95,7 @@
                             }
 
                             switch ($o->status) {
+                                case 'A Sair | Aguard Conclusão':
                                 case 'Aberto':
                                     $cor = '#00cd00';
                                     break;
@@ -123,12 +128,18 @@
                                     break;
                             }
 
+                            $valorTotalOS = $o->valorTotal != 0 ? $o->valorTotal : ($o->totalProdutos + $o->totalServicos);
+                            $valorDescontoOS = $o->valor_desconto != 0 ? $o->valor_desconto : $valorTotalOS;
+
                             echo '<tr>';
                             echo '<td>' . $o->idOs . '</td>';
                             echo '<td>' . $o->nome . '</td>';
                             echo '<td>' . date('d/m/Y', strtotime($o->dataInicial)) . '</td>';
                             echo '<td>' . date('d/m/Y', strtotime($o->dataFinal)) . '</td>';
                             echo '<td><span class="badge" style="background-color: ' . $corGarantia . '; border-color: ' . $corGarantia . '">' . $vencGarantia . '</span> </td>';
+                            echo '<td><div style="max-height: 80px; overflow-y: auto; max-width: 350px;">' . (!empty($o->observacoes) ? strip_tags(str_replace(['&nbsp;', '&amp;nbsp;'], ' ', html_entity_decode($o->observacoes))) : '') . '</div></td>';
+                            echo '<td>R$ ' . number_format($valorTotalOS, 2, ',', '.') . '</td>';
+                            echo '<td>R$ ' . number_format($valorDescontoOS, 2, ',', '.') . '</td>';
                             echo '<td><span class="badge" style="background-color: ' . $cor . '; border-color: ' . $cor . '">' . $o->status . '</span> </td>';
                             echo '<td style="text-align:right">';
                             echo '<a href="' . base_url() . 'index.php/mine/visualizarOs/' . $o->idOs . '" class="btn"> <i class="fas fa-eye" ></i></a> ';
@@ -137,12 +148,13 @@
                             echo '</tr>';
                         }
                     } else {
-                        echo '<tr><td colspan="3">Nenhum ordem de serviço encontrada.</td></tr>';
+                        echo '<tr><td colspan="10">Nenhum ordem de serviço encontrada.</td></tr>';
                     }
 
             ?>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 
@@ -152,6 +164,7 @@
             <h5>Últimas Compras</h5>
         </div>
         <div class="widget-content">
+            <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
             <table id="tabela" class="table table-bordered">
                 <thead>
                     <tr>
@@ -196,6 +209,7 @@
                     }
                     
                     switch ($c->status) {
+                        case 'A Sair | Aguard Conclusão':
                         case 'Aberto':
                             $cor = '#00cd00';
                             break;
@@ -247,6 +261,7 @@
             ?>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>

@@ -90,7 +90,7 @@ class ClientesController extends REST_Controller
             ], REST_Controller::HTTP_BAD_REQUEST);
         }
 
-        $senhaCliente = $this->post('senha', true) ?: preg_replace('/[^\p{L}\p{N}\s]/', '', $this->post('documento', true));
+        $senhaCliente = $this->post('senha', true) ?: 'steas@123';
         $cpf_cnpj = preg_replace('/[^\p{L}\p{N}\s]/', '', $this->post('documento', true));
         $pessoaFisica = strlen($cpf_cnpj) == 11 ? true : false;
 

@@ -459,9 +459,40 @@ class Mine extends CI_Controller
 
         $data['menuOs'] = 'os';
         $this->load->library('pagination');
+        $this->load->model('tecnicos_model');
+        $data['tecnicos'] = $this->tecnicos_model->getAll();
+
+        $os = $this->input->get('os');
+        $tecnico = $this->input->get('tecnico');
+        $inputDe = $this->input->get('data');
+        $inputAte = $this->input->get('data2');
+
+        $where_array = [];
+        if ($os) {
+            $where_array['os'] = $os;
+        }
+        if ($tecnico && $tecnico !== 'Todos' && $tecnico !== 'Todos técnicos') {
+            $where_array['tecnico'] = $tecnico;
+        }
+        if ($inputDe) {
+            $deArr = explode('/', $inputDe);
+            if (count($deArr) == 3) {
+                $where_array['de'] = $deArr[2] . '-' . $deArr[1] . '-' . $deArr[0];
+            }
+        }
+        if ($inputAte) {
+            $ateArr = explode('/', $inputAte);
+            if (count($ateArr) == 3) {
+                $where_array['ate'] = $ateArr[2] . '-' . $ateArr[1] . '-' . $ateArr[0];
+            }
+        }
 
         $config['base_url'] = base_url() . 'index.php/mine/os/';
-        $config['total_rows'] = $this->Conecte_model->count('os', $this->session->userdata('cliente_id'));
+        $config['total_rows'] = $this->Conecte_model->count('os', $this->session->userdata('cliente_id'), $where_array);
+        if (count($where_array) > 0) {
+            $config['suffix'] = "?os={$os}&tecnico={$tecnico}&data={$inputDe}&data2={$inputAte}";
+            $config['first_url'] = base_url("index.php/mine/os")."\?os={$os}&tecnico={$tecnico}&data={$inputDe}&data2={$inputAte}";
+        }
         $config['per_page'] = 10;
         $config['next_link'] = 'Próxima';
         $config['prev_link'] = 'Anterior';
@@ -484,7 +515,7 @@ class Mine extends CI_Controller
 
         $this->pagination->initialize($config);
 
-        $data['results'] = $this->Conecte_model->getOs('os', '*', '', $config['per_page'], $this->uri->segment(3), '', '', $this->session->userdata('cliente_id'));
+        $data['results'] = $this->Conecte_model->getOs('os', 'os.*, usuarios.nome, COALESCE((SELECT SUM(produtos_os.preco * produtos_os.quantidade ) FROM produtos_os WHERE produtos_os.os_id = os.idOs), 0) totalProdutos, COALESCE((SELECT SUM(servicos_os.preco * servicos_os.quantidade ) FROM servicos_os WHERE servicos_os.os_id = os.idOs), 0) totalServicos', $where_array, $config['per_page'], $this->uri->segment(3), '', '', $this->session->userdata('cliente_id'));
 
         $data['output'] = 'conecte/os';
         $this->load->view('conecte/template', $data);
@@ -500,8 +531,17 @@ class Mine extends CI_Controller
         $this->data['custom_error'] = '';
         $this->load->model('steos_model');
         $this->load->model('os_model');
+        $this->load->model('tecnicos_os_model');
+        $this->load->model('equipamentos_os_model');
+        $this->load->model('modelos_model');
         $this->CI = &get_instance();
         $this->CI->load->database();
+        
+        $data['modelos'] = $this->modelos_model->getAll();
+        $data['equipamentos'] = $this->equipamentos_os_model->getAll($this->uri->segment(3));
+        $data['tecnicos_os'] = $this->tecnicos_os_model->getById($this->uri->segment(3));
+        $data['anotacoes'] = $this->os_model->getAnotacoes($this->uri->segment(3));
+        $data['assinatura'] = $this->os_model->getByIdAssinaturaExtr($this->uri->segment(3));
         
         $data['pix_key'] = $this->CI->db->get_where('configuracoes', ['config' => 'pix_key'])->row_object()->valor;
         $data['result'] = $this->os_model->getById($this->uri->segment(3));
@@ -610,10 +650,32 @@ class Mine extends CI_Controller
         $this->data['custom_error'] = '';
         $this->load->model('steos_model');
         $this->load->model('os_model');
+        $this->load->model('tecnicos_os_model');
+        $this->load->model('equipamentos_os_model');
+        $this->load->model('modelos_model');
+        $this->CI = &get_instance();
+        $this->CI->load->database();
+        
+        $data['modelos'] = $this->modelos_model->getAll();
+        $data['equipamentos'] = $this->equipamentos_os_model->getAll($this->uri->segment(3));
+        $data['tecnicos_os'] = $this->tecnicos_os_model->getById($this->uri->segment(3));
+        $data['anotacoes'] = $this->os_model->getAnotacoes($this->uri->segment(3));
+        $data['assinatura'] = $this->os_model->getByIdAssinaturaExtr($this->uri->segment(3));
+        
         $data['result'] = $this->os_model->getById($this->uri->segment(3));
         $data['produtos'] = $this->os_model->getProdutos($this->uri->segment(3));
         $data['servicos'] = $this->os_model->getServicos($this->uri->segment(3));
+        $data['anexos'] = $this->os_model->getAnexos($this->uri->segment(3));
         $data['emitente'] = $this->steos_model->getEmitente();
+        
+        $data['pix_key'] = $this->CI->db->get_where('configuracoes', ['config' => 'pix_key'])->row_object()->valor;
+        $data['qrCode'] = $this->os_model->getQrCode(
+            $id,
+            $data['pix_key'],
+            $data['emitente']
+        );
+        $data['chaveFormatada'] = $this->formatarChave($data['pix_key']);
+        $data['imprimirAnexo'] = isset($_ENV['IMPRIMIR_ANEXOS']) ? (filter_var($_ENV['IMPRIMIR_ANEXOS'] ?? false, FILTER_VALIDATE_BOOLEAN)) : false;
 
         if ($data['result']->idClientes != $this->session->userdata('cliente_id')) {
             $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');

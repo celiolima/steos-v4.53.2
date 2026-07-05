@@ -90,7 +90,7 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label for="complemento" class="control-label">Complmento</label>
+                        <label for="complemento" class="control-label">Complemento</label>
                         <div class="controls">
                             <input id="complemento" type="text" name="complemento" value="<?php echo $result->complemento; ?>" />
                         </div>

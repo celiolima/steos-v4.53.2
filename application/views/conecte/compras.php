@@ -46,8 +46,7 @@ if (!$results) { ?>
         </div>
 
         <div class="widget-content nopadding tab-content">
-
-
+            <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
             <table id="tabela" class="table table-bordered ">
                 <thead>
                     <tr>
@@ -92,6 +91,7 @@ if (!$results) { ?>
                         }
                     
                         switch ($r->status) {
+                            case 'A Sair | Aguard Conclusão':
                             case 'Aberto':
                                 $cor = '#00cd00';
                                 break;
@@ -137,6 +137,7 @@ if (!$results) { ?>
                     } ?>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 

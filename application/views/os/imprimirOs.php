@@ -462,7 +462,7 @@ $totalProdutos = 0; ?>
                                     <?php } ?>
 
                                     <!--  tabela09 assinaturas-->
-                                    <?php if ($result->status == "Finalizado") { ?>
+                                    <?php if ($result->status == "Finalizado" && !empty($assinatura) && !empty($assinatura->assinatura)) { ?>
                                         <table class="table table-bordered table-condensed" style="padding-top: 20px">
                                             <tbody>
                                                 <tr>

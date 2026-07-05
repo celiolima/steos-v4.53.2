@@ -115,15 +115,22 @@ exit; */
             </div>
 
             <div class="span2">
-                <input type="text" name="data" autocomplete="off" id="data" placeholder="Data Inicial" class="span6 datepicker" value="<?= $this->input->get('data') ? $this->input->get('data') : '' ?>">
-                <input type="text" name="data2" autocomplete="off" id="data2" placeholder="Data Final" class="span6 datepicker" value="<?= $this->input->get('data2') ? $this->input->get('data2') : '' ?>">
-                <?php if ((int)$this->session->userdata('permissao') == 1) { ?>
-                    <input type="checkbox" id="afaturar" name="afaturar" value="1" <?= $this->input->get('afaturar') == "1" ? "checked" : ""; ?>>
-                    <label>A faturar</label>
-                <?php    }   ?>
-                <input type="checkbox" id="manPrevnt" name="manPrevnt" value="1" <?= $this->input->get('manPrevnt') == "1" ? "checked" : ""; ?>>
-                <label>Manut Peventiva</label>
-
+                <input type="text" name="data" autocomplete="off" id="data" placeholder="Data Inicial Abert" title="Data Inicial Abertura" class="span6 datepicker" value="<?= $this->input->get('data') ? $this->input->get('data') : '' ?>">
+                <input type="text" name="data2" autocomplete="off" id="data2" placeholder="Data Final Abert" title="Data Final Abertura" class="span6 datepicker" value="<?= $this->input->get('data2') ? $this->input->get('data2') : '' ?>">
+                <input type="text" name="data_fech_de" autocomplete="off" id="data_fech_de" placeholder="Data Inicial Fech" title="Data Inicial Fechamento" class="span6 datepicker" value="<?= $this->input->get('data_fech_de') ? $this->input->get('data_fech_de') : '' ?>">
+                <input type="text" name="data_fech_ate" autocomplete="off" id="data_fech_ate" placeholder="Data Final Fech" title="Data Final Fechamento" class="span6 datepicker" value="<?= $this->input->get('data_fech_ate') ? $this->input->get('data_fech_ate') : '' ?>">
+                <div style="clear: both; width: 100%; display: flex; justify-content: flex-start; gap: 10px; align-items: center; margin: 10px 0 14px 0; white-space: nowrap;">
+                    <?php if ((int)$this->session->userdata('permissao') == 1) { ?>
+                        <label style="display: inline-flex; align-items: center; margin: 0; cursor: pointer; font-size: 11px; white-space: nowrap; line-height: 1;">
+                            <input type="checkbox" id="afaturar" name="afaturar" value="1" <?= $this->input->get('afaturar') == "1" ? "checked" : ""; ?> style="margin: 0 4px 0 0; width: 13px; height: 13px;">
+                            <span>A faturar</span>
+                        </label>
+                    <?php } ?>
+                    <label style="display: inline-flex; align-items: center; margin: 0; cursor: pointer; font-size: 11px; white-space: nowrap; line-height: 1;">
+                        <input type="checkbox" id="manPrevnt" name="manPrevnt" value="1" <?= $this->input->get('manPrevnt') == "1" ? "checked" : ""; ?> style="margin: 0 4px 0 0; width: 13px; height: 13px;">
+                        <span>Preventiva</span>
+                    </label>
+                </div>
             </div>
 
             <div class="span2">

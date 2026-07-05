@@ -1022,11 +1022,16 @@ class OsController extends REST_Controller
                 strtotime($os->dataInicial)
             ),
             $os->garantia . ' dias',
+            (isset($os->email) ? $os->email : ''),
+            (isset($os->email) ? $os->email : ''),
+            rtrim(base_url(), '/'),
+            rtrim(base_url(), '/'),
+            rtrim(base_url(), '/'),
         ];
 
         $textoBase = $this->getConfig('notifica_whats');
 
-        $procura = ['{CLIENTE_NOME}', '{NUMERO_OS}', '{STATUS_OS}', '{VALOR_OS}', '{DESCRI_PRODUTOS}', '{EMITENTE}', '{TELEFONE_EMITENTE}', '{OBS_OS}', '{DEFEITO_OS}', '{LAUDO_OS}', '{DATA_FINAL}', '{DATA_INICIAL}', '{DATA_GARANTIA}'];
+        $procura = ['{CLIENTE_NOME}', '{NUMERO_OS}', '{STATUS_OS}', '{VALOR_OS}', '{DESCRI_PRODUTOS}', '{EMITENTE}', '{TELEFONE_EMITENTE}', '{OBS_OS}', '{DEFEITO_OS}', '{LAUDO_OS}', '{DATA_FINAL}', '{DATA_INICIAL}', '{DATA_GARANTIA}', '{CLIENTE_EMAIL}', '{EMAIL_CLIENTE}', '{APP_URL}', '{URL_SISTEMA}', '{URL_APP}'];
         $textoFinal = str_replace($procura, $troca, $textoBase);
         $textoFinal = strip_tags($textoFinal);
 

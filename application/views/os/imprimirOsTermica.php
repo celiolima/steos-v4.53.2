@@ -364,7 +364,9 @@ $totalProdutos = 0; ?>
                                     <tr>
                                         <td colspan="5" style="text-align:center;">
                                             <b>
-                                                <?php echo '<img  src="' . !empty($assinatura->assinatura) . '"style="width: 70%;">'; ?>
+                                                <?php if (!empty($assinatura) && !empty($assinatura->assinatura)) { ?>
+                                                    <img src="<?php echo $assinatura->assinatura; ?>" style="width: 70%;"><br />
+                                                <?php } ?>
                                                 <hr>
                                                 <p class="text-center">Assinatura do Cliente</p>
                                             </b><br />

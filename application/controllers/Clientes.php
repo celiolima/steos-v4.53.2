@@ -56,7 +56,7 @@ class Clientes extends MY_Controller
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
 
-        $senhaCliente = $this->input->post('senha') ? $this->input->post('senha') : preg_replace('/[^\p{L}\p{N}\s]/', '', set_value('documento'));
+        $senhaCliente = $this->input->post('senha') ? $this->input->post('senha') : 'steas@123';
 
         $cpf_cnpj = preg_replace('/[^\p{L}\p{N}\s]/', '', set_value('documento'));
 
@@ -237,6 +237,26 @@ class Clientes extends MY_Controller
         log_info('Removeu um cliente. ID' . $id);
 
         $this->session->set_flashdata('success', 'Cliente excluido com sucesso!');
+        redirect(site_url('clientes/gerenciar/'));
+    }
+
+    public function atualizar_senhas_padrao()
+    {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eCliente')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para editar clientes.');
+            redirect(base_url());
+        }
+
+        $senhaPadrao = 'steas@123';
+        $senhaHash = password_hash($senhaPadrao, PASSWORD_DEFAULT);
+
+        $this->db->set('senha', $senhaHash);
+        $this->db->update('clientes');
+
+        $total = $this->db->affected_rows();
+
+        $this->session->set_flashdata('success', "Sucesso! A senha padrão '{$senhaPadrao}' foi atualizada para todos os clientes no banco de dados ({$total} registros alterados).");
+        log_info("Atualizou a senha padrão de todos os clientes para steas@123.");
         redirect(site_url('clientes/gerenciar/'));
     }
 }
