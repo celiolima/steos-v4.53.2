@@ -66,9 +66,9 @@ services:
       - "8080:80"
     volumes:
       # DESENVOLVIMENTO: mapeia código local diretamente
-      - .:/var/www/html:cached # cached para melhor performance
+      #- .:/var/www/html:cached # cached para melhor performance
       # PRODUÇÃO: volume separado para uploads se necessário
-      #- steos_data:/var/www/html/assets:cached # cached para melhor performance
+      - steos_data:/var/www/html/assets:cached # cached para melhor performance
     networks:
       - steos
     environment:
@@ -97,8 +97,8 @@ services:
 
 networks:
   steos:
-    # external: true
-    driver: bridge
+    external: true
+    #driver: bridge
 volumes:
   steos_mysql_data:
   steos_data:
