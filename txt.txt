@@ -12,6 +12,8 @@ ou
 cd /docker/steos && git pull origin main && docker compose down -v && docker compose up -d --build    --> apaga volumes
 
 
+cd /docker/steos/dados_banco_steos && mv dados_steos.sql dados_steos.sql.imported
+
 
 docker-compose up -d
 
