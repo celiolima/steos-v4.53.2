@@ -34,6 +34,9 @@ class Contratos_model extends CI_Model
         $this->db->join('clientes', 'clientes.idClientes = contratos.clientes_id');
 
         if ($where) {
+            if (array_key_exists('clientes_id', $where) && !empty($where['clientes_id'])) {
+                $this->db->where('contratos.clientes_id', $where['clientes_id']);
+            }
             if (array_key_exists('contrato', $where) && !empty($where['contrato'])) {
                 $this->db->where('contratos.idContratos', $where['contrato']);
             }
@@ -128,6 +131,9 @@ class Contratos_model extends CI_Model
         $this->db->join('clientes', 'clientes.idClientes = contratos.clientes_id', 'left');
 
         if ($where) {
+            if (array_key_exists('clientes_id', $where) && !empty($where['clientes_id'])) {
+                $this->db->where('contratos.clientes_id', $where['clientes_id']);
+            }
             if (array_key_exists('contrato', $where) && !empty($where['contrato'])) {
                 $this->db->where('contratos.idContratos', $where['contrato']);
             }
