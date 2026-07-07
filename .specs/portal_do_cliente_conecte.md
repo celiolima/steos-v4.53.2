@@ -186,7 +186,38 @@ O Portal do Cliente transforma a experiência do usuário final, entregando tran
 |  • QR Code Pix na tela para pagamento imediato de O.S. finalizadas!   |
 |  • Listagem de faturas e boletos com link direto para Gerencianet.    |
 |  • Impressão de relatórios e recibos em PDF / A4 com 1 clique.        |
+|                                                                       |
+| 📄 MÓDULO DE CONTRATOS (NOVO CORE):                                   |
+|  • Acesso no menu lateral sempre que houver contrato cadastrado.      |
+|  • Visualização espelhada da gestão do contrato em 7 abas exclusivas, |
+|    100% em modo somente leitura (sem poder de edição):                |
+|    - Geral: Visualizar dados do contrato, vigência e termos.          |
+|    - O.S.: Visualizar e imprimir ordens de serviço do contrato.       |
+|    - Vendas: Visualizar e imprimir vendas do contrato.                |
+|    - Anexos: Visualizar e baixar arquivos e documentos.               |
+|    - Sistemas: Visualizar sistemas vinculados ao contrato.            |
+|    - Checklists: Visualizar e imprimir checklists de manutenção.      |
+|    - Faturas/Boletos: Visualizar e abrir boleto com 1 clique.         |
 +-----------------------------------------------------------------------+
+
+---
+
+## 8. Especificação do Módulo de Contratos no Portal Conecte
+
+O Módulo de Contratos no portal do cliente foi projetado para conceder transparência institucional máxima, permitindo que o cliente acompanhe a evolução, as preventivas e a situação financeira de seus contratos recorrentes sem qualquer risco de alteração acidental ou indevida de regras contratuais.
+
+### 🎯 Regras de Negócio e Acesso
+1. **Visibilidade Condicional no Menu (`template.php`)**: O ícone e link **"Contratos"** só aparecem na barra lateral do portal se o cliente logado possuir pelo menos 1 contrato ativo ou registrado vinculado ao seu `idClientes`.
+2. **Modo Somente Leitura (Read-Only)**: A interface é espelhada na tela administrativa `editarContrato.php`, porém todos os botões de adicionar, editar, excluir ou salvar estão ausentes ou desabilitados. Os campos de texto são apresentados como exibição limpa (texto ou inputs desabilitados).
+
+### 📑 Estrutura das 7 Abas do Contrato
+- **1. Geral**: Exibe os metadados fundamentais do contrato (Código, Técnico Responsável, Data de Início, Fim da Vigência, Dia de Vencimento, Valor Mensal, Termos de Garantia e Observações do Contrato).
+- **2. Ordens de Serviços**: Lista todas as O.S. geradas sob o guarda-chuva deste contrato (incluindo as O.S. Preventivas mensais automáticas). Permite ao cliente visualizar detalhes (`mine/detalhesOs`) e **imprimir** relatórios ou cupons.
+- **3. Vendas**: Lista os produtos e vendas vinculados ao contrato, com opção de visualização e **impressão**.
+- **4. Anexos**: Interface de galeria e listagem de arquivos do contrato (aditivos contratuais, manuais, relatórios). O cliente pode visualizar e **baixar (download)** os documentos.
+- **5. Sistemas**: Exibe a lista dos sistemas ou ativos tecnológicos cobertos e monitorados no escopo do contrato.
+- **6. Checklists do Contrato**: Lista o histórico de checklists técnicos realizados nas visitas de manutenção preventiva. O cliente pode visualizar as respostas/assinaturas e **imprimir** o relatório em PDF.
+- **7. Faturas / Notas e Boletos**: Exibe a grade financeira exclusiva do contrato. O cliente pode visualizar os status (Pendente, Pago, Atrasado) e, ao clicar no **ícone do boleto/fatura**, abrir diretamente a linha digitável ou link de pagamento (Gerencianet / Asaas / Pix).
 ```
 
 ---

@@ -406,6 +406,133 @@ class Mine extends CI_Controller
         $this->load->view('conecte/template', $data);
     }
 
+    public function contratos()
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        $this->load->model('contratos_model');
+        $cliente_id = $this->session->userdata('cliente_id');
+
+        $contratos = $this->contratos_model->getContratos('contratos', 'contratos.*', ['clientes_id' => $cliente_id], 100, 0);
+
+        if (!$contratos || count($contratos) == 0) {
+            $this->session->set_flashdata('error', 'Você não possui contratos cadastrados.');
+            redirect('mine/painel');
+        }
+
+        if (count($contratos) == 1) {
+            redirect('mine/detalhesContrato/' . $contratos[0]->idContratos);
+        }
+
+        $data['contratos'] = $contratos;
+        $data['menuContratos'] = 'contratos';
+        $data['output'] = 'conecte/contratos';
+        $this->load->view('conecte/template', $data);
+    }
+
+    public function detalhesContrato($id = null)
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        if (!$id) {
+            redirect('mine/contratos');
+        }
+
+        $this->load->helper('form');
+        $this->load->model('contratos_model');
+        $this->load->model('tecnicos_model');
+        $cliente_id = $this->session->userdata('cliente_id');
+
+        $contrato = $this->contratos_model->getById($id);
+        if (!$contrato || $contrato->clientes_id != $cliente_id) {
+            $this->session->set_flashdata('error', 'Contrato não encontrado ou acesso negado.');
+            redirect('mine/painel');
+        }
+
+        $data['result'] = $contrato;
+        $data['tecnicos'] = $this->tecnicos_model->getAll();
+        $data['os'] = $this->contratos_model->getOsByContrato($id);
+        $data['vendas'] = $this->contratos_model->getVendasByContrato($id);
+        $data['sistemas_contrato'] = $this->contratos_model->getSistemasByContrato($id);
+        $data['faturas'] = $this->contratos_model->getCobrancasByContrato($id);
+        $data['anexos'] = $this->contratos_model->getAnexos($id);
+        $data['checklists'] = $this->db->where('contratos_id', $id)->order_by('idChecklist', 'DESC')->get('os_checklists')->result();
+
+        $data['menuContratos'] = 'contratos';
+        $data['output'] = 'conecte/detalhes_contrato';
+        $this->load->view('conecte/template', $data);
+    }
+
+    public function imprimirChecklist($idOs = null)
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        if (!$idOs) {
+            redirect('mine/os');
+        }
+
+        $this->load->model('os_model');
+        $result = $this->os_model->getById($idOs);
+        if (!$result || $result->clientes_id != $this->session->userdata('cliente_id')) {
+            $this->session->set_flashdata('error', 'Esta OS não pertence ao cliente logado.');
+            redirect('mine/painel');
+        }
+
+        $data['result'] = $result;
+        $data['autoPrint'] = true;
+
+        $this->load->model('tecnicos_os_model');
+        $tecnicosOS = $this->tecnicos_os_model->getById($idOs);
+        $nomeTecnicoResp = '';
+        if (!empty($tecnicosOS)) {
+            $nomeTecnicoResp = $tecnicosOS[0]->tecnicoName ?? ($tecnicosOS[0]->nome ?? '');
+        }
+        $data['tecnicoResp'] = !empty($nomeTecnicoResp) ? $nomeTecnicoResp : ($data['result']->nome ?? '');
+
+        $this->db->where('os_id', $idOs);
+        $checklist = $this->db->get('os_checklists')->row();
+        
+        if (!$checklist) {
+            $this->session->set_flashdata('error', 'Checklist não encontrado para esta OS.');
+            redirect('mine/os');
+        }
+
+        $data['checklist'] = $checklist;
+        
+        $this->db->where('checklist_id', $checklist->idChecklist);
+        $itens = $this->db->get('os_checklists_itens')->result();
+        
+        $matriz = [];
+        foreach ($itens as $item) {
+            $sis = $item->sistema;
+            $loc = $item->local;
+            
+            if (!isset($matriz[$sis])) {
+                $matriz[$sis] = ['locais' => [], 'checks' => []];
+            }
+            if (!in_array($item->check_desc, $matriz[$sis]['checks'])) {
+                $matriz[$sis]['checks'][] = $item->check_desc;
+            }
+            if (!isset($matriz[$sis]['locais'][$loc])) {
+                $matriz[$sis]['locais'][$loc] = [
+                    'obs_local' => $item->obs_local,
+                    'os_local' => $item->os_local,
+                    'checks' => []
+                ];
+            }
+            $matriz[$sis]['locais'][$loc]['checks'][$item->check_desc] = $item->status;
+        }
+        
+        $data['matriz'] = $matriz;
+        $this->load->view('os/visualizarChecklist', $data);
+    }
+
     public function atualizarcobranca($id = null)
     {
         if (!session_id() || !$this->session->userdata('conectado')) {
