@@ -130,41 +130,108 @@
                 display: inline-block;
                 margin-bottom: 3px;
             }
-            /* Ajuste do cabeçalho / nome do cliente no topo (visão mobile) */
+        }
+
+        /* ==========================================================================
+           Estilo Premium e Moderno para a Pílula do Usuário no Topo (Desktop e Mobile)
+           Elimina a caixa cinza escuro do navbar-inverse e cria um visual limpo/translúcido
+           ========================================================================== */
+        .navebarn {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        .navebarn #user-nav {
+            background: transparent !important;
+            border: none !important;
+        }
+        .navebarn #user-nav > ul {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .navebarn #user-nav > ul > li {
+            background: transparent !important;
+            border: none !important;
+        }
+        .navebarn #user-nav > ul > li > a {
+            display: flex !important;
+            align-items: center !important;
+            background: rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 20px !important;
+            padding: 5px 14px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            text-shadow: none !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+            transition: all 0.2s ease !important;
+        }
+        .navebarn #user-nav > ul > li > a:hover,
+        .navebarn #user-nav > ul > li.open > a {
+            background: rgba(255, 255, 255, 0.28) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+        .navebarn #user-nav > ul > li > a > i {
+            color: #ffffff !important;
+            font-size: 1.4em !important;
+            margin-right: 6px !important;
+        }
+        .client-top-name {
+            display: inline-block !important;
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+            color: #ffffff !important;
+        }
+
+        /* Ajustes Exclusivos de Alinhamento para Visão Mobile - Conecte */
+        @media (max-width: 767px) {
             .navebarn {
+                position: absolute !important;
+                top: 14px !important;
+                right: 12px !important;
+                left: auto !important;
                 width: auto !important;
-                margin-left: 55px !important;
-                margin-right: 10px !important;
+                margin: 0 !important;
+                height: auto !important;
+                z-index: 9999 !important;
             }
-            #user-nav {
+            .navebarn #user-nav {
                 width: auto !important;
-                margin-left: 0 !important;
+                margin: 0 !important;
             }
-            #user-nav > ul {
-                margin-left: 0 !important;
+            .navebarn #user-nav > ul {
+                margin: 0 !important;
                 position: relative !important;
                 top: 0 !important;
             }
-            #user-nav > ul > li {
+            .navebarn #user-nav > ul > li {
                 left: 0 !important;
             }
-            #user-nav > ul > li > a {
-                display: flex !important;
-                align-items: center !important;
-                padding: 4px 8px !important;
+            .navebarn #user-nav > ul > li > a {
+                padding: 4px 12px !important;
+                font-size: 12px !important;
             }
             .client-top-name {
-                display: inline-block !important;
-                max-width: 170px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                vertical-align: middle;
+                max-width: 150px !important;
             }
         }
         @media (max-width: 480px) {
+            .navebarn {
+                top: 15px !important;
+                right: 8px !important;
+            }
+            .navebarn #user-nav > ul > li > a {
+                padding: 4px 10px !important;
+                font-size: 11.5px !important;
+            }
             .client-top-name {
-                max-width: 115px !important;
+                max-width: 105px !important;
             }
         }
     </style>
