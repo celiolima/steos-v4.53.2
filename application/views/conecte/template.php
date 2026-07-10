@@ -156,16 +156,18 @@
         .navebarn #user-nav > ul > li > a {
             display: flex !important;
             align-items: center !important;
+            height: 28px !important;
+            line-height: 26px !important;
             background: rgba(255, 255, 255, 0.18) !important;
             color: #ffffff !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
             border-radius: 20px !important;
-            padding: 5px 14px !important;
+            padding: 0 16px !important;
             font-size: 13px !important;
             font-weight: 500 !important;
             text-decoration: none !important;
             text-shadow: none !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) !important;
             transition: all 0.2s ease !important;
         }
         .navebarn #user-nav > ul > li > a:hover,
@@ -176,12 +178,13 @@
         }
         .navebarn #user-nav > ul > li > a > i {
             color: #ffffff !important;
-            font-size: 1.4em !important;
+            font-size: 1.3em !important;
             margin-right: 6px !important;
+            line-height: 1 !important;
         }
         .client-top-name {
             display: inline-block !important;
-            max-width: 250px;
+            max-width: 450px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -193,7 +196,7 @@
         @media (max-width: 767px) {
             .navebarn {
                 position: absolute !important;
-                top: 14px !important;
+                top: 16px !important;
                 right: 12px !important;
                 left: auto !important;
                 width: auto !important;
@@ -214,24 +217,36 @@
                 left: 0 !important;
             }
             .navebarn #user-nav > ul > li > a {
-                padding: 4px 12px !important;
+                height: 26px !important;
+                line-height: 24px !important;
+                padding: 0 14px !important;
                 font-size: 12px !important;
             }
+            .navebarn #user-nav > ul > li > a > i {
+                font-size: 1.2em !important;
+                margin-right: 5px !important;
+            }
             .client-top-name {
-                max-width: 150px !important;
+                max-width: 300px !important;
             }
         }
         @media (max-width: 480px) {
             .navebarn {
-                top: 15px !important;
+                top: 16px !important;
                 right: 8px !important;
             }
             .navebarn #user-nav > ul > li > a {
-                padding: 4px 10px !important;
+                height: 25px !important;
+                line-height: 23px !important;
+                padding: 0 12px !important;
                 font-size: 11.5px !important;
             }
+            .navebarn #user-nav > ul > li > a > i {
+                font-size: 1.15em !important;
+                margin-right: 4px !important;
+            }
             .client-top-name {
-                max-width: 105px !important;
+                max-width: 220px !important;
             }
         }
     </style>
