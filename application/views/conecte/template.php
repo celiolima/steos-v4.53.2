@@ -194,9 +194,16 @@
 
         /* Ajustes Exclusivos de Alinhamento para Visão Mobile - Conecte */
         @media (max-width: 767px) {
+            #header {
+                height: 48px !important;
+                min-height: 48px !important;
+            }
+            #header h1 a {
+                height: 48px !important;
+            }
             .navebarn {
                 position: absolute !important;
-                top: 16px !important;
+                top: 11px !important;
                 right: 12px !important;
                 left: auto !important;
                 width: auto !important;
@@ -231,8 +238,15 @@
             }
         }
         @media (max-width: 480px) {
+            #header {
+                height: 44px !important;
+                min-height: 44px !important;
+            }
+            #header h1 a {
+                height: 44px !important;
+            }
             .navebarn {
-                top: 16px !important;
+                top: 9px !important;
                 right: 8px !important;
             }
             .navebarn #user-nav > ul > li > a {
