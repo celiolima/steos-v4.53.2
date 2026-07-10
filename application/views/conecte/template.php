@@ -130,6 +130,42 @@
                 display: inline-block;
                 margin-bottom: 3px;
             }
+            /* Ajuste do cabeçalho / nome do cliente no topo (visão mobile) */
+            .navebarn {
+                width: auto !important;
+                margin-left: 55px !important;
+                margin-right: 10px !important;
+            }
+            #user-nav {
+                width: auto !important;
+                margin-left: 0 !important;
+            }
+            #user-nav > ul {
+                margin-left: 0 !important;
+                position: relative !important;
+                top: 0 !important;
+            }
+            #user-nav > ul > li {
+                left: 0 !important;
+            }
+            #user-nav > ul > li > a {
+                display: flex !important;
+                align-items: center !important;
+                padding: 4px 8px !important;
+            }
+            .client-top-name {
+                display: inline-block !important;
+                max-width: 170px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                vertical-align: middle;
+            }
+        }
+        @media (max-width: 480px) {
+            .client-top-name {
+                max-width: 115px !important;
+            }
         }
     </style>
 </head>
@@ -146,7 +182,7 @@
         <div id="user-nav" class="navbar navbar-inverse">
             <ul class="nav">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <?= $this->session->userdata('nome') ?> </a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class='bx bx-user-circle iconN1'></i> <span class="client-top-name"><?= $this->session->userdata('nome') ?></span> </a>
                     <ul class="dropdown-menu">
                         <li class=""><a title="Meu Perfil" href="<?php echo base_url() ?>index.php/mine/conta"><i class="fas fa-user"></i> <span class="text">Meu Perfil</span></a></li>
                         <li class="divider"></li>
