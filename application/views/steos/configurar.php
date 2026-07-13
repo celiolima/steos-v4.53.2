@@ -232,6 +232,13 @@
                             </div>
                         </div>
                         <div class="control-group">
+                            <label for="ASAAS_WEBHOOK_TOKEN" class="control-label">WEBHOOK_TOKEN</label>
+                            <div class="controls">
+                                <input type="text" name="PAYMENT_GATEWAYS_ASAAS_WEBHOOK_TOKEN" value="<?= ($_ENV['PAYMENT_GATEWAYS_ASAAS_WEBHOOK_TOKEN'] ?? '') ?>" id="ASAAS_WEBHOOK_TOKEN">
+                                <span class="help-inline">Token de autenticação do Webhook gerado no painel do Asaas ("whsec_...")</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
                             <label for="ASAAS_BOLETO_EXPIRATION" class="control-label">Dias para vencimento do boleto</label>
                             <div class="controls">
                                 <select name="PAYMENT_GATEWAYS_ASAAS_BOLETO_EXPIRATION" id="ASAAS_BOLETO_EXPIRATION">

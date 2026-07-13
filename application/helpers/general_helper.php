@@ -43,7 +43,51 @@ if (! function_exists('getMoneyAsCents')) {
 if (! function_exists('getCobrancaTransactionStatus')) {
     function getCobrancaTransactionStatus($paymentGatewaysConfig, $paymentGateway, $status)
     {
-        return $paymentGatewaysConfig[$paymentGateway]['transaction_status'][$status];
+        return @$paymentGatewaysConfig[$paymentGateway]['transaction_status'][$status] ?: $status;
+    }
+}
+
+if (! function_exists('getCobrancaStatusBadge')) {
+    function getCobrancaStatusBadge($status, $gateways_config = null, $payment_gateway = null)
+    {
+        $status_cob_text = $status;
+        if (function_exists('getCobrancaTransactionStatus') && !empty($gateways_config) && !empty($payment_gateway)) {
+            $status_cob_text = getCobrancaTransactionStatus($gateways_config, $payment_gateway, $status);
+        }
+
+        $status_badge = '';
+        switch ($status) {
+            case 'PENDING':
+            case 'waiting':
+                $status_badge = '<span class="label label-warning" title="' . htmlspecialchars($status_cob_text) . '">Aguardando Pagamento</span>';
+                break;
+            case 'RECEIVED':
+            case 'paid':
+            case 'RECEIVED_IN_CASH':
+                $status_badge = '<span class="label label-success" style="background-color: #353535;" title="' . htmlspecialchars($status_cob_text) . '">Recebida (Paga)</span>';
+                break;
+            case 'CONFIRMED':
+            case 'identified':
+                $status_badge = '<span class="label label-success" title="' . htmlspecialchars($status_cob_text) . '">Confirmada</span>';
+                break;
+            case 'OVERDUE':
+            case 'expired':
+                $status_badge = '<span class="label label-important" title="' . htmlspecialchars($status_cob_text) . '">Vencida</span>';
+                break;
+            case 'DELETED':
+            case 'canceled':
+                $status_badge = '<span class="label label-inverse" title="' . htmlspecialchars($status_cob_text) . '">Cancelada / Excluída</span>';
+                break;
+            case 'REFUNDED':
+            case 'refunded':
+                $status_badge = '<span class="label label-info" title="' . htmlspecialchars($status_cob_text) . '">Estornada</span>';
+                break;
+            default:
+                $status_badge = '<span class="label" title="' . htmlspecialchars($status_cob_text) . '">' . htmlspecialchars($status_cob_text ?: $status) . '</span>';
+                break;
+        }
+
+        return $status_badge;
     }
 }
 

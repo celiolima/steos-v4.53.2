@@ -14,6 +14,10 @@
             $('#tabela').dataTable({
                 //"ordering": false,
                 "ordering": true,
+                "searching": false,
+                "bFilter": false,
+                "lengthChange": false,
+                "bLengthChange": false,
                 "order": [
                     [0, 'desc']
                 ],

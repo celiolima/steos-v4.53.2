@@ -503,13 +503,30 @@ foreach ($produtos as $p) {
                             if (data.result == true) {
                                 window.location.reload(true);
                             } else {
+                                var rawMsg = data.messages || data.message || "Ocorreu um erro ao tentar faturar venda.";
+                                var cleanMsg = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
                                 Swal.fire({
                                     type: "error",
+                                    icon: "error",
                                     title: "Atenção",
-                                    text: "Ocorreu um erro ao tentar faturar venda."
+                                    html: cleanMsg.replace(/\n/g, "<br>")
                                 });
                                 $('#progress-fatura').hide();
                             }
+                        },
+                        error: function(xhr) {
+                            var rawMsg = "Ocorreu um erro ao tentar faturar venda.";
+                            if (xhr.responseJSON && (xhr.responseJSON.messages || xhr.responseJSON.message)) {
+                                rawMsg = xhr.responseJSON.messages || xhr.responseJSON.message;
+                            }
+                            var cleanMsg = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
+                            Swal.fire({
+                                type: "error",
+                                icon: "error",
+                                title: "Atenção",
+                                html: cleanMsg.replace(/\n/g, "<br>")
+                            });
+                            $('#progress-fatura').hide();
                         }
                     });
 

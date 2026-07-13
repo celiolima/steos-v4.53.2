@@ -29,3 +29,7 @@ ci_sessions/
 uploads
 # application/.env
 assets/userImage
+.agents/
+*.zip
+application/.env_desenvolvimento
+txt.txt

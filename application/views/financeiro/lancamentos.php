@@ -147,7 +147,7 @@ foreach ($results as $r) {
     echo '<td>' . $r->descricao . '</td>';
     echo '<td>' . $vencimento . '</td>';
     echo '<td>' . $status . '</td>';
-    echo '<td>' . $r->observacoes . '</td>';
+    echo '<td><div style="max-height: 80px; overflow-y: auto; max-width: 350px;">' . $r->observacoes . '</div></td>';
     echo '<td>' . $r->forma_pgto . '</td>';
     echo '<td> R$ ' . number_format($r->valor, 2, ',', '.') . '</td>'; //valor total sem o desconto
     echo  $r->tipo_desconto == "real" ? '<td>' . "R$ ".$r->desconto . '</td>' : ($r->tipo_desconto == "porcento" ? '<td>' . $r->desconto." %" . '</td>' : '<td>' . "0" . '</td>'); // valor do desconto
@@ -161,7 +161,7 @@ foreach ($results as $r) {
     }
 
     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
-        echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . ($r->valor_desconto != 0 ? $r->valor_desconto : $r->valor) . '" usuario="' . $r->nome . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+        echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . htmlspecialchars($r->descricao, ENT_QUOTES, 'UTF-8') . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . htmlspecialchars($r->cliente_fornecedor, ENT_QUOTES, 'UTF-8') . '" formaPgto="' . htmlspecialchars($r->forma_pgto, ENT_QUOTES, 'UTF-8') . '" tipo="' . $r->tipo . '" observacoes="' . htmlspecialchars($r->observacoes, ENT_QUOTES, 'UTF-8') . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . ($r->valor_desconto != 0 ? $r->valor_desconto : $r->valor) . '" usuario="' . htmlspecialchars($r->nome, ENT_QUOTES, 'UTF-8') . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
     }
     if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
         echo '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';

@@ -89,6 +89,59 @@ class Produtos extends MY_Controller
         return $this->layout();
     }
 
+    public function adicionarModalOs()
+    {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'aProduto')) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(false));
+        }
+
+        $this->load->library('form_validation');
+
+        if ($this->form_validation->run('produtos') == false) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(false));
+        }
+
+        $precoCompra = $this->input->post('precoCompra');
+        $precoCompra = str_replace(',', '', $precoCompra);
+        $precoVenda = $this->input->post('precoVenda');
+        $precoVenda = str_replace(',', '', $precoVenda);
+
+        $data = [
+            'codDeBarra' => $this->input->post('codDeBarra'),
+            'descricao' => $this->input->post('descricao'),
+            'unidade' => $this->input->post('unidade'),
+            'precoCompra' => $precoCompra,
+            'precoVenda' => $precoVenda,
+            'estoque' => $this->input->post('estoque'),
+            'estoqueMinimo' => $this->input->post('estoqueMinimo'),
+            'saida' => $this->input->post('saida') ? 1 : 0,
+            'entrada' => $this->input->post('entrada') ? 1 : 0,
+        ];
+
+        if ($this->produtos_model->add('produtos', $data) == true) {
+            $id = $this->db->insert_id();
+            log_info('Adicionou um produto via modal OS');
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'result' => true,
+                    'idProdutos' => $id,
+                    'codDeBarra' => $data['codDeBarra'],
+                    'descricao' => $data['descricao'],
+                    'estoque' => $data['estoque'],
+                    'precoVenda' => $data['precoVenda']
+                ]));
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(false));
+    }
+
     public function editar()
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3)) || ! $this->produtos_model->getById($this->uri->segment(3))) {

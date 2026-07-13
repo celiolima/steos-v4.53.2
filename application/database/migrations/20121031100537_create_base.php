@@ -405,6 +405,7 @@ class Migration_create_base extends CI_Migration
   `tipo` varchar(45) DEFAULT NULL,
   `local` varchar(45) DEFAULT NULL,
   `defeito_encontrado` text DEFAULT NULL,
+  `manutPreventiva` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`idOs`),
   KEY `fk_os_clientes1` (`clientes_id`),
   KEY `fk_os_usuarios1` (`usuarios_id`),
@@ -628,6 +629,40 @@ class Migration_create_base extends CI_Migration
   CONSTRAINT `fk_sistemas_contratos_checks_sistemas_contratos` FOREIGN KEY (`sistemas_contratos_id`) REFERENCES `sistemas_contratos` (`idSistemas_contratos`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
 
+        $this->db->query('DROP TABLE IF EXISTS `os_checklists`');
+        $this->db->query('CREATE TABLE `os_checklists` (
+  `idChecklist` int(11) NOT NULL AUTO_INCREMENT,
+  `os_id` int(11) NOT NULL,
+  `contratos_id` int(11) NOT NULL,
+  `data_criacao` datetime NOT NULL,
+  `usuarios_id` int(11) NOT NULL,
+  `status` varchar(50) DEFAULT \'Aberto\',
+  `observacoes` text DEFAULT NULL,
+  `assinatura_cliente` longtext DEFAULT NULL,
+  `assinatura_tecnico` longtext DEFAULT NULL,
+  `nome_tecnico` varchar(100) DEFAULT NULL,
+  `data_checklist` date DEFAULT NULL,
+  `obs_gerais` text DEFAULT NULL,
+  PRIMARY KEY (`idChecklist`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
+
+        $this->db->query('DROP TABLE IF EXISTS `os_checklists_itens`');
+        $this->db->query('CREATE TABLE `os_checklists_itens` (
+  `idItem` int(11) NOT NULL AUTO_INCREMENT,
+  `checklist_id` int(11) NOT NULL,
+  `descricao` text NOT NULL,
+  `concluido` tinyint(1) DEFAULT 0,
+  `observacoes` text DEFAULT NULL,
+  `sistema` varchar(100) DEFAULT NULL,
+  `local` varchar(100) DEFAULT NULL,
+  `check_desc` varchar(255) DEFAULT NULL,
+  `status` varchar(10) DEFAULT NULL,
+  `obs_local` text DEFAULT NULL,
+  `os_local` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`idItem`),
+  KEY `fk_os_checklists_itens` (`checklist_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
+
         $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
     }
 
@@ -635,6 +670,8 @@ class Migration_create_base extends CI_Migration
     {
         $this->db->query('SET FOREIGN_KEY_CHECKS = 0');
 
+        $this->db->query('DROP TABLE IF EXISTS `os_checklists_itens`');
+        $this->db->query('DROP TABLE IF EXISTS `os_checklists`');
         $this->db->query('DROP TABLE IF EXISTS `sistemas_contratos_checks`');
         $this->db->query('DROP TABLE IF EXISTS `sistemas_contratos`');
         $this->db->query('DROP TABLE IF EXISTS `sistemas_checks`');

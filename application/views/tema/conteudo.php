@@ -19,8 +19,28 @@
     <div class="container-flu">
       <div class="row-fluid">
         <div class="span12">
-          <?php if ($var = $this->session->flashdata('success')): ?><script>swal("Sucesso!", "<?php echo str_replace('"', '', $var); ?>", "success");</script><?php endif; ?>
-          <?php if ($var = $this->session->flashdata('error')): ?><script>swal("Falha!", "<?php echo str_replace('"', '', $var); ?>", "error");</script><?php endif; ?>
+          <?php if ($var = $this->session->flashdata('success')): ?>
+              <script>
+                  var rawMsg = <?php echo json_encode($var); ?> || "";
+                  var cleanText = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
+                  if (typeof Swal !== 'undefined') {
+                      Swal.fire({ title: "Sucesso!", html: cleanText.replace(/\n/g, "<br>"), icon: "success" });
+                  } else {
+                      swal("Sucesso!", cleanText, "success");
+                  }
+              </script>
+          <?php endif; ?>
+          <?php if ($var = $this->session->flashdata('error')): ?>
+              <script>
+                  var rawMsg = <?php echo json_encode($var); ?> || "";
+                  var cleanText = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
+                  if (typeof Swal !== 'undefined') {
+                      Swal.fire({ title: "Falha!", html: cleanText.replace(/\n/g, "<br>"), icon: "error" });
+                  } else {
+                      swal("Falha!", cleanText, "error");
+                  }
+              </script>
+          <?php endif; ?>
           <?php if (isset($view)) {
               echo $this->load->view($view, null, true);
           } ?>

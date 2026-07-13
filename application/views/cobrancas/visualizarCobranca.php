@@ -78,10 +78,10 @@
                             <td style="text-align: right"><strong>Status atual</strong></td>
                             <td>
                                 <?php
-                                    echo getCobrancaTransactionStatus(
+                                    echo getCobrancaStatusBadge(
+                                        $result->status,
                                         $this->config->item('payment_gateways'),
-                                        $result->payment_gateway,
-                                        $result->status
+                                        $result->payment_gateway
                                     );
                                 ?>
                             </td>
@@ -104,7 +104,9 @@
                         <tr>
                             <td style="text-align: right"><strong>Url de pagamento</strong></td>
                             <td>
-                                <?php echo $result->payment_url; ?>
+                                <?php if (!empty($result->payment_url)) { ?>
+                                    <a href="<?php echo $result->payment_url; ?>" target="_blank" title="Abrir URL em nova aba"><?php echo $result->payment_url; ?> <i class="fas fa-external-link-alt" style="margin-left: 4px;"></i></a>
+                                <?php } else { echo '-'; } ?>
                             </td>
                         </tr>
 

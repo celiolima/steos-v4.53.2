@@ -704,6 +704,7 @@ class Os extends MY_Controller
         
         $where = "vendas_id = '$os->idOs'";
         $this->data['lancamentos'] = $this->financeiro_model->get1('lancamentos', '*', $where);
+        $this->data['cobrancas_os'] = $this->os_model->getCobrancas($os->idOs);
 
         $this->data['tecnicos'] = $this->tecnicos_model->getAll();
 
@@ -1629,6 +1630,23 @@ class Os extends MY_Controller
                     ->set_output(json_encode(['result' => false]));
             }
 
+            if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+                $this->load->library('Gateways/Asaas');
+                if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
+                    $osEntity = $this->os_model->getById($os_id);
+                    if ($erros = $this->asaas->errosCadastro($osEntity)) {
+                        return $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode([
+                                'result' => false,
+                                'messages' => "Não foi possível faturar no Asaas.\n" . trim($erros),
+                                'message' => "Não foi possível faturar no Asaas.\n" . trim($erros)
+                            ]));
+                    }
+                }
+            }
+
             $dadosOs = [
                 'faturado' => 1,
                 'valorTotal' => $valorTotal,
@@ -1642,7 +1660,24 @@ class Os extends MY_Controller
                 $dadosOs['valor_desconto'] = $valorTotal;
             }
 
-            if ($this->os_model->faturarOs($os_id, $data, $dadosOs)) {
+            if ($idLancamento = $this->os_model->faturarOs($os_id, $data, $dadosOs)) {
+                if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+                    try {
+                        $this->load->library('Gateways/Asaas');
+                        if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
+                            $cobrancaDados = [
+                                'vencimento' => $vencimento,
+                                'valor' => $valorTotalComDesconto > 0 ? $valorTotalComDesconto : $valorTotal,
+                                'forma_pagamento' => $this->input->post('formaPgto') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
+                                'descricao' => "OS #{$os_id}",
+                                'lancamentos_id' => $idLancamento
+                            ];
+                            $this->asaas->gerarCobranca($os_id, 'os', $this->input->post('formaPgto') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
+                        }
+                    } catch (\Exception $e) {
+                        log_message('error', 'Erro ao emitir cobrança no Asaas para OS: ' . $e->getMessage());
+                    }
+                }
                 log_info('Faturou uma OS. ID: ' . $os_id);
                 $this->session->set_flashdata('success', 'OS faturada com sucesso!');
                 $json = ['result' => true];

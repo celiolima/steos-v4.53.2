@@ -24,10 +24,16 @@ class Asaas extends BasePaymentGateway
 
         $asaasConfig = $this->ci->config->item('payment_gateways')['Asaas'];
         $this->asaasConfig = $asaasConfig;
+        $this->ci->load->helper('asaas');
         $this->asaasApi = new AsaasSdk(
             $asaasConfig['credentials']['api_key'],
             $asaasConfig['production'] === true ? 'producao' : 'homologacao'
         );
+    }
+
+    public function isConfigured()
+    {
+        return !empty($this->asaasConfig['credentials']['api_key']);
     }
 
     public function cancelar($id)
@@ -100,39 +106,36 @@ class Asaas extends BasePaymentGateway
             throw new \Exception('Cobrança não existe!');
         }
 
-        if ($cobranca->payment_method == 'boleto') {
-            $result = $this->asaasApi->Cobranca()->getById($cobranca->charge_id);
-        } else {
-            throw new Exception('Devido à limitação da Asaas, somente é possível atualizar cobranças com boletos!');
-        }
+        // Requisição v3 nativa, suporta Boletos, Pix e Cartão (sem limitação legada do SDK)
+        $this->ci->load->helper('asaas');
+        $result = asaas_api_request('/v3/payments/' . $cobranca->charge_id, 'GET');
 
         // Verifica se a cobrança já foi deletada
-        if ($result->deleted) {
-            // Atribui o valor DELETED ao status para atualizar o status no banco de dados
+        if (!empty($result->deleted) && $result->deleted == true) {
             $result->status = 'DELETED';
         }
-        
-        // Cobrança foi paga ou foi confirmada de forma manual, então damos baixa
-        if ($result->status == 'RECEIVED' || $result->status == 'CONFIRMED' || $result->status == 'DUNNING_RECEIVED') {
-            // TODO: dar baixa no lançamento caso exista
-        }
 
-        $databaseResult = $this->ci->cobrancas_model->edit(
-            'cobrancas',
-            [
-                'status' => $result->status,
-            ],
-            'idCobranca',
-            $id
-        );
-
-        if ($databaseResult == true) {
-            $this->ci->session->set_flashdata('success', 'Cobrança atualizada com sucesso!');
-            log_info('Alterou um status de cobrança. ID' . $id);
+        // Importa e executa o motor sênior de baixa e conciliação (atualiza cobrancas, os, vendas e lancamentos)
+        if (file_exists(APPPATH . 'controllers/Asaas_webhook.php')) {
+            require_once APPPATH . 'controllers/Asaas_webhook.php';
+            if (class_exists('Asaas_webhook') && method_exists('Asaas_webhook', 'executarBaixaEConciliacao')) {
+                $valorReais = round($cobranca->total / 100, 2);
+                if ($valorReais <= 0 && isset($result->value)) {
+                    $valorReais = floatval($result->value);
+                }
+                $dataPagamento = !empty($result->paymentDate) ? date('Y-m-d', strtotime($result->paymentDate)) : (!empty($result->clientPaymentDate) ? date('Y-m-d', strtotime($result->clientPaymentDate)) : date('Y-m-d'));
+                
+                \Asaas_webhook::executarBaixaEConciliacao($cobranca, $result->status, $valorReais, $dataPagamento);
+            } else {
+                $this->ci->cobrancas_model->edit('cobrancas', ['status' => $result->status], 'idCobranca', $id);
+            }
         } else {
-            $this->ci->session->set_flashdata('error', 'Erro ao atualizar cobrança!');
-            throw new \Exception('Erro ao atualizar cobrança!');
+            $this->ci->cobrancas_model->edit('cobrancas', ['status' => $result->status], 'idCobranca', $id);
         }
+
+        $this->ci->session->set_flashdata('success', 'Cobrança atualizada com sucesso!');
+        log_info('Alterou um status e conciliou cobrança. ID' . $id);
+        return true;
     }
 
     public function confirmarPagamento($id)
@@ -142,31 +145,18 @@ class Asaas extends BasePaymentGateway
             throw new \Exception('Cobrança não existe!');
         }
 
-        if ($cobranca->payment_method == 'boleto') {
-            $result = $this->asaasApi->Cobranca()->confirmacao(
-                $cobranca->charge_id,
-                [
-                    'paymentDate' => (new DateTime())->format('Y-m-d'),
-                    'value' => round($cobranca->total / 100, 2),
-                ]
-            );
-            if ($result && ! empty($result->errors)) {
-                // A resposta da API inclui erros
-                foreach ($result->errors as $error) {
-                    throw new \Exception('Erro ao chamar Asaas.\n\n' . $error->description);
-                }
-            } elseif (! $result) {
-                // A chamada para a API falhou de alguma forma
-                throw new \Exception('Falha na chamada para a API Asaas');
-            }
-        } else {
-            throw new Exception('Devido à limitação da Asaas, somente é possível confirmar cobranças com boletos!');
-        }
+        $this->ci->load->helper('asaas');
+        $payload = [
+            'paymentDate' => (new DateTime())->format('Y-m-d'),
+            'value' => round($cobranca->total / 100, 2),
+        ];
+
+        asaas_api_request('/v3/payments/' . $cobranca->charge_id . '/receiveInCash', 'POST', $payload);
 
         return $this->atualizarDados($id);
     }
 
-    protected function gerarCobrancaBoleto($id, $tipo)
+    protected function gerarCobrancaBoleto($id, $tipo, $data = [])
     {
         $entity = $this->findEntity($id, $tipo);
         $produtos = $tipo === PaymentGateway::PAYMENT_TYPE_OS
@@ -217,7 +207,7 @@ class Asaas extends BasePaymentGateway
             throw new \Exception('OS ou venda não existe!');
         }
 
-        if (($totalProdutos + $totalServicos) <= 0) {
+        if (($totalProdutos + $totalServicos) <= 0 && empty($data['valor'])) {
             throw new \Exception('OS ou venda com valor negativo ou zero!');
         }
 
@@ -225,17 +215,40 @@ class Asaas extends BasePaymentGateway
             throw new \Exception($err);
         }
 
-        $expirationDate = (new DateTime())->add(new DateInterval($this->asaasConfig['boleto_expiration']));
-        $expirationDate = ($expirationDate->format('Y-m-d'));
+        if (!empty($data['vencimento'])) {
+            $expirationDate = $data['vencimento'];
+        } else {
+            $expirationDate = (new DateTime())->add(new DateInterval($this->asaasConfig['boleto_expiration']));
+            $expirationDate = ($expirationDate->format('Y-m-d'));
+        }
+
+        if (!empty($data['valor']) && floatval($data['valor']) > 0) {
+            $valorCobrar = floatval($data['valor']);
+        } else {
+            $valorCobrar = $this->valorTotal($totalProdutos, $totalServicos, $totalDesconto, $tipoDesconto);
+        }
+
+        $billingType = 'BOLETO';
+        if (!empty($data['forma_pagamento']) && (stripos($data['forma_pagamento'], 'pix') !== false || $data['forma_pagamento'] === 'PIX')) {
+            $billingType = 'PIX';
+        }
+
+        $description = !empty($data['descricao']) ? $data['descricao'] : ($tipo === PaymentGateway::PAYMENT_TYPE_OS ? "OS #$id" : "Venda #$id");
+
         $body = [
             'customer' => $this->criarOuRetornarClienteAsaasId($entity->clientes_id),
-            'billingType' => 'BOLETO',
+            'billingType' => $billingType,
             'dueDate' => $expirationDate,
-            'value' => $this->valorTotal($totalProdutos, $totalServicos, $totalDesconto, $tipoDesconto),
-            'description' => $tipo === PaymentGateway::PAYMENT_TYPE_OS ? "OS #$id" : "Venda #$id",
+            'value' => $valorCobrar,
+            'description' => $description,
             'externalReference' => $id,
             'postalService' => false,
         ];
+
+        if (!empty($data['installmentCount']) && intval($data['installmentCount']) > 1) {
+            $body['installmentCount'] = intval($data['installmentCount']);
+            $body['installmentValue'] = !empty($data['installmentValue']) ? floatval($data['installmentValue']) : ($valorCobrar / intval($data['installmentCount']));
+        }
 
         $result = $this->asaasApi->Cobranca()->create($body);
 
@@ -249,8 +262,8 @@ class Asaas extends BasePaymentGateway
             throw new \Exception('Falha na chamada para a API Asaas');
         }
 
-        $title = $tipo === PaymentGateway::PAYMENT_TYPE_OS ? "OS #$id" : "Venda #$id";
-        $data = [
+        $title = $description;
+        $dataCobranca = [
             'barcode' => '',
             'link' => $result->invoiceUrl,
             'payment_url' => $result->invoiceUrl,
@@ -258,31 +271,35 @@ class Asaas extends BasePaymentGateway
             'expire_at' => $result->dueDate,
             'charge_id' => $result->id,
             'status' => $result->status,
-            'total' => getMoneyAsCents($this->valorTotal($totalProdutos, $totalServicos, $totalDesconto, $tipoDesconto)),
+            'total' => getMoneyAsCents($valorCobrar),
             'payment' => $result->billingType,
             'clientes_id' => $entity->idClientes,
-            'payment_method' => 'boleto',
+            'payment_method' => strtolower($billingType),
             'payment_gateway' => 'Asaas',
             'message' => 'Pagamento referente a ' . $title,
         ];
 
-        if ($tipo === PaymentGateway::PAYMENT_TYPE_OS) {
-            $data['os_id'] = $id;
-        } else {
-            $data['vendas_id'] = $id;
+        if (!empty($data['lancamentos_id'])) {
+            $dataCobranca['message'] = $description;
         }
 
-        if ($id = $this->ci->cobrancas_model->add('cobrancas', $data, true)) {
-            $data['idCobranca'] = $id;
+        if ($tipo === PaymentGateway::PAYMENT_TYPE_OS) {
+            $dataCobranca['os_id'] = $id;
+        } else {
+            $dataCobranca['vendas_id'] = $id;
+        }
+
+        if ($idCobranca = $this->ci->cobrancas_model->add('cobrancas', $dataCobranca, true)) {
+            $dataCobranca['idCobranca'] = $idCobranca;
             log_info('Cobrança criada com successo. ID: ' . $result->id);
         } else {
             throw new \Exception('Erro ao salvar cobrança!');
         }
 
-        return $data;
+        return $dataCobranca;
     }
 
-    protected function gerarCobrancaLink($id, $tipo)
+    protected function gerarCobrancaLink($id, $tipo, $data = [])
     {
         $entity = $this->findEntity($id, $tipo);
         $produtos = $tipo === PaymentGateway::PAYMENT_TYPE_OS
@@ -416,51 +433,86 @@ class Asaas extends BasePaymentGateway
             throw new Exception('Cliente não encontrado: ' . $clienteId);
         }
 
-        if (isset($cliente['asaas_id'])) {
+        if (!empty($cliente['asaas_id'])) {
             return $cliente['asaas_id'];
         }
 
-        $result = $this->asaasApi->Cliente()->create([
+        $this->ci->load->helper('asaas');
+        $docLimpo = preg_replace('/[^0-9]/', '', $cliente['documento'] ?? '');
+
+        // Fase 1.2: Consulta inteligente anti-duplicidade antes do POST
+        if (!empty($docLimpo)) {
+            try {
+                $busca = asaas_api_request('/v3/customers?cpfCnpj=' . $docLimpo, 'GET');
+                if (!empty($busca->data) && count($busca->data) > 0) {
+                    $asaasIdExistente = $busca->data[0]->id;
+                    $this->ci->clientes_model->edit(
+                        'clientes',
+                        ['asaas_id' => $asaasIdExistente],
+                        'idClientes',
+                        $clienteId
+                    );
+                    return $asaasIdExistente;
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'Falha ao buscar cliente por CPF/CNPJ no Asaas: ' . $e->getMessage());
+            }
+        }
+
+        $body = [
             'name' => $cliente['nomeCliente'],
             'email' => $cliente['email'],
-            'phone' => preg_replace('/[^0-9]/', '', $cliente['telefone']),
-            'mobilePhone' => preg_replace('/[^0-9]/', '', $cliente['celular']),
-            'cpfCnpj' => preg_replace('/[^0-9]/', '', $cliente['documento']),
-            'postalCode' => $cliente['cep'],
-            'address' => $cliente['rua'],
-            'addressNumber' => $cliente['numero'],
-            'complement' => $cliente['complemento'],
-            'province' => $cliente['bairro'],
-            'city' => $cliente['cidade'],
-            'state' => $cliente['estado'],
+            'phone' => preg_replace('/[^0-9]/', '', $cliente['telefone'] ?? ''),
+            'mobilePhone' => preg_replace('/[^0-9]/', '', $cliente['celular'] ?? ''),
+            'cpfCnpj' => $docLimpo,
+            'postalCode' => $cliente['cep'] ?? '',
+            'address' => $cliente['rua'] ?? '',
+            'addressNumber' => $cliente['numero'] ?? '',
+            'complement' => $cliente['complemento'] ?? '',
+            'province' => $cliente['bairro'] ?? '',
+            'city' => $cliente['cidade'] ?? '',
+            'state' => $cliente['estado'] ?? '',
             'country' => 'Brasil',
-            'externalReference' => $clienteId,
+            'externalReference' => (string) $clienteId,
             'notificationDisabled' => $this->asaasConfig['notify'] === false,
             'observations' => '',
             'groupName' => 'steos',
-        ]);
+        ];
 
-        if ($result && ! empty($result->errors)) {
-            foreach ($result->errors as $error) {
-                throw new \Exception('Erro ao criar cliente no Asaas: ' . $error->description);
-            }
-        } elseif (! $result) {
-            throw new \Exception('Erro de comunicação ao criar cliente na Asaas!');
+        $result = asaas_api_request('/v3/customers', 'POST', $body);
+
+        if (!empty($result->id)) {
+            $this->ci->clientes_model->edit(
+                'clientes',
+                ['asaas_id' => $result->id],
+                'idClientes',
+                $clienteId
+            );
+            return $result->id;
         }
 
-        $success = $this->ci->clientes_model->edit(
-            'clientes',
-            [
-                'asaas_id' => $result->id,
-            ],
-            'idClientes',
-            $clienteId
-        );
+        throw new Exception('Erro ao criar ou vincular ID do cliente no Asaas!');
+    }
 
-        if ($success) {
-            return $result->id;
-        } else {
-            throw new Exception('Erro ao vincular ID do cliente criado na Asaas!');
+    /**
+     * Fase 1.3: QR Code Pix Instantâneo e Copia-e-Cola
+     */
+    public function getPixQrCode($chargeId)
+    {
+        try {
+            $this->ci->load->helper('asaas');
+            $response = asaas_api_request('/v3/payments/' . $chargeId . '/pixQrCode', 'GET');
+            return [
+                'success' => true,
+                'encodedImage' => $response->encodedImage ?? null,
+                'payload' => $response->payload ?? null,
+                'expirationDate' => $response->expirationDate ?? null,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
         }
     }
 }

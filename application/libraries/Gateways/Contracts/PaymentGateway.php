@@ -12,6 +12,8 @@ interface PaymentGateway
 
     const PAYMENT_METHOD_LINK = 'link';
 
+    public function isConfigured();
+
     public function gerarCobranca($id, $tipo, $metodoPagamento, $data = []);
 
     public function findEntity($id, $tipo);

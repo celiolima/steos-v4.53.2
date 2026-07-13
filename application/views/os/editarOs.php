@@ -791,6 +791,10 @@ if (!empty($lancamentos)) {
                         <!--  TAB FATURAS -->
                         <?php if ($result->faturado == 1 || $despesa == 1) { ?>
 
+                            <?php
+                            $cobrancas_da_os = isset($cobrancas_os) ? $cobrancas_os : (!empty($result->idOs) ? $this->db->where('os_id', $result->idOs)->get('cobrancas')->result() : []);
+                            $tem_cobranca = !empty($cobrancas_da_os);
+                            ?>
                             <div class="tab-pane" id="tab8">
                                 <div class="widget-box">
                                     <div class="widget-content nopadding tab-content">
@@ -808,14 +812,20 @@ if (!empty($lancamentos)) {
                                                     <th>Valor (+)</th>
                                                     <th>Desconto (-)</th>
                                                     <th>Valor Total (=)</th>
-                                                    <!-- <th>Ações</th> -->
+                                                    <?php if ($tem_cobranca) { ?>
+                                                        <th>Status Cobrança</th>
+                                                        <th>Ação</th>
+                                                    <?php } else { ?>
+                                                        <!-- <th>Ações</th> -->
+                                                    <?php } ?>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php
                                                 if (empty($lancamentos)) {
+                                                    $colspan_faturas = $tem_cobranca ? 11 : 9;
                                                     echo '<tr>
-                                                                <td colspan="9" >Nenhum lançamento encontrado</td>
+                                                                <td colspan="' . $colspan_faturas . '" >Nenhum lançamento encontrado</td>
                                                                 </tr>';
                                                 } else {
 
@@ -848,26 +858,75 @@ if (!empty($lancamentos)) {
                                                         echo  $r->tipo_desconto == "real" ? '<td>' . "R$ " . $r->desconto . '</td>' : ($r->tipo_desconto == "porcento" ? '<td>' . $r->desconto . " %" . '</td>' : '<td>' . "0" . '</td>'); // valor do desconto
                                                         echo $r->valor_desconto != 0 ? '<td> R$ ' . number_format($r->valor_desconto, 2, ',', '.') . '</td>' : '<td> R$ ' . number_format($r->valor, 2, ',', '.') . '</td>'; // valor total  com o desconto
 
-                                                        echo '<td>';
-                                                        if ($r->data_pagamento == "0000-00-00") {
-                                                            $data_pagamento = "";
-                                                        } else {
-                                                            $data_pagamento = date('d/m/Y', strtotime($r->data_pagamento));
-                                                        }
-
-
-                                                        /*   if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
-                                                            if ($r->valor_desconto == 0) {
-                                                                echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->valor . '" valorEditar_sem_desconto="' . $r->valor . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
-                                                            } else {
-                                                                echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor_desconto . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->desconto . '" valorEditar_sem_desconto="' . $r->valor  . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                                        if ($tem_cobranca) {
+                                                            $cobranca_vinculada = null;
+                                                            foreach ($cobrancas_da_os as $cob) {
+                                                                if (!empty($cob->charge_id) && (strpos($r->descricao, $cob->charge_id) !== false || strpos($r->observacoes, $cob->charge_id) !== false)) {
+                                                                    $cobranca_vinculada = $cob;
+                                                                    break;
+                                                                }
+                                                                if (!empty($cob->idCobranca) && (strpos($r->descricao, (string)$cob->idCobranca) !== false || strpos($r->observacoes, (string)$cob->idCobranca) !== false)) {
+                                                                    $cobranca_vinculada = $cob;
+                                                                    break;
+                                                                }
                                                             }
-                                                        }
-                                                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
-                                                            echo '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
-                                                        } */
+                                                            if (!$cobranca_vinculada) {
+                                                                foreach ($cobrancas_da_os as $cob) {
+                                                                    $valor_cob = round($cob->total / 100, 2);
+                                                                    $valor_r = round($r->valor_desconto != 0 ? $r->valor_desconto : $r->valor, 2);
+                                                                    if (abs($valor_cob - $valor_r) <= 0.05 && $cob->expire_at == $r->data_vencimento) {
+                                                                        $cobranca_vinculada = $cob;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                            if (!$cobranca_vinculada && count($cobrancas_da_os) == 1) {
+                                                                $cobranca_vinculada = $cobrancas_da_os[0];
+                                                            }
 
-                                                        echo '</td>';
+                                                            if ($cobranca_vinculada) {
+                                                                $status_badge = getCobrancaStatusBadge(
+                                                                    $cobranca_vinculada->status,
+                                                                    $this->config->item('payment_gateways'),
+                                                                    $cobranca_vinculada->payment_gateway
+                                                                );
+                                                                echo '<td>' . $status_badge . '</td>';
+                                                            } else {
+                                                                echo '<td>-</td>';
+                                                            }
+
+                                                            echo '<td>';
+                                                            if ($cobranca_vinculada) {
+                                                                if (!empty($cobranca_vinculada->link)) {
+                                                                    echo '<a style="margin-right: 1%" href="' . $cobranca_vinculada->link . '" target="_blank" class="btn-nwe" title="Visualizar Boleto / Link Online"><i class="bx bx-barcode"></i></a>';
+                                                                }
+                                                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/cobrancas/visualizar/' . $cobranca_vinculada->idCobranca . '" class="btn-nwe2" title="Visualizar Detalhes da Cobrança"><i class="bx bx-show"></i></a>';
+                                                            } else {
+                                                                echo '-';
+                                                            }
+                                                            echo '</td>';
+                                                        } else {
+                                                            echo '<td>';
+                                                            if ($r->data_pagamento == "0000-00-00") {
+                                                                $data_pagamento = "";
+                                                            } else {
+                                                                $data_pagamento = date('d/m/Y', strtotime($r->data_pagamento));
+                                                            }
+
+
+                                                            /*   if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
+                                                                if ($r->valor_desconto == 0) {
+                                                                    echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->valor . '" valorEditar_sem_desconto="' . $r->valor . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                                                } else {
+                                                                    echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor_desconto . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->desconto . '" valorEditar_sem_desconto="' . $r->valor  . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                                                }
+                                                            }
+                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
+                                                                echo '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
+                                                            } */
+
+                                                            echo '</td>';
+                                                        }
                                                         echo '</tr>';
                                                     }
                                                 } ?>
@@ -1366,6 +1425,7 @@ if (!empty($lancamentos)) {
                         <select name="formaPgto" id="formaPgto" class="span12">
                             <option value="Dinheiro">Dinheiro</option>
                             <option value="Pix">Pix</option>
+                            <option value="Pix (Asaas)">Pix / QR Code (Asaas)</option>
                             <option value="Cartão de Débito">Cartão de Débito</option>
                             <option value="Depósito">Depósito</option>
                         </select>
@@ -1534,6 +1594,8 @@ if (!empty($lancamentos)) {
                     <label for="formaPgto_parc">Forma Pgto</label>
                     <select name="formaPgto_parc" id="formaPgto_parc" class="span12" style="margin-left: 0">
                         <option value="Boleto">Boleto</option>
+                        <option value="Boleto (Asaas)">Boleto (Asaas)</option>
+                        <option value="Pix (Asaas)">Pix / QR Code (Asaas)</option>
                         <option value="Cartão de Crédito">Cartão de Crédito</option>
                         <option value="Cartão de Débito">Cartão de Débito</option>
                         <option value="Cheque">Cheque</option>
@@ -2141,7 +2203,7 @@ if (!empty($lancamentos)) {
                     var selected = (data[i].id == curr_contrato_id) ? ' selected' : '';
                     options += '<option value="' + data[i].id + '"' + selected + '>' + data[i].nome + '</option>';
                 }
-                $("#contratos_id").html(options);
+                $("#contratos_id").html(options).trigger('change');
             });
         }
 
@@ -2220,14 +2282,31 @@ if (!empty($lancamentos)) {
                             if (data.result == true) {
                                 window.location.reload(true);
                             } else {
-                                Swal.fire({
-                                    type: "error",
-                                    title: "Atenção",
-                                    text: "Ocorreu um erro ao tentar faturar OS."
-                                });
-                                $('#progress-fatura').hide();
-                            }
+                            var rawMsg = data.messages || data.message || "Ocorreu um erro ao tentar faturar OS.";
+                            var cleanMsg = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
+                            Swal.fire({
+                                type: "error",
+                                icon: "error",
+                                title: "Atenção",
+                                html: cleanMsg.replace(/\n/g, "<br>")
+                            });
+                            $('#progress-fatura').hide();
                         }
+                    },
+                    error: function(xhr) {
+                        var rawMsg = "Ocorreu um erro ao tentar faturar OS.";
+                        if (xhr.responseJSON && (xhr.responseJSON.messages || xhr.responseJSON.message)) {
+                            rawMsg = xhr.responseJSON.messages || xhr.responseJSON.message;
+                        }
+                        var cleanMsg = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
+                        Swal.fire({
+                            type: "error",
+                            icon: "error",
+                            title: "Atenção",
+                            html: cleanMsg.replace(/\n/g, "<br>")
+                        });
+                        $('#progress-fatura').hide();
+                    }
                     });
 
                     return false;
@@ -2325,13 +2404,30 @@ if (!empty($lancamentos)) {
 
                             window.location.reload(true);
                         } else {
+                            var rawMsg = data.messages || data.message || "Ocorreu um erro ao tentar faturar OS.";
+                            var cleanMsg = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
                             Swal.fire({
                                 type: "error",
+                                icon: "error",
                                 title: "Atenção",
-                                text: "Ocorreu um erro ao tentar  OS."
+                                html: cleanMsg.replace(/\n/g, "<br>")
                             });
                             $('#progress-fatura').hide();
                         }
+                    },
+                    error: function(xhr) {
+                        var rawMsg = "Ocorreu um erro ao tentar faturar OS.";
+                        if (xhr.responseJSON && (xhr.responseJSON.messages || xhr.responseJSON.message)) {
+                            rawMsg = xhr.responseJSON.messages || xhr.responseJSON.message;
+                        }
+                        var cleanMsg = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
+                        Swal.fire({
+                            type: "error",
+                            icon: "error",
+                            title: "Atenção",
+                            html: cleanMsg.replace(/\n/g, "<br>")
+                        });
+                        $('#progress-fatura').hide();
                     }
                 });
 
@@ -2379,7 +2475,7 @@ if (!empty($lancamentos)) {
                         for (var i = 0; i < data.length; i++) {
                             options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
                         }
-                        $("#contratos_id").html(options);
+                        $("#contratos_id").html(options).trigger('change');
                     });
                 }
             },
@@ -3531,16 +3627,27 @@ if (!empty($lancamentos)) {
                         title: 'Sucesso',
                         text: response.message
                     });
-                    setTimeout(function() {
-                        $("#cliente").val(response.nomeCliente).trigger('change');
-                        $("#clientes_id").val(response.id).trigger('change');
-                    }, 400);
+                    var atualizarClienteOS = function() {
+                        try { $("#cliente").autocomplete("close"); } catch(e) {}
+                        $("#cliente").val(response.nomeCliente);
+                        $("#clientes_id").val(response.id);
+                        try {
+                            var ac = $("#cliente").data("ui-autocomplete") || $("#cliente").data("autocomplete");
+                            if (ac) {
+                                ac.term = response.nomeCliente;
+                                ac.selectedItem = { id: response.id, label: response.nomeCliente, value: response.nomeCliente };
+                            }
+                        } catch(e) {}
+                    };
+                    atualizarClienteOS();
+                    setTimeout(atualizarClienteOS, 500);
+                    setTimeout(atualizarClienteOS, 1200);
                     $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: response.id}, function(data) {
                         var options = '<option value="">Nenhum Contrato</option>';
                         for (var j = 0; j < data.length; j++) {
                             options += '<option value="' + data[j].id + '">' + data[j].nome + '</option>';
                         }
-                        $("#contratos_id").html(options);
+                        $("#contratos_id").html(options).trigger('change');
                     });
                 } else {
                     Swal.fire({
@@ -3563,6 +3670,15 @@ if (!empty($lancamentos)) {
     $.getJSON('<?php echo base_url() ?>assets/json/estados.json', function(data) {
         for (var idx in data.estados) {
             $('#estado').append(new Option(data.estados[idx].nome, data.estados[idx].sigla));
+        }
+    });
+
+    $(document).on('change', '#contratos_id', function() {
+        var contratoVal = $(this).val();
+        if (contratoVal !== "" && contratoVal !== null && contratoVal !== "0") {
+            $("#tipo").val("Contrato").trigger('change');
+        } else {
+            $("#tipo").val("Avulso").trigger('change');
         }
     });
     //***** */

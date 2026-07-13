@@ -82,6 +82,49 @@ class Servicos extends MY_Controller
         return $this->layout();
     }
 
+    public function adicionarModalOs()
+    {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'aServico')) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(false));
+        }
+
+        $this->load->library('form_validation');
+
+        if ($this->form_validation->run('servicos') == false) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(false));
+        }
+
+        $preco = $this->input->post('preco');
+        $preco = str_replace(',', '', $preco);
+
+        $data = [
+            'nome' => $this->input->post('nome'),
+            'descricao' => $this->input->post('descricao'),
+            'preco' => $preco,
+        ];
+
+        if ($this->servicos_model->add('servicos', $data) == true) {
+            $id = $this->db->insert_id();
+            log_info('Adicionou um serviço via modal OS');
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'result' => true,
+                    'idServico' => $id,
+                    'servico' => $data['nome'],
+                    'preco_servico' => $data['preco']
+                ]));
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(false));
+    }
+
     public function editar()
     {
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3)) || ! $this->servicos_model->getById($this->uri->segment(3))) {

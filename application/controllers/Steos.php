@@ -567,6 +567,7 @@ class Steos extends MY_Controller
                 'PAYMENT_GATEWAYS_ASAAS_PRODUCTION' => $this->input->post('PAYMENT_GATEWAYS_ASAAS_PRODUCTION'),
                 'PAYMENT_GATEWAYS_ASAAS_NOTIFY' => $this->input->post('PAYMENT_GATEWAYS_ASAAS_NOTIFY'),
                 'PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY' => $this->input->post('PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY'),
+                'PAYMENT_GATEWAYS_ASAAS_WEBHOOK_TOKEN' => $this->input->post('PAYMENT_GATEWAYS_ASAAS_WEBHOOK_TOKEN'),
                 'PAYMENT_GATEWAYS_ASAAS_BOLETO_EXPIRATION' => $this->input->post('PAYMENT_GATEWAYS_ASAAS_BOLETO_EXPIRATION'),
                 'API_ENABLED' => $this->input->post('apiEnabled'),
                 'API_TOKEN_EXPIRE_TIME' => $this->input->post('apiExpireTime'),

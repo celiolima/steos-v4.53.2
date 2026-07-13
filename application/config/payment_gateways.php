@@ -78,6 +78,7 @@ $config['payment_gateways'] = [
         'library_name' => 'Asaas',
         'production' => isset($_ENV['PAYMENT_GATEWAYS_ASAAS_PRODUCTION']) ? filter_var($_ENV['PAYMENT_GATEWAYS_ASAAS_PRODUCTION'], FILTER_VALIDATE_BOOLEAN) : false,
         'notify' => isset($_ENV['PAYMENT_GATEWAYS_ASAAS_NOTIFY']) ? filter_var($_ENV['PAYMENT_GATEWAYS_ASAAS_NOTIFY'], FILTER_VALIDATE_BOOLEAN) : false,
+        'webhook_token' => $_ENV['PAYMENT_GATEWAYS_ASAAS_WEBHOOK_TOKEN'] ?? '',
         'credentials' => [
             'api_key' => $_ENV['PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY'] ?? '',
         ],

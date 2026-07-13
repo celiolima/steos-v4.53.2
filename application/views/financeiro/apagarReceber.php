@@ -475,9 +475,9 @@ exit; */
 
                                                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
                                                                     if ($r->valor_desconto == 0) {
-                                                                        echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->valor . '" valorEditar_sem_desconto="' . $r->valor . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                                                        echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . htmlspecialchars($r->descricao, ENT_QUOTES, 'UTF-8') . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . htmlspecialchars($r->cliente_fornecedor, ENT_QUOTES, 'UTF-8') . '" formaPgto="' . htmlspecialchars($r->forma_pgto, ENT_QUOTES, 'UTF-8') . '" tipo="' . $r->tipo . '" observacoes="' . htmlspecialchars($r->observacoes, ENT_QUOTES, 'UTF-8') . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->valor . '" valorEditar_sem_desconto="' . $r->valor . '" usuario="' . htmlspecialchars($r->nome, ENT_QUOTES, 'UTF-8') . '" centro_de_gastos="' . htmlspecialchars($r->centro_de_gastos, ENT_QUOTES, 'UTF-8') . '" classificacao_fin="' . htmlspecialchars($r->classificacao_fin, ENT_QUOTES, 'UTF-8') . '" grupo_finaceiro="' . htmlspecialchars($r->grupo_finaceiro, ENT_QUOTES, 'UTF-8') . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
                                                                     } else {
-                                                                        echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor_desconto . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->desconto . '" valorEditar_sem_desconto="' . $r->valor  . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                                                        echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . htmlspecialchars($r->descricao, ENT_QUOTES, 'UTF-8') . '" valor="' . $r->valor_desconto . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . htmlspecialchars($r->cliente_fornecedor, ENT_QUOTES, 'UTF-8') . '" formaPgto="' . htmlspecialchars($r->forma_pgto, ENT_QUOTES, 'UTF-8') . '" tipo="' . $r->tipo . '" observacoes="' . htmlspecialchars($r->observacoes, ENT_QUOTES, 'UTF-8') . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->desconto . '" valorEditar_sem_desconto="' . $r->valor  . '" usuario="' . htmlspecialchars($r->nome, ENT_QUOTES, 'UTF-8') . '" centro_de_gastos="' . htmlspecialchars($r->centro_de_gastos, ENT_QUOTES, 'UTF-8') . '" classificacao_fin="' . htmlspecialchars($r->classificacao_fin, ENT_QUOTES, 'UTF-8') . '" grupo_finaceiro="' . htmlspecialchars($r->grupo_finaceiro, ENT_QUOTES, 'UTF-8') . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
                                                                     }
                                                                 }
                                                                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
@@ -1551,13 +1551,30 @@ exit; */
                             if (data.result == true) {
                                 window.location.reload(true);
                             } else {
+                                var rawMsg = data.messages || data.message || "Ocorreu um erro ao tentar faturar OS.";
+                                var cleanMsg = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
                                 Swal.fire({
                                     type: "error",
+                                    icon: "error",
                                     title: "Atenção",
-                                    text: "Ocorreu um erro ao tentar faturar OS."
+                                    html: cleanMsg.replace(/\n/g, "<br>")
                                 });
                                 $('#progress-fatura').hide();
                             }
+                        },
+                        error: function(xhr) {
+                            var rawMsg = "Ocorreu um erro ao tentar faturar OS.";
+                            if (xhr.responseJSON && (xhr.responseJSON.messages || xhr.responseJSON.message)) {
+                                rawMsg = xhr.responseJSON.messages || xhr.responseJSON.message;
+                            }
+                            var cleanMsg = rawMsg.replace(/<br\s*[\/]?>/gi, "\n").replace(/\r\n/g, "\n").replace(/\n+/g, "\n").trim();
+                            Swal.fire({
+                                type: "error",
+                                icon: "error",
+                                title: "Atenção",
+                                html: cleanMsg.replace(/\n/g, "<br>")
+                            });
+                            $('#progress-fatura').hide();
                         }
                     });
 

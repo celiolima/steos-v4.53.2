@@ -65,6 +65,55 @@ class Conecte_model extends CI_Model
         return $result;
     }
 
+    protected function _applyCobrancasFilters($where = [])
+    {
+        if (empty($where) || !is_array($where)) {
+            return;
+        }
+
+        // 1. Ordem de Serviço
+        if (!empty($where['os_id'])) {
+            $os_clean = preg_replace('/[^0-9]/', '', $where['os_id']);
+            if (!empty($os_clean)) {
+                $this->db->where('cobrancas.os_id', $os_clean);
+            }
+        }
+
+        // 2. Venda / Fatura
+        if (!empty($where['vendas_id'])) {
+            $venda_clean = preg_replace('/[^0-9]/', '', $where['vendas_id']);
+            if (!empty($venda_clean)) {
+                $this->db->where('cobrancas.vendas_id', $venda_clean);
+            }
+        }
+
+        // 3. Tipo (payment_method)
+        if (!empty($where['tipo']) && $where['tipo'] !== 'Todos') {
+            $this->db->where('cobrancas.payment_method', $where['tipo']);
+        }
+
+        // 4. Status
+        if (!empty($where['status']) && $where['status'] !== 'Todos') {
+            $this->db->where('cobrancas.status', $where['status']);
+        }
+
+        // 5. Período de Vencimento (expire_at)
+        if (!empty($where['data_de'])) {
+            $this->db->where('cobrancas.expire_at >=', $where['data_de']);
+        }
+        if (!empty($where['data_ate'])) {
+            $this->db->where('cobrancas.expire_at <=', $where['data_ate']);
+        }
+
+        // 6. Valor Mínimo / Máximo (em centavos no banco)
+        if (!empty($where['valor_de'])) {
+            $this->db->where('cobrancas.total >=', $where['valor_de']);
+        }
+        if (!empty($where['valor_ate'])) {
+            $this->db->where('cobrancas.total <=', $where['valor_ate']);
+        }
+    }
+
     public function getCobrancas($table, $fields, $where, $perpage, $start, $one, $array, $cliente)
     {
         $this->db->select($fields);
@@ -75,7 +124,11 @@ class Conecte_model extends CI_Model
         $this->db->limit($perpage, $start);
         $this->db->order_by('idCobranca', 'desc');
         if ($where) {
-            $this->db->where($where);
+            if (is_array($where)) {
+                $this->_applyCobrancasFilters($where);
+            } else {
+                $this->db->where($where);
+            }
         }
 
         $query = $this->db->get();
@@ -167,11 +220,15 @@ class Conecte_model extends CI_Model
         $this->db->from($table);
         if ($table === 'os') {
             $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
+        } elseif ($table === 'cobrancas') {
+            $this->db->join('clientes', 'cobrancas.clientes_id = clientes.idClientes', 'left');
         }
         $this->db->where('clientes_id', $cliente);
         if ($where) {
             if (is_array($where) && $table === 'os') {
                 $this->_applyOsFilters($where);
+            } elseif (is_array($where) && $table === 'cobrancas') {
+                $this->_applyCobrancasFilters($where);
             } else {
                 $this->db->where($where);
             }

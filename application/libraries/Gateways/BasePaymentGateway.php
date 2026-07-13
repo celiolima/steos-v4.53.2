@@ -6,14 +6,22 @@ use Libraries\Gateways\Contracts\PaymentGateway;
 
 abstract class BasePaymentGateway implements PaymentGateway
 {
+    public function isConfigured()
+    {
+        return true;
+    }
+
     public function gerarCobranca($id, $tipo, $metodoPagamento, $data = [])
     {
         switch ($metodoPagamento) {
             case PaymentGateway::PAYMENT_METHOD_BILLET:
-                return $this->gerarCobrancaBoleto($id, $tipo);
+            case 'pix':
+            case 'Boleto (Asaas)':
+            case 'Pix (Asaas)':
+                return $this->gerarCobrancaBoleto($id, $tipo, $data);
                 break;
             case PaymentGateway::PAYMENT_METHOD_LINK:
-                return $this->gerarCobrancaLink($id, $tipo);
+                return $this->gerarCobrancaLink($id, $tipo, $data);
                 break;
             default:
                 throw new \Exception('Método de pagamento inválido!');
@@ -28,6 +36,10 @@ abstract class BasePaymentGateway implements PaymentGateway
                 break;
             case PaymentGateway::PAYMENT_TYPE_VENDAS:
                 return $this->ci->vendas_model->getById($id);
+                break;
+            case 'cliente':
+            case 'clientes':
+                return $this->ci->clientes_model->getById($id);
                 break;
             default:
                 throw new \Exception('Tipo de entidade a ser gerado a cobrança inválido!');
@@ -78,7 +90,7 @@ abstract class BasePaymentGateway implements PaymentGateway
         throw new \Exception('Não implementado');
     }
 
-    abstract protected function gerarCobrancaBoleto($id, $tipo);
+    abstract protected function gerarCobrancaBoleto($id, $tipo, $data = []);
 
-    abstract protected function gerarCobrancaLink($id, $tipo);
+    abstract protected function gerarCobrancaLink($id, $tipo, $data = []);
 }

@@ -92,11 +92,11 @@ class Financeiro_model extends CI_Model
         return $this->db->get('clientes')->row();
     }
 
-    public function add($table, $data)
+    public function add($table, $data, $returnId = false)
     {
         $this->db->insert($table, $data);
         if ($this->db->affected_rows() == '1') {
-            return true;
+            return $returnId ? $this->db->insert_id() : true;
         }
         return false;
     }

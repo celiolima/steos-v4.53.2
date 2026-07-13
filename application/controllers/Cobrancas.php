@@ -90,12 +90,77 @@ class Cobrancas extends MY_Controller
         $this->load->library('pagination');
         $this->load->config('payment_gateways');
 
+        $where_array = [];
+
+        $pesquisa = $this->input->get('pesquisa');
+        $os_id = $this->input->get('os_id');
+        $vendas_id = $this->input->get('vendas_id');
+        $tipo = $this->input->get('tipo');
+        $status = $this->input->get('status');
+        $inputDe = $this->input->get('data_de');
+        $inputAte = $this->input->get('data_ate');
+        $valor_de = $this->input->get('valor_de');
+        $valor_ate = $this->input->get('valor_ate');
+
+        if ($pesquisa) { $where_array['pesquisa'] = $pesquisa; }
+        if ($os_id) { $where_array['os_id'] = $os_id; }
+        if ($vendas_id) { $where_array['vendas_id'] = $vendas_id; }
+        if ($tipo && $tipo !== 'Todos') { $where_array['tipo'] = $tipo; }
+        if ($status && $status !== 'Todos') { $where_array['status'] = $status; }
+        if ($inputDe) {
+            $deArr = explode('/', $inputDe);
+            if (count($deArr) == 3) {
+                $where_array['data_de'] = $deArr[2] . '-' . $deArr[1] . '-' . $deArr[0];
+            } else {
+                $where_array['data_de'] = $inputDe;
+            }
+        }
+        if ($inputAte) {
+            $ateArr = explode('/', $inputAte);
+            if (count($ateArr) == 3) {
+                $where_array['data_ate'] = $ateArr[2] . '-' . $ateArr[1] . '-' . $ateArr[0];
+            } else {
+                $where_array['data_ate'] = $inputAte;
+            }
+        }
+        if ($valor_de) {
+            $v_clean = preg_replace('/[^0-9,.]/', '', $valor_de);
+            if (strpos($v_clean, ',') !== false) {
+                $v_clean = str_replace('.', '', $v_clean);
+                $v_clean = str_replace(',', '.', $v_clean);
+            }
+            $where_array['valor_de'] = round(floatval($v_clean) * 100);
+        }
+        if ($valor_ate) {
+            $v_clean = preg_replace('/[^0-9,.]/', '', $valor_ate);
+            if (strpos($v_clean, ',') !== false) {
+                $v_clean = str_replace('.', '', $v_clean);
+                $v_clean = str_replace(',', '.', $v_clean);
+            }
+            $where_array['valor_ate'] = round(floatval($v_clean) * 100);
+        }
+
         $this->data['configuration']['base_url'] = site_url('cobrancas/cobrancas/');
-        $this->data['configuration']['total_rows'] = $this->cobrancas_model->count('cobrancas');
+        $this->data['configuration']['total_rows'] = $this->cobrancas_model->count('cobrancas', $where_array);
+        if (count($where_array) > 0) {
+            $query_params = http_build_query([
+                'pesquisa' => $pesquisa,
+                'os_id' => $os_id,
+                'vendas_id' => $vendas_id,
+                'tipo' => $tipo,
+                'status' => $status,
+                'data_de' => $inputDe,
+                'data_ate' => $inputAte,
+                'valor_de' => $valor_de,
+                'valor_ate' => $valor_ate
+            ]);
+            $this->data['configuration']['suffix'] = '?' . $query_params;
+            $this->data['configuration']['first_url'] = site_url('cobrancas/cobrancas/') . '?' . $query_params;
+        }
 
         $this->pagination->initialize($this->data['configuration']);
 
-        $this->data['results'] = $this->cobrancas_model->get('cobrancas', '*', '', $this->data['configuration']['per_page'], $this->uri->segment(3));
+        $this->data['results'] = $this->cobrancas_model->get('cobrancas', '*', $where_array, $this->data['configuration']['per_page'], $this->uri->segment(3));
 
         $this->data['view'] = 'cobrancas/cobrancas';
 

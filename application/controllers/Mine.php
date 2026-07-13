@@ -376,9 +376,59 @@ class Mine extends CI_Controller
 
         $data['menuCobrancas'] = 'cobrancas';
 
+        $where = [];
+        $os_id = $this->input->get('os_id');
+        $vendas_id = $this->input->get('vendas_id');
+        $tipo = $this->input->get('tipo');
+        $status = $this->input->get('status');
+        $data_de = $this->input->get('data_de');
+        $data_ate = $this->input->get('data_ate');
+        $valor_de = $this->input->get('valor_de');
+        $valor_ate = $this->input->get('valor_ate');
+
+        if (!empty($os_id)) {
+            $where['os_id'] = $os_id;
+        }
+        if (!empty($vendas_id)) {
+            $where['vendas_id'] = $vendas_id;
+        }
+        if (!empty($tipo) && $tipo !== 'Todos') {
+            $where['tipo'] = $tipo;
+        }
+        if (!empty($status) && $status !== 'Todos') {
+            $where['status'] = $status;
+        }
+        if (!empty($data_de)) {
+            $where['data_de'] = $data_de;
+        }
+        if (!empty($data_ate)) {
+            if (strpos($data_ate, ':') === false) {
+                $where['data_ate'] = $data_ate . ' 23:59:59';
+            } else {
+                $where['data_ate'] = $data_ate;
+            }
+        }
+        if ($valor_de !== null && $valor_de !== '') {
+            $val_de = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $valor_de);
+            if (is_numeric($val_de)) {
+                $where['valor_de'] = floatval($val_de) * 100;
+            }
+        }
+        if ($valor_ate !== null && $valor_ate !== '') {
+            $val_ate = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $valor_ate);
+            if (is_numeric($val_ate)) {
+                $where['valor_ate'] = floatval($val_ate) * 100;
+            }
+        }
+
         $config['base_url'] = base_url() . 'index.php/mine/cobrancas/';
-        $config['total_rows'] = $this->Conecte_model->count('cobrancas', $this->session->userdata('cliente_id'));
+        $config['total_rows'] = $this->Conecte_model->count('cobrancas', $this->session->userdata('cliente_id'), $where);
         $config['per_page'] = 10;
+        $config['reuse_query_string'] = true;
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            $config['suffix'] = '?' . $_SERVER['QUERY_STRING'];
+            $config['first_url'] = $config['base_url'] . '?' . $_SERVER['QUERY_STRING'];
+        }
         $config['next_link'] = 'Próxima';
         $config['prev_link'] = 'Anterior';
         $config['full_tag_open'] = '<div class="pagination alternate"><ul>';
@@ -400,7 +450,7 @@ class Mine extends CI_Controller
 
         $this->pagination->initialize($config);
 
-        $data['results'] = $this->Conecte_model->getCobrancas('cobrancas', '*', '', $config['per_page'], $this->uri->segment(3), '', '', $this->session->userdata('cliente_id'));
+        $data['results'] = $this->Conecte_model->getCobrancas('cobrancas', '*', $where, $config['per_page'], $this->uri->segment(3), '', '', $this->session->userdata('cliente_id'));
         $data['output'] = 'conecte/cobrancas';
 
         $this->load->view('conecte/template', $data);

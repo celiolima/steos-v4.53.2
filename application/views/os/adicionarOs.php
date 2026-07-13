@@ -508,7 +508,7 @@
                         for (var i = 0; i < data.length; i++) {
                             options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>';
                         }
-                        $("#contratos_id").html(options);
+                        $("#contratos_id").html(options).trigger('change');
                     });
                 }
             },
@@ -708,16 +708,27 @@
                              title: 'Sucesso',
                              text: response.message
                          });
-                         setTimeout(function() {
-                             $("#cliente").val(response.nomeCliente).trigger('change');
-                             $("#clientes_id").val(response.id).trigger('change');
-                         }, 400);
+                         var atualizarClienteOS = function() {
+                             try { $("#cliente").autocomplete("close"); } catch(e) {}
+                             $("#cliente").val(response.nomeCliente);
+                             $("#clientes_id").val(response.id);
+                             try {
+                                 var ac = $("#cliente").data("ui-autocomplete") || $("#cliente").data("autocomplete");
+                                 if (ac) {
+                                     ac.term = response.nomeCliente;
+                                     ac.selectedItem = { id: response.id, label: response.nomeCliente, value: response.nomeCliente };
+                                 }
+                             } catch(e) {}
+                         };
+                         atualizarClienteOS();
+                         setTimeout(atualizarClienteOS, 500);
+                         setTimeout(atualizarClienteOS, 1200);
                          $.getJSON("<?php echo base_url(); ?>index.php/contratos/get_contratos_por_cliente", {clientes_id: response.id}, function(data) {
                              var options = '<option value="">Nenhum Contrato</option>';
                              for (var j = 0; j < data.length; j++) {
                                  options += '<option value="' + data[j].id + '">' + data[j].nome + '</option>';
                              }
-                             $("#contratos_id").html(options);
+                             $("#contratos_id").html(options).trigger('change');
                          });
                      } else {
                          Swal.fire({
@@ -740,6 +751,15 @@
          $.getJSON('<?php echo base_url() ?>assets/json/estados.json', function(data) {
              for (var idx in data.estados) {
                  $('#estado').append(new Option(data.estados[idx].nome, data.estados[idx].sigla));
+             }
+         });
+
+         $(document).on('change', '#contratos_id', function() {
+             var contratoVal = $(this).val();
+             if (contratoVal !== "" && contratoVal !== null && contratoVal !== "0") {
+                 $("#tipo").val("Contrato").trigger('change');
+             } else {
+                 $("#tipo").val("Avulso").trigger('change');
              }
          });
      });
