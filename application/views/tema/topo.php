@@ -111,6 +111,7 @@
             <?php } ?>
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) { ?>
               <li><a href="<?= site_url('servicos') ?>">Servicos</a></li>
+              <li><a href="<?= site_url('servicos_nfse') ?>">Serviços NFS-e</a></li>
             <?php } ?>
             <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) { ?>
               <li><a href="<?= site_url('sistemas') ?>">Sistemas</a></li>

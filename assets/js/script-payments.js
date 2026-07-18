@@ -38,6 +38,11 @@ $("#gateway_de_pagamento").change(function (e) {
     $("#label_forma_pagamento").hide();
     $('#forma_pagamento').empty();
 
+    $("#tipo_cobranca").hide();
+    $("#label_tipo_cobranca").hide();
+    $("#div_parcelamento").hide();
+    $("#div_vencimento").hide();
+
     if (!gatewayDePagamento) {
         return;
     }
@@ -52,4 +57,22 @@ $("#gateway_de_pagamento").change(function (e) {
     }
     $("#forma_pagamento").show();
     $("#label_forma_pagamento").show();
-})
+
+    if (gatewayDePagamento === 'Asaas') {
+        $("#tipo_cobranca").show();
+        $("#label_tipo_cobranca").show();
+        $("#div_vencimento").show();
+        if ($("#tipo_cobranca").val() === 'parcelamento') {
+            $("#div_parcelamento").show();
+        }
+    }
+});
+
+$("#tipo_cobranca").change(function (e) {
+    if ($(this).val() === 'parcelamento') {
+        $("#div_parcelamento").show();
+    } else {
+        $("#div_parcelamento").hide();
+    }
+});
+

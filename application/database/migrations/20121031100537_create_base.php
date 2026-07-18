@@ -15,9 +15,12 @@ class Migration_create_base extends CI_Migration
   `path` varchar(300) DEFAULT NULL,
   `os_id` int(11) DEFAULT NULL,
   `os_Lancamentos` int(11) DEFAULT NULL,
+  `contrato_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`idAnexos`) USING BTREE,
   KEY `fk_anexos_os1` (`os_id`) USING BTREE,
   KEY `fk_anexos_lancamentos1` (`os_Lancamentos`) USING BTREE,
+  KEY `fk_anexos_contratos1` (`contrato_id`) USING BTREE,
+  CONSTRAINT `fk_anexos_contratos1` FOREIGN KEY (`contrato_id`) REFERENCES `contratos` (`idContratos`),
   CONSTRAINT `fk_anexos_lancamentos1` FOREIGN KEY (`os_Lancamentos`) REFERENCES `lancamentos` (`idLancamentos`),
   CONSTRAINT `fk_anexos_os1` FOREIGN KEY (`os_id`) REFERENCES `os` (`idOs`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
@@ -107,6 +110,7 @@ class Migration_create_base extends CI_Migration
         $this->db->query('CREATE TABLE `cobrancas` (
   `idCobranca` int(11) NOT NULL AUTO_INCREMENT,
   `charge_id` varchar(255) DEFAULT NULL,
+  `installment_id` varchar(50) DEFAULT NULL,
   `conditional_discount_date` date DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `custom_id` int(11) DEFAULT NULL,
@@ -161,6 +165,8 @@ class Migration_create_base extends CI_Migration
         $this->db->query('DROP TABLE IF EXISTS `contratos`');
         $this->db->query('CREATE TABLE `contratos` (
   `idContratos` int(11) NOT NULL AUTO_INCREMENT,
+  `clientes_id` int(11) NOT NULL,
+  `tipoContrato` varchar(100) NOT NULL,
   `dataInicial` date DEFAULT NULL,
   `dataFinal` date DEFAULT NULL,
   `nomeContratos` varchar(255) NOT NULL,
@@ -168,7 +174,15 @@ class Migration_create_base extends CI_Migration
   `valorContrato` decimal(10,2) DEFAULT 0.00,
   `valorDesconto` decimal(10,2) DEFAULT 0.00,
   `valorTotal` decimal(10,2) DEFAULT 0.00,
-  PRIMARY KEY (`idContratos`) USING BTREE
+  `status` varchar(50) DEFAULT \'Negociação\',
+  `faturado` tinyint(1) DEFAULT 0,
+  `tipoDesconto` varchar(5) DEFAULT \'R$\',
+  `tipoAcrescimo` varchar(5) DEFAULT \'R$\',
+  `valorAcrescimo` decimal(10,2) DEFAULT 0.00,
+  `tecnico_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idContratos`) USING BTREE,
+  KEY `fk_contratos_clientes1` (`clientes_id`) USING BTREE,
+  CONSTRAINT `fk_contratos_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`idClientes`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
 
         $this->db->query('DROP TABLE IF EXISTS `documentos`');
@@ -385,6 +399,12 @@ class Migration_create_base extends CI_Migration
   `dataFinal` datetime DEFAULT NULL,
   `garantia` varchar(45) DEFAULT NULL,
   `status` varchar(45) DEFAULT NULL,
+  `asaas_invoice_id` varchar(100) DEFAULT NULL,
+  `asaas_invoice_status` varchar(50) DEFAULT NULL,
+  `asaas_invoice_number` varchar(50) DEFAULT NULL,
+  `asaas_invoice_pdf` text DEFAULT NULL,
+  `asaas_invoice_xml` text DEFAULT NULL,
+  `asaas_invoice_error` text DEFAULT NULL,
   `observacoes` text DEFAULT NULL,
   `laudoTecnico` text DEFAULT NULL,
   `vendedor` varchar(50) DEFAULT NULL,
@@ -405,6 +425,7 @@ class Migration_create_base extends CI_Migration
   `tipo` varchar(45) DEFAULT NULL,
   `local` varchar(45) DEFAULT NULL,
   `defeito_encontrado` text DEFAULT NULL,
+  `contratos_id` int(11) DEFAULT NULL,
   `manutPreventiva` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`idOs`),
   KEY `fk_os_clientes1` (`clientes_id`),
@@ -412,7 +433,10 @@ class Migration_create_base extends CI_Migration
   KEY `fk_os_lancamentos1` (`lancamento`),
   KEY `fk_os_garantias1` (`garantias_id`),
   KEY `fk_os_equipamentos_1` (`equipamentos_id`),
+  KEY `fk_os_contratos1` (`contratos_id`),
+  KEY `idx_os_invoice_id` (`asaas_invoice_id`),
   CONSTRAINT `fk_os_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`idClientes`),
+  CONSTRAINT `fk_os_contratos1` FOREIGN KEY (`contratos_id`) REFERENCES `contratos` (`idContratos`) ON DELETE SET NULL,
   CONSTRAINT `fk_os_equipamentos_1` FOREIGN KEY (`equipamentos_id`) REFERENCES `equipamentos` (`idEquipamentos`),
   CONSTRAINT `fk_os_lancamentos1` FOREIGN KEY (`lancamento`) REFERENCES `lancamentos` (`idLancamentos`),
   CONSTRAINT `fk_os_usuarios1` FOREIGN KEY (`usuarios_id`) REFERENCES `usuarios` (`idUsuarios`)
@@ -493,6 +517,16 @@ class Migration_create_base extends CI_Migration
   CONSTRAINT `fk_servicos_os_os1` FOREIGN KEY (`os_id`) REFERENCES `os` (`idOs`),
   CONSTRAINT `fk_servicos_os_servicos1` FOREIGN KEY (`servicos_id`) REFERENCES `servicos` (`idServicos`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2267 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
+
+        $this->db->query('DROP TABLE IF EXISTS `servicos_nfse`');
+        $this->db->query('CREATE TABLE `servicos_nfse` (
+  `idServicosNfse` int(11) NOT NULL AUTO_INCREMENT,
+  `nome_servico` varchar(255) NOT NULL,
+  `codigo_servico_municipal` varchar(255) NOT NULL,
+  `codigo_nbs` varchar(100) DEFAULT NULL,
+  `aliquota` varchar(50) NOT NULL,
+  PRIMARY KEY (`idServicosNfse`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
 
         $this->db->query('DROP TABLE IF EXISTS `tecnicos`');
         $this->db->query('CREATE TABLE `tecnicos` (
@@ -580,11 +614,14 @@ class Migration_create_base extends CI_Migration
   `clientes_id` int(11) NOT NULL,
   `usuarios_id` int(11) DEFAULT NULL,
   `lancamentos_id` int(11) DEFAULT NULL,
+  `contratos_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`idVendas`),
   KEY `fk_vendas_clientes1` (`clientes_id`),
   KEY `fk_vendas_usuarios1` (`usuarios_id`),
   KEY `fk_vendas_lancamentos1` (`lancamentos_id`),
+  KEY `fk_vendas_contratos1` (`contratos_id`),
   CONSTRAINT `fk_vendas_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`idClientes`),
+  CONSTRAINT `fk_vendas_contratos1` FOREIGN KEY (`contratos_id`) REFERENCES `contratos` (`idContratos`) ON DELETE SET NULL,
   CONSTRAINT `fk_vendas_lancamentos1` FOREIGN KEY (`lancamentos_id`) REFERENCES `lancamentos` (`idLancamentos`),
   CONSTRAINT `fk_vendas_usuarios1` FOREIGN KEY (`usuarios_id`) REFERENCES `usuarios` (`idUsuarios`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
@@ -592,12 +629,17 @@ class Migration_create_base extends CI_Migration
         $this->db->query('DROP TABLE IF EXISTS `sistemas_contratos`');
         $this->db->query('CREATE TABLE `sistemas_contratos` (
   `idSistemas_contratos` int(11) NOT NULL AUTO_INCREMENT,
-  `sistemas_id` int(11) NOT NULL,
   `contratos_id` int(11) NOT NULL,
+  `local` varchar(255) DEFAULT NULL,
+  `sistemas_id` int(11) NOT NULL,
+  `preco` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `quantidade` int(11) NOT NULL DEFAULT 1,
   `subTotal` decimal(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`idSistemas_contratos`),
-  CONSTRAINT `fk_sistemas_contratos_sistemas` FOREIGN KEY (`sistemas_id`) REFERENCES `sistemas` (`idSistemas`) ON DELETE CASCADE,
-  CONSTRAINT `fk_sistemas_contratos_contratos` FOREIGN KEY (`contratos_id`) REFERENCES `contratos` (`idContratos`) ON DELETE CASCADE
+  KEY `fk_sistemas_contratos_contratos1` (`contratos_id`),
+  KEY `fk_sistemas_contratos_sistemas1` (`sistemas_id`),
+  CONSTRAINT `fk_sistemas_contratos_contratos1` FOREIGN KEY (`contratos_id`) REFERENCES `contratos` (`idContratos`) ON DELETE CASCADE,
+  CONSTRAINT `fk_sistemas_contratos_sistemas1` FOREIGN KEY (`sistemas_id`) REFERENCES `sistemas` (`idSistemas`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
 
         $this->db->query('DROP TABLE IF EXISTS `sistemas_checks`');
@@ -625,8 +667,13 @@ class Migration_create_base extends CI_Migration
   `sistemas_contratos_id` int(11) NOT NULL,
   `descricao` varchar(255) NOT NULL,
   `concluido` tinyint(1) NOT NULL DEFAULT 0,
+  `data_conclusao` datetime DEFAULT NULL,
+  `usuarios_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`idSistemas_contratos_checks`),
-  CONSTRAINT `fk_sistemas_contratos_checks_sistemas_contratos` FOREIGN KEY (`sistemas_contratos_id`) REFERENCES `sistemas_contratos` (`idSistemas_contratos`) ON DELETE CASCADE
+  KEY `fk_sistemas_contratos_checks_sist_cont1` (`sistemas_contratos_id`),
+  KEY `fk_sistemas_contratos_checks_usuarios1` (`usuarios_id`),
+  CONSTRAINT `fk_sistemas_contratos_checks_sist_cont1` FOREIGN KEY (`sistemas_contratos_id`) REFERENCES `sistemas_contratos` (`idSistemas_contratos`) ON DELETE CASCADE,
+  CONSTRAINT `fk_sistemas_contratos_checks_usuarios1` FOREIGN KEY (`usuarios_id`) REFERENCES `usuarios` (`idUsuarios`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
 
         $this->db->query('DROP TABLE IF EXISTS `os_checklists`');
@@ -682,6 +729,7 @@ class Migration_create_base extends CI_Migration
         $this->db->query('DROP TABLE IF EXISTS `tecnicos_os`');
         $this->db->query('DROP TABLE IF EXISTS `tecnicos`');
         $this->db->query('DROP TABLE IF EXISTS `servicos_os`');
+        $this->db->query('DROP TABLE IF EXISTS `servicos_nfse`');
         $this->db->query('DROP TABLE IF EXISTS `servicos`');
         $this->db->query('DROP TABLE IF EXISTS `resets_de_senha`');
         $this->db->query('DROP TABLE IF EXISTS `produtos_os`');

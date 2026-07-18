@@ -1630,20 +1630,18 @@ class Os extends MY_Controller
                     ->set_output(json_encode(['result' => false]));
             }
 
-            if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+            if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)'])) {
                 $this->load->library('Gateways/Asaas');
-                if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                    $osEntity = $this->os_model->getById($os_id);
-                    if ($erros = $this->asaas->errosCadastro($osEntity)) {
-                        return $this->output
-                            ->set_content_type('application/json')
-                            ->set_status_header(200)
-                            ->set_output(json_encode([
-                                'result' => false,
-                                'messages' => "Não foi possível faturar no Asaas.\n" . trim($erros),
-                                'message' => "Não foi possível faturar no Asaas.\n" . trim($erros)
-                            ]));
-                    }
+                $osEntity = $this->os_model->getById($os_id);
+                if ($erros = $this->asaas->errosCadastro($osEntity)) {
+                    return $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode([
+                            'result' => false,
+                            'messages' => "Não foi possível faturar no Asaas.\n" . trim($erros),
+                            'message' => "Não foi possível faturar no Asaas.\n" . trim($erros)
+                        ]));
                 }
             }
 
@@ -1661,19 +1659,17 @@ class Os extends MY_Controller
             }
 
             if ($idLancamento = $this->os_model->faturarOs($os_id, $data, $dadosOs)) {
-                if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+                if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)'])) {
                     try {
                         $this->load->library('Gateways/Asaas');
-                        if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                            $cobrancaDados = [
-                                'vencimento' => $vencimento,
-                                'valor' => $valorTotalComDesconto > 0 ? $valorTotalComDesconto : $valorTotal,
-                                'forma_pagamento' => $this->input->post('formaPgto') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
-                                'descricao' => "OS #{$os_id}",
-                                'lancamentos_id' => $idLancamento
-                            ];
-                            $this->asaas->gerarCobranca($os_id, 'os', $this->input->post('formaPgto') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
-                        }
+                        $cobrancaDados = [
+                            'vencimento' => $vencimento,
+                            'valor' => $valorTotalComDesconto > 0 ? $valorTotalComDesconto : $valorTotal,
+                            'forma_pagamento' => $this->input->post('formaPgto') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
+                            'descricao' => "OS #{$os_id}",
+                            'lancamentos_id' => $idLancamento
+                        ];
+                        $this->asaas->gerarCobranca($os_id, 'os', $this->input->post('formaPgto'), $cobrancaDados);
                     } catch (\Exception $e) {
                         log_message('error', 'Erro ao emitir cobrança no Asaas para OS: ' . $e->getMessage());
                     }
@@ -1956,4 +1952,228 @@ class Os extends MY_Controller
         $this->data['autoPrint'] = true;
         $this->visualizarChecklist($idOs);
     }
+
+    /**
+     * Fase 4: Retorna cobranças Asaas vinculadas à O.S. e configurações padrão para o Modal de NFS-e
+     */
+    public function get_cobrancas_nfse($idOs = null)
+    {
+        if (!$idOs) {
+            echo json_encode(['cobrancas' => [], 'config' => []]);
+            return;
+        }
+        $this->db->where('os_id', $idOs);
+        $this->db->where('payment_gateway', 'Asaas');
+        $cobrancas = $this->db->get('cobrancas')->result();
+
+        foreach ($cobrancas as &$cob) {
+            if (isset($cob->total)) {
+                // A tabela cobrancas armazena em centavos (ex: 100000 para R$ 1000,00)
+                $cob->total_formatado = round($cob->total > 1000 ? $cob->total / 100 : $cob->total, 2);
+                $cob->total_reais = number_format($cob->total_formatado, 2, ',', '.');
+            }
+        }
+
+        $this->load->library('Gateways/Asaas', null, 'asaas');
+        $configAsaas = $this->asaas->obterConfiguracoesNfse();
+        $this->load->model('servicos_nfse_model');
+        $servicosNfse = $this->servicos_nfse_model->get('servicos_nfse', '*');
+
+        echo json_encode([
+            'cobrancas' => $cobrancas,
+            'config' => $configAsaas,
+            'servicos_nfse' => $servicosNfse
+        ]);
+    }
+
+    /**
+     * Fase 4: Emissão de NFS-e (Avulsa ou Atrelada a Cobrança)
+     */
+    public function emitir_nfse()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
+            echo json_encode(['result' => false, 'message' => 'Você não tem permissão para emitir NFS-e.']);
+            return;
+        }
+
+        $idOs = $this->input->post('os_id');
+        $tipoEmissao = $this->input->post('tipo_emissao'); // 'avulsa' ou 'cobranca'
+        $chargeId = $this->input->post('charge_id');
+        $valorNfseInput = $this->input->post('valor_nfse');
+        $municipalServiceCode = $this->input->post('municipal_service_code');
+        $codigoNbs = trim($this->input->post('codigo_nbs'));
+        $retainIssInput = $this->input->post('retain_iss');
+        $aliquotaIssInput = $this->input->post('aliquota_iss');
+        $serviceDescription = $this->input->post('service_description');
+        $observations = $this->input->post('observations');
+        $effectiveDate = $this->input->post('effective_date') ? $this->input->post('effective_date') : date('Y-m-d');
+
+        $valorClean = str_replace('.', '', $valorNfseInput);
+        $valorClean = str_replace(',', '.', $valorClean);
+        $valorFloat = floatval($valorClean);
+        if ($valorFloat <= 0) {
+            $valorFloat = floatval(str_replace(',', '.', $valorNfseInput));
+        }
+
+        $retainIss = ($retainIssInput === 'true' || $retainIssInput === '1');
+        $aliquotaIss = floatval(str_replace(',', '.', $aliquotaIssInput));
+        if ($aliquotaIss <= 0) {
+            $aliquotaIss = 2.0;
+        }
+
+        $os = $this->os_model->getById($idOs);
+        if (!$os) {
+            echo json_encode(['result' => false, 'message' => 'Ordem de Serviço não encontrada.']);
+            return;
+        }
+
+        try {
+            $this->load->library('Gateways/Asaas');
+            // Retorna ou cria o ID do cliente no Asaas
+            $asaasCustomerId = $this->asaas->criarOuRetornarClienteAsaasId($os->clientes_id);
+
+            $payload = [
+                'customer' => $asaasCustomerId,
+                'serviceDescription' => $serviceDescription,
+                'observations' => $observations,
+                'value' => $valorFloat,
+                'effectiveDate' => $effectiveDate,
+                'municipalServiceCode' => !empty($municipalServiceCode) ? $municipalServiceCode : '14.01',
+                'municipalServiceName' => !empty($municipalServiceCode) ? $municipalServiceCode : '14.01',
+                'taxes' => [
+                    'retainIss' => $retainIss,
+                    'iss' => $aliquotaIss,
+                    'cofins' => 0.0,
+                    'csll' => 0.0,
+                    'inss' => 0.0,
+                    'ir' => 0.0,
+                    'pis' => 0.0
+                ]
+            ];
+
+            if (!empty($codigoNbs)) {
+                $payload['nbsCode'] = $codigoNbs;
+            }
+
+            if ($tipoEmissao === 'cobranca_todas') {
+                $installmentId = $this->input->post('installment_id');
+                $chargesList = $this->input->post('charges_list');
+                if (!empty($installmentId)) {
+                    $payload['installment'] = trim($installmentId);
+                } elseif (!empty($chargesList)) {
+                    $arr = explode(',', $chargesList);
+                    if (!empty($arr[0])) {
+                        $payload['payment'] = trim($arr[0]);
+                    }
+                }
+            } elseif ($tipoEmissao === 'cobranca' && !empty($chargeId)) {
+                $payload['payment'] = trim($chargeId);
+            }
+
+            $resp = $this->asaas->emitirNfse($payload);
+
+            if (!empty($resp->id)) {
+                $dadosUpdateOs = [
+                    'asaas_invoice_id' => $resp->id,
+                    'asaas_invoice_status' => $resp->status ?? 'SCHEDULED'
+                ];
+                if (empty($os->valorTotal) || $os->valorTotal <= 0) {
+                    $dadosUpdateOs['valorTotal'] = $valorFloat;
+                }
+                $this->db->where('idOs', $idOs);
+                $this->db->update('os', $dadosUpdateOs);
+
+                echo json_encode([
+                    'result' => true,
+                    'message' => 'NFS-e agendada com sucesso no Asaas! ID: ' . $resp->id,
+                    'invoice_id' => $resp->id,
+                    'status' => $resp->status ?? 'SCHEDULED'
+                ]);
+            } else {
+                echo json_encode(['result' => false, 'message' => 'Erro desconhecido ao agendar NFS-e no Asaas.']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['result' => false, 'message' => 'Erro ao emitir NFS-e: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Fase 4: Consulta status atual da NFS-e no Asaas
+     */
+    public function consultar_nfse($idOs = null)
+    {
+        if (!$idOs) {
+            echo json_encode(['result' => false, 'message' => 'ID de O.S. não informado.']);
+            return;
+        }
+
+        $os = $this->os_model->getById($idOs);
+        if (!$os || empty($os->asaas_invoice_id)) {
+            echo json_encode(['result' => false, 'message' => 'O.S. não possui NFS-e vinculada.']);
+            return;
+        }
+
+        try {
+            $this->load->library('Gateways/Asaas');
+            $resp = $this->asaas->consultarNfse($os->asaas_invoice_id);
+
+            if (!empty($resp->id)) {
+                $dadosUpdate = [
+                    'asaas_invoice_status' => $resp->status ?? $os->asaas_invoice_status,
+                    'asaas_invoice_number' => !empty($resp->number) ? $resp->number : (!empty($resp->rpsNumber) ? $resp->rpsNumber : (!empty($resp->invoiceNumber) ? $resp->invoiceNumber : $os->asaas_invoice_number)),
+                    'asaas_invoice_pdf'    => $resp->pdfUrl ?? $os->asaas_invoice_pdf,
+                    'asaas_invoice_xml'    => $resp->xmlUrl ?? $os->asaas_invoice_xml,
+                    'asaas_invoice_error'  => $resp->statusDescription ?? $os->asaas_invoice_error
+                ];
+
+                $this->db->where('idOs', $idOs);
+                $this->db->update('os', $dadosUpdate);
+
+                echo json_encode([
+                    'result' => true,
+                    'status' => $dadosUpdate['asaas_invoice_status'],
+                    'invoice_number' => $dadosUpdate['asaas_invoice_number'],
+                    'pdf_url' => $dadosUpdate['asaas_invoice_pdf'],
+                    'xml_url' => $dadosUpdate['asaas_invoice_xml'],
+                    'error_msg' => $dadosUpdate['asaas_invoice_error']
+                ]);
+            } else {
+                echo json_encode(['result' => false, 'message' => 'Não foi possível consultar a NFS-e no Asaas.']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode(['result' => false, 'message' => 'Erro na consulta: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Fase 4: Cancela a NFS-e no Asaas
+     */
+    public function cancelar_nfse($idOs = null)
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
+            echo json_encode(['result' => false, 'message' => 'Sem permissão para cancelar NFS-e.']);
+            return;
+        }
+
+        $os = $this->os_model->getById($idOs);
+        if (!$os || empty($os->asaas_invoice_id)) {
+            echo json_encode(['result' => false, 'message' => 'O.S. não possui NFS-e vinculada.']);
+            return;
+        }
+
+        try {
+            $this->load->library('Gateways/Asaas');
+            $resp = $this->asaas->cancelarNfse($os->asaas_invoice_id);
+
+            $this->db->where('idOs', $idOs);
+            $this->db->update('os', [
+                'asaas_invoice_status' => 'CANCELED'
+            ]);
+
+            echo json_encode(['result' => true, 'message' => 'NFS-e cancelada com sucesso no Asaas.']);
+        } catch (\Exception $e) {
+            echo json_encode(['result' => false, 'message' => 'Erro ao cancelar: ' . $e->getMessage()]);
+        }
+    }
 }
+

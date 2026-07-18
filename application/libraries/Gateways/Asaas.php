@@ -235,6 +235,10 @@ class Asaas extends BasePaymentGateway
 
         $description = !empty($data['descricao']) ? $data['descricao'] : ($tipo === PaymentGateway::PAYMENT_TYPE_OS ? "OS #$id" : "Venda #$id");
 
+        if (!empty($data['vencimento']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['vencimento'])) {
+            $expirationDate = $data['vencimento'];
+        }
+
         $body = [
             'customer' => $this->criarOuRetornarClienteAsaasId($entity->clientes_id),
             'billingType' => $billingType,
@@ -247,7 +251,7 @@ class Asaas extends BasePaymentGateway
 
         if (!empty($data['installmentCount']) && intval($data['installmentCount']) > 1) {
             $body['installmentCount'] = intval($data['installmentCount']);
-            $body['installmentValue'] = !empty($data['installmentValue']) ? floatval($data['installmentValue']) : ($valorCobrar / intval($data['installmentCount']));
+            $body['installmentValue'] = !empty($data['installmentValue']) ? floatval($data['installmentValue']) : round($valorCobrar / intval($data['installmentCount']), 2);
         }
 
         $result = $this->asaasApi->Cobranca()->create($body);
@@ -263,6 +267,97 @@ class Asaas extends BasePaymentGateway
         }
 
         $title = $description;
+        if (!empty($result->installment)) {
+            $respPayments = asaas_api_request('/v3/payments?installment=' . $result->installment, 'GET', null, $this->asaasConfig['credentials']['api_key'], $this->asaasConfig['production'] === true);
+            $respArr = json_decode(json_encode($respPayments), true);
+            $paymentsList = !empty($respArr['data']) ? $respArr['data'] : [];
+            $createdList = [];
+            foreach ($paymentsList as $idx => $item) {
+                $item = (array) $item;
+                $instNum = !empty($item['installmentNumber']) ? $item['installmentNumber'] : ($idx + 1);
+                $instCount = !empty($body['installmentCount']) ? $body['installmentCount'] : count($paymentsList);
+
+                if (!empty($data['custom_installments'][$idx])) {
+                    $cust = $data['custom_installments'][$idx];
+                    $updatePayload = [];
+                    if (isset($cust['valor']) && getMoneyAsCents($item['value']) !== getMoneyAsCents($cust['valor'])) {
+                        $updatePayload['value'] = floatval($cust['valor']);
+                        $item['value'] = floatval($cust['valor']);
+                    }
+                    if (!empty($cust['vencimento']) && $item['dueDate'] !== $cust['vencimento']) {
+                        $updatePayload['dueDate'] = $cust['vencimento'];
+                        $item['dueDate'] = $cust['vencimento'];
+                    }
+                    if (!empty($cust['descricao']) && ($item['description'] ?? '') !== $cust['descricao']) {
+                        $updatePayload['description'] = $cust['descricao'];
+                        $item['description'] = $cust['descricao'];
+                    }
+                    if (!empty($updatePayload)) {
+                        try {
+                            asaas_api_request('/v3/payments/' . $item['id'], 'POST', $updatePayload, $this->asaasConfig['credentials']['api_key'], $this->asaasConfig['production'] === true);
+                        } catch (\Exception $e) {
+                            log_message('error', 'Erro ao ajustar parcela customizada no Asaas: ' . $e->getMessage());
+                        }
+                    }
+                }
+
+                $msgDesc = !empty($data['custom_installments'][$idx]['descricao']) ? $data['custom_installments'][$idx]['descricao'] : ($description . " - Parcela {$instNum}/{$instCount}");
+
+                $dataCobranca = [
+                    'barcode' => '',
+                    'link' => !empty($item['invoiceUrl']) ? $item['invoiceUrl'] : ($result->invoiceUrl ?? ''),
+                    'payment_url' => !empty($item['invoiceUrl']) ? $item['invoiceUrl'] : ($result->invoiceUrl ?? ''),
+                    'pdf' => !empty($item['bankSlipUrl']) ? $item['bankSlipUrl'] : ($result->bankSlipUrl ?? ''),
+                    'expire_at' => !empty($item['dueDate']) ? $item['dueDate'] : ($result->dueDate ?? ''),
+                    'charge_id' => $item['id'],
+                    'installment_id' => $result->installment,
+                    'status' => !empty($item['status']) ? $item['status'] : ($result->status ?? 'PENDING'),
+                    'total' => getMoneyAsCents(!empty($item['value']) ? $item['value'] : ($body['installmentValue'] ?? $valorCobrar)),
+                    'payment' => !empty($item['billingType']) ? $item['billingType'] : ($result->billingType ?? $billingType),
+                    'clientes_id' => $entity->idClientes,
+                    'payment_method' => strtolower($billingType),
+                    'payment_gateway' => 'Asaas',
+                    'message' => 'Pagamento referente a ' . $msgDesc,
+                ];
+                if (!empty($data['lancamentos_ids']) && is_array($data['lancamentos_ids']) && !empty($data['lancamentos_ids'][$idx])) {
+                    $lancIdTarget = $data['lancamentos_ids'][$idx];
+                    $dataCobranca['message'] = $msgDesc;
+                    $this->ci->db->where('idLancamentos', $lancIdTarget)->update('lancamentos', [
+                        'observacoes' => "Asaas Cobrança ID: {$item['id']} - Parcelamento ID: {$result->installment}"
+                    ]);
+                } elseif (!empty($data['lancamentos_id'])) {
+                    $dataCobranca['message'] = $description . " - Parcela {$instNum}/{$instCount}";
+                    $lancIdTarget = $data['lancamentos_id'];
+                    if ($idx > 0) {
+                        $ciQuery = $this->ci->db->where('idLancamentos >=', $data['lancamentos_id'])
+                                                ->where('vendas_id', $id)
+                                                ->order_by('idLancamentos', 'ASC')
+                                                ->limit(1, $idx)
+                                                ->get('lancamentos')->row();
+                        if ($ciQuery) {
+                            $lancIdTarget = $ciQuery->idLancamentos;
+                        }
+                    }
+                    $this->ci->db->where('idLancamentos', $lancIdTarget)->update('lancamentos', [
+                        'observacoes' => "Asaas Cobrança ID: {$item['id']} - Parcelamento ID: {$result->installment}"
+                    ]);
+                }
+                if ($tipo === PaymentGateway::PAYMENT_TYPE_OS) {
+                    $dataCobranca['os_id'] = $id;
+                } else {
+                    $dataCobranca['vendas_id'] = $id;
+                }
+                if ($idCob = $this->ci->cobrancas_model->add('cobrancas', $dataCobranca, true)) {
+                    $dataCobranca['idCobranca'] = $idCob;
+                    $createdList[] = $dataCobranca;
+                } else {
+                    log_message('error', 'Erro ao salvar parcela do Asaas: ' . $item['id']);
+                }
+            }
+            log_info('Parcelamento criado com sucesso no Asaas. ID: ' . $result->installment);
+            return !empty($createdList) ? $createdList[0] : [];
+        }
+
         $dataCobranca = [
             'barcode' => '',
             'link' => $result->invoiceUrl,
@@ -270,6 +365,7 @@ class Asaas extends BasePaymentGateway
             'pdf' => $result->bankSlipUrl,
             'expire_at' => $result->dueDate,
             'charge_id' => $result->id,
+            'installment_id' => !empty($result->installment) ? $result->installment : null,
             'status' => $result->status,
             'total' => getMoneyAsCents($valorCobrar),
             'payment' => $result->billingType,
@@ -281,6 +377,9 @@ class Asaas extends BasePaymentGateway
 
         if (!empty($data['lancamentos_id'])) {
             $dataCobranca['message'] = $description;
+            $this->ci->db->where('idLancamentos', $data['lancamentos_id'])->update('lancamentos', [
+                'observacoes' => 'Asaas Cobrança ID: ' . $result->id
+            ]);
         }
 
         if ($tipo === PaymentGateway::PAYMENT_TYPE_OS) {
@@ -359,16 +458,20 @@ class Asaas extends BasePaymentGateway
 
         $expirationDate = (new DateTime())->add(new DateInterval($this->asaasConfig['boleto_expiration']));
         $expirationDate = ($expirationDate->format('Y-m-d'));
+        if (!empty($data['vencimento']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['vencimento'])) {
+            $expirationDate = $data['vencimento'];
+        }
+
         $body = [
             'name' => $tipo === PaymentGateway::PAYMENT_TYPE_OS ? "OS #$id" : "Venda #$id",
             'description' => $tipo === PaymentGateway::PAYMENT_TYPE_OS ? "OS #$id" : "Venda #$id",
             'endDate' => $expirationDate,
             'value' => $this->valorTotal($totalProdutos, $totalServicos, $totalDesconto, $tipoDesconto),
             'billingType' => 'UNDEFINED',
-            'chargeType' => 'DETACHED',
+            'chargeType' => (!empty($data['installmentCount']) && intval($data['installmentCount']) > 1) ? 'INSTALLMENT' : 'DETACHED',
             'dueDateLimitDays' => preg_replace('/[^0-9]/', '', $this->asaasConfig['boleto_expiration']),
             'subscriptionCycle' => null,
-            'maxInstallmentCount' => 1,
+            'maxInstallmentCount' => (!empty($data['installmentCount']) && intval($data['installmentCount']) > 1) ? intval($data['installmentCount']) : 1,
         ];
 
         $result = $this->asaasApi->LinkPagamento()->create($body);
@@ -383,9 +486,10 @@ class Asaas extends BasePaymentGateway
         }
 
         $title = $tipo === PaymentGateway::PAYMENT_TYPE_OS ? "OS #$id" : "Venda #$id";
-        $data = [
+        $dataCobranca = [
             'expire_at' => $result->endDate,
             'charge_id' => $result->id,
+            'installment_id' => !empty($result->installment) ? $result->installment : null,
             'status' => 'PENDING',
             'total' => getMoneyAsCents($this->valorTotal($totalProdutos, $totalServicos, $totalDesconto, $tipoDesconto)),
             'clientes_id' => $entity->idClientes,
@@ -393,24 +497,23 @@ class Asaas extends BasePaymentGateway
             'payment_gateway' => 'Asaas',
             'payment_url' => $result->url,
             'link' => $result->url,
-            'message' => $result->description,
             'message' => 'Pagamento referente a ' . $title,
         ];
 
         if ($tipo === PaymentGateway::PAYMENT_TYPE_OS) {
-            $data['os_id'] = $id;
+            $dataCobranca['os_id'] = $id;
         } else {
-            $data['vendas_id'] = $id;
+            $dataCobranca['vendas_id'] = $id;
         }
 
-        if ($id = $this->ci->cobrancas_model->add('cobrancas', $data, true)) {
-            $data['idCobranca'] = $id;
+        if ($id = $this->ci->cobrancas_model->add('cobrancas', $dataCobranca, true)) {
+            $dataCobranca['idCobranca'] = $id;
             log_info('Cobrança criada com successo. ID: ' . $result->id);
         } else {
             throw new \Exception('Erro ao salvar cobrança!');
         }
 
-        return $data;
+        return $dataCobranca;
     }
 
     private function valorTotal($produtosValor, $servicosValor, $desconto, $tipo_desconto)
@@ -426,7 +529,7 @@ class Asaas extends BasePaymentGateway
         return ($produtosValor + $servicosValor) - $def_desconto;
     }
 
-    private function criarOuRetornarClienteAsaasId($clienteId)
+    public function criarOuRetornarClienteAsaasId($clienteId)
     {
         $cliente = (array) $this->ci->clientes_model->getById($clienteId);
         if (! $cliente) {
@@ -515,4 +618,76 @@ class Asaas extends BasePaymentGateway
             ];
         }
     }
+
+    /**
+     * Fase 4: Emissão de NFS-e (Nota Fiscal de Serviços Eletrônica) via Asaas v3
+     */
+    public function emitirNfse($dadosPayload)
+    {
+        $this->ci->load->helper('asaas');
+        $response = asaas_api_request('/v3/invoices', 'POST', $dadosPayload);
+        return $response;
+    }
+
+    /**
+     * Fase 4: Consulta de NFS-e (GET /v3/invoices/{id})
+     */
+    public function consultarNfse($invoiceId)
+    {
+        $this->ci->load->helper('asaas');
+        $response = asaas_api_request('/v3/invoices/' . $invoiceId, 'GET');
+        return $response;
+    }
+
+    /**
+     * Fase 4: Cancelamento de NFS-e (POST /v3/invoices/{id}/cancel)
+     */
+    public function cancelarNfse($invoiceId)
+    {
+        $this->ci->load->helper('asaas');
+        $response = asaas_api_request('/v3/invoices/' . $invoiceId . '/cancel', 'POST');
+        return $response;
+    }
+
+    /**
+     * Fase 4: Consulta de Serviços Municipais Configurados na Conta Asaas (GET /v3/invoices/municipalServices)
+     */
+    public function obterServicosMunicipais()
+    {
+        $this->ci->load->helper('asaas');
+        $response = asaas_api_request('/v3/invoices/municipalServices?limit=5', 'GET');
+        return $response;
+    }
+
+    /**
+     * Fase 4: Busca os valores padrão (Cód. Serviço, NBS e Alíquota ISS) diretamente do Asaas ou Configurações
+     */
+    public function obterConfiguracoesNfse()
+    {
+        $config = [
+            'municipal_service_code' => '14.01',
+            'codigo_nbs' => '1.0101.10.00',
+            'aliquota_iss' => '2,00'
+        ];
+
+        $this->ci->load->database();
+        $queryConf = $this->ci->db->get_where('configuracoes', ['config' => 'asaas_nfse_padrao']);
+        if ($queryConf && $queryConf->num_rows() > 0 && !empty($queryConf->row()->valor)) {
+            $confLocal = json_decode($queryConf->row()->valor, true);
+            if (is_array($confLocal)) {
+                if (!empty($confLocal['municipal_service_code'])) {
+                    $config['municipal_service_code'] = $confLocal['municipal_service_code'];
+                }
+                if (!empty($confLocal['codigo_nbs'])) {
+                    $config['codigo_nbs'] = $confLocal['codigo_nbs'];
+                }
+                if (!empty($confLocal['aliquota_iss'])) {
+                    $config['aliquota_iss'] = $confLocal['aliquota_iss'];
+                }
+            }
+        }
+
+        return $config;
+    }
 }
+

@@ -42,7 +42,7 @@ class Asaas_webhook extends CI_Controller
             }
         }
 
-        if (empty($payload) || !isset($payload->event) || !isset($payload->payment)) {
+        if (empty($payload) || !isset($payload->event)) {
             return $this->output
                 ->set_content_type('application/json')
                 ->set_status_header(400)
@@ -50,6 +50,37 @@ class Asaas_webhook extends CI_Controller
         }
 
         $event = $payload->event;
+
+        // Tratamento de Webhook para NFS-e (Fase 4)
+        if (strpos($event, 'INVOICE_') === 0 && isset($payload->invoice)) {
+            $invoice = $payload->invoice;
+            $invoiceId = $invoice->id ?? null;
+            if (!empty($invoiceId)) {
+                $dadosUpdate = [
+                    'asaas_invoice_status' => $invoice->status ?? null,
+                    'asaas_invoice_number' => !empty($invoice->number) ? $invoice->number : (!empty($invoice->rpsNumber) ? $invoice->rpsNumber : (!empty($invoice->invoiceNumber) ? $invoice->invoiceNumber : null)),
+                    'asaas_invoice_pdf'    => $invoice->pdfUrl ?? null,
+                    'asaas_invoice_xml'    => $invoice->xmlUrl ?? null,
+                    'asaas_invoice_error'  => $invoice->statusDescription ?? null
+                ];
+
+                $this->db->where('asaas_invoice_id', $invoiceId);
+                $this->db->update('os', $dadosUpdate);
+                log_message('info', "[Asaas_webhook] NFS-e {$invoiceId} atualizada para status " . ($invoice->status ?? 'unknown'));
+            }
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode(['status' => 'OK', 'processed_event' => $event]));
+        }
+
+        if (!isset($payload->payment)) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['error' => 'Payload inválido: sem payment ou invoice']));
+        }
+
         $payment = $payload->payment;
         $chargeId = $payment->id ?? null;
 

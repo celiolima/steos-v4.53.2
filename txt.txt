@@ -3,6 +3,8 @@
 
 cd /docker && rm -rf steos && git clone https://github.com/celiolima/steos-v4.53.2.git steos && cd steos && docker compose up -d --build
 
+cd /docker && rm -rf fbestacionamento && git clone https://github.com/celiolima/fbestacionamento.git fbestacionamento && cd fbestacionamento && docker compose up -d --build
+
 -- atualizando o projeto
 
 cd /docker/steos && git pull origin main && docker compose up -d

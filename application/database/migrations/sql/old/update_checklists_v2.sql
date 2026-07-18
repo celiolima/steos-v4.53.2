@@ -1,0 +1,11 @@
+ALTER TABLE os_checklists ADD COLUMN assinatura_cliente LONGTEXT;
+ALTER TABLE os_checklists ADD COLUMN assinatura_tecnico LONGTEXT;
+ALTER TABLE os_checklists ADD COLUMN nome_tecnico VARCHAR(100);
+ALTER TABLE os_checklists ADD COLUMN data_checklist DATE;
+ALTER TABLE os_checklists ADD COLUMN obs_gerais TEXT;
+ALTER TABLE os_checklists_itens ADD COLUMN sistema VARCHAR(100);
+ALTER TABLE os_checklists_itens ADD COLUMN local VARCHAR(100);
+ALTER TABLE os_checklists_itens ADD COLUMN check_desc VARCHAR(255);
+ALTER TABLE os_checklists_itens ADD COLUMN status VARCHAR(10);
+ALTER TABLE os_checklists_itens ADD COLUMN obs_local TEXT;
+ALTER TABLE os_checklists_itens ADD COLUMN os_local VARCHAR(50);

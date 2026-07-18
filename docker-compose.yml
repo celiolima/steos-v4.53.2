@@ -21,7 +21,9 @@ services:
   steosMyadmin:
     image: phpmyadmin:latest
     container_name: steos_phpmyadmin
-    restart: unless-stopped
+    #restart: unless-stopped
+    profiles:
+      - manual
     depends_on:
       - steosMySql
     environment:

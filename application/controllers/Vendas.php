@@ -588,20 +588,18 @@ class Vendas extends MY_Controller
                 'usuarios_id' => $this->session->userdata('id_admin'),
             ];
 
-            if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+            if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)'])) {
                 $this->load->library('Gateways/Asaas');
-                if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                    $vendaEntity = $this->vendas_model->getById($venda_id);
-                    if ($erros = $this->asaas->errosCadastro($vendaEntity)) {
-                        return $this->output
-                            ->set_content_type('application/json')
-                            ->set_status_header(200)
-                            ->set_output(json_encode([
-                                'result' => false,
-                                'messages' => "Não foi possível faturar no Asaas.\n" . trim($erros),
-                                'message' => "Não foi possível faturar no Asaas.\n" . trim($erros)
-                            ]));
-                    }
+                $vendaEntity = $this->vendas_model->getById($venda_id);
+                if ($erros = $this->asaas->errosCadastro($vendaEntity)) {
+                    return $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode([
+                            'result' => false,
+                            'messages' => "Não foi possível faturar no Asaas.\n" . trim($erros),
+                            'message' => "Não foi possível faturar no Asaas.\n" . trim($erros)
+                        ]));
                 }
             }
 
@@ -614,19 +612,17 @@ class Vendas extends MY_Controller
             ];
 
             if ($idLancamento = $this->vendas_model->faturarVenda($venda_id, $data, $dadosVenda)) {
-                if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+                if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)'])) {
                     try {
                         $this->load->library('Gateways/Asaas');
-                        if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                            $cobrancaDados = [
-                                'vencimento' => $vencimento,
-                                'valor' => $valorComDesconto > 0 ? $valorComDesconto : $valorTotal,
-                                'forma_pagamento' => $this->input->post('formaPgto') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
-                                'descricao' => "Venda #{$venda_id}",
-                                'lancamentos_id' => $idLancamento
-                            ];
-                            $this->asaas->gerarCobranca($venda_id, 'venda', $this->input->post('formaPgto') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
-                        }
+                        $cobrancaDados = [
+                            'vencimento' => $vencimento,
+                            'valor' => $valorComDesconto > 0 ? $valorComDesconto : $valorTotal,
+                            'forma_pagamento' => $this->input->post('formaPgto') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
+                            'descricao' => "Venda #{$venda_id}",
+                            'lancamentos_id' => $idLancamento
+                        ];
+                        $this->asaas->gerarCobranca($venda_id, 'venda', $this->input->post('formaPgto'), $cobrancaDados);
                     } catch (\Exception $e) {
                         log_message('error', 'Erro ao emitir cobrança no Asaas para Venda: ' . $e->getMessage());
                     }

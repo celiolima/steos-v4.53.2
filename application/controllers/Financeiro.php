@@ -494,14 +494,12 @@ class Financeiro extends MY_Controller
                         ];
 
                         // Validação Asaas antes de cadastrar lançamento
-                        if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+                        if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)'])) {
                             $this->load->library('Gateways/Asaas');
-                            if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                                if ($erros = $this->asaas->errosCadastro($os)) {
-                                    $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
-                                    redirect($urlAtual);
-                                    return;
-                                }
+                            if ($erros = $this->asaas->errosCadastro($os)) {
+                                $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
+                                redirect($urlAtual);
+                                return;
                             }
                         }
 
@@ -581,18 +579,16 @@ class Financeiro extends MY_Controller
                         'vendas_id' => $ndoc,
                     ];
                     // Validação Asaas antes de cadastrar lançamento
-                    if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+                    if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)'])) {
                         $this->load->library('Gateways/Asaas');
-                        if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                            $idEnt = !empty($ndoc) ? $ndoc : 0;
-                            $tipoCob = !empty($ndoc) ? 'venda' : 'os';
-                            if ($idEnt > 0 || !empty($clien_forn_user)) {
-                                $entity = ($idEnt > 0) ? $this->asaas->findEntity($idEnt, $tipoCob) : $this->asaas->findEntity($clien_forn_user, 'cliente');
-                                if ($erros = $this->asaas->errosCadastro($entity)) {
-                                    $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
-                                    redirect($urlAtual);
-                                    return;
-                                }
+                        $idEnt = !empty($ndoc) ? $ndoc : 0;
+                        $tipoCob = !empty($ndoc) ? 'venda' : 'os';
+                        if ($idEnt > 0 || !empty($clien_forn_user)) {
+                            $entity = ($idEnt > 0) ? $this->asaas->findEntity($idEnt, $tipoCob) : $this->asaas->findEntity($clien_forn_user, 'cliente');
+                            if ($erros = $this->asaas->errosCadastro($entity)) {
+                                $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
+                                redirect($urlAtual);
+                                return;
                             }
                         }
                     }
@@ -794,18 +790,16 @@ class Financeiro extends MY_Controller
             print_r('entrada' .   $entrada);
             exit; */
 
-            if (in_array($this->input->post('formaPgto_parc'), ['Boleto (Asaas)', 'Pix (Asaas)', 'Boleto', 'Pix'])) {
+            if (in_array($this->input->post('formaPgto_parc'), ['Boleto (Asaas)', 'Pix (Asaas)'])) {
                 $this->load->library('Gateways/Asaas');
-                if (in_array($this->input->post('formaPgto_parc'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                    $idEntidade = !empty($this->input->post('os_id')) ? $this->input->post('os_id') : (!empty($this->input->post('documento_parc')) ? $this->input->post('documento_parc') : 0);
-                    $tipoCobranca = !empty($this->input->post('os_id')) ? 'os' : (!empty($this->input->post('documento_parc')) ? 'venda' : 'cliente');
-                    if ($idEntidade > 0 || !empty($idClietFor)) {
-                        $entity = ($idEntidade > 0) ? $this->asaas->findEntity($idEntidade, $tipoCobranca) : $this->asaas->findEntity($idClietFor, 'cliente');
-                        if ($erros = $this->asaas->errosCadastro($entity)) {
-                            $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
-                            redirect($urlAtual);
-                            return;
-                        }
+                $idEntidade = !empty($this->input->post('os_id')) ? $this->input->post('os_id') : (!empty($this->input->post('documento_parc')) ? $this->input->post('documento_parc') : 0);
+                $tipoCobranca = !empty($this->input->post('os_id')) ? 'os' : (!empty($this->input->post('documento_parc')) ? 'venda' : 'cliente');
+                if ($idEntidade > 0 || !empty($idClietFor)) {
+                    $entity = ($idEntidade > 0) ? $this->asaas->findEntity($idEntidade, $tipoCobranca) : $this->asaas->findEntity($idClietFor, 'cliente');
+                    if ($erros = $this->asaas->errosCadastro($entity)) {
+                        $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
+                        redirect($urlAtual);
+                        return;
                     }
                 }
             }
@@ -849,10 +843,30 @@ class Financeiro extends MY_Controller
                         'vendas_id' => $vendas_id,
                     ];
                     if ($idLancParc = $this->financeiro_model->add('lancamentos', $data, true)) {
-                        if ($this->input->post('formaPgto_parc') === 'Boleto (Asaas)' || $this->input->post('formaPgto_parc') === 'Pix (Asaas)' || $this->input->post('formaPgto_parc') === 'Boleto') {
-                            try {
-                                $this->load->library('Gateways/Asaas');
-                                if (in_array($this->input->post('formaPgto_parc'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
+                        if ($this->input->post('formaPgto_parc') === 'Boleto (Asaas)' || $this->input->post('formaPgto_parc') === 'Pix (Asaas)') {
+                            if ($qtdparcelas_parc > 1 && $loops === 1) {
+                                try {
+                                    $this->load->library('Gateways/Asaas');
+                                    $cobrancaDados = [
+                                        'vencimento' => date_format($myDateTime, "Y-m-d"),
+                                        'valor' => round($total_com_desconto * $qtdparcelas_parc, 2),
+                                        'forma_pagamento' => $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
+                                        'descricao' => !empty($vendas_id) ? "OS #{$vendas_id} - Parcelamento {$qtdparcelas_parc}x" : "Parcelamento {$qtdparcelas_parc}x",
+                                        'lancamentos_id' => $idLancParc,
+                                        'installmentCount' => $qtdparcelas_parc,
+                                        'installmentValue' => round($total_com_desconto, 2)
+                                    ];
+                                    $idEntidade = !empty($this->input->post('os_id')) ? $this->input->post('os_id') : (!empty($this->input->post('documento_parc')) ? $this->input->post('documento_parc') : 0);
+                                    $tipoCobranca = !empty($this->input->post('os_id')) ? 'os' : (!empty($this->input->post('documento_parc')) ? 'venda' : 'cliente');
+                                    if ($idEntidade > 0) {
+                                        $this->asaas->gerarCobranca($idEntidade, $tipoCobranca, $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
+                                    }
+                                } catch (\Exception $e) {
+                                    log_message('error', 'Erro ao emitir parcelamento no Asaas: ' . $e->getMessage());
+                                }
+                            } elseif ($qtdparcelas_parc <= 1) {
+                                try {
+                                    $this->load->library('Gateways/Asaas');
                                     $cobrancaDados = [
                                         'vencimento' => date_format($myDateTime, "Y-m-d"),
                                         'valor' => round($total_com_desconto, 2),
@@ -865,9 +879,9 @@ class Financeiro extends MY_Controller
                                     if ($idEntidade > 0) {
                                         $this->asaas->gerarCobranca($idEntidade, $tipoCobranca, $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
                                     }
+                                } catch (\Exception $e) {
+                                    log_message('error', 'Erro ao emitir parcela no Asaas: ' . $e->getMessage());
                                 }
-                            } catch (\Exception $e) {
-                                log_message('error', 'Erro ao emitir parcela no Asaas: ' . $e->getMessage());
                             }
                         }
                         $this->session->set_flashdata('success', 'Lançamento adicionado com sucesso!');
@@ -915,27 +929,18 @@ class Financeiro extends MY_Controller
                 ];
 
                 if ($idLancEntrada = $this->financeiro_model->add('lancamentos', $data1, true)) {
-                    if ($this->input->post('formaPgto_parc') === 'Boleto (Asaas)' || $this->input->post('formaPgto_parc') === 'Pix (Asaas)' || $this->input->post('formaPgto_parc') === 'Boleto') {
-                        try {
-                            $this->load->library('Gateways/Asaas');
-                            if (in_array($this->input->post('formaPgto_parc'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                                $cobrancaDados = [
-                                    'vencimento' => !empty($dia_pgto) ? $dia_pgto : date("Y-m-d"),
-                                    'valor' => round($entrada, 2),
-                                    'forma_pagamento' => $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
-                                    'descricao' => !empty($vendas_id) ? "OS #{$vendas_id} - Entrada" : "Entrada do parcelamento",
-                                    'lancamentos_id' => $idLancEntrada
-                                ];
-                                $idEntidade = !empty($this->input->post('os_id')) ? $this->input->post('os_id') : (!empty($this->input->post('documento_parc')) ? $this->input->post('documento_parc') : 0);
-                                $tipoCobranca = !empty($this->input->post('os_id')) ? 'os' : (!empty($this->input->post('documento_parc')) ? 'venda' : 'cliente');
-                                if ($idEntidade > 0) {
-                                    $this->asaas->gerarCobranca($idEntidade, $tipoCobranca, $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
-                                }
-                            }
-                        } catch (\Exception $e) {
-                            log_message('error', 'Erro ao emitir cobrança de entrada no Asaas: ' . $e->getMessage());
-                        }
-                    }
+                    $lancamentos_ids = [$idLancEntrada];
+                    $totalInstallmentCount = $qtdparcelas_parc + 1;
+                    $custom_installments = [
+                        [
+                            'valor' => round($entrada, 2),
+                            'vencimento' => !empty($dia_pgto) ? $dia_pgto : date("Y-m-d"),
+                            'descricao' => !empty($vendas_id) ? "OS #{$vendas_id} - Entrada (1/{$totalInstallmentCount})" : "Entrada (1/{$totalInstallmentCount})"
+                        ]
+                    ];
+                } else {
+                    $lancamentos_ids = [];
+                    $custom_installments = [];
                 }
                 $loops = 1;
                 while ($loops <= $qtdparcelas_parc) {
@@ -980,33 +985,48 @@ class Financeiro extends MY_Controller
                     // }
 
                     if ($idLancParc = $this->financeiro_model->add('lancamentos', $data, true)) {
-                        if ($this->input->post('formaPgto_parc') === 'Boleto (Asaas)' || $this->input->post('formaPgto_parc') === 'Pix (Asaas)' || $this->input->post('formaPgto_parc') === 'Boleto') {
-                            try {
-                                $this->load->library('Gateways/Asaas');
-                                if (in_array($this->input->post('formaPgto_parc'), ['Boleto (Asaas)', 'Pix (Asaas)']) || $this->asaas->isConfigured()) {
-                                    $cobrancaDados = [
-                                        'vencimento' => date_format($myDateTime, "Y-m-d"),
-                                        'valor' => round($total_com_desconto, 2),
-                                        'forma_pagamento' => $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
-                                        'descricao' => !empty($vendas_id) ? "OS #{$vendas_id} - Parcela {$loops}/{$qtdparcelas_parc}" : "Parcela {$loops}/{$qtdparcelas_parc}",
-                                        'lancamentos_id' => $idLancParc
-                                    ];
-                                    $idEntidade = !empty($this->input->post('os_id')) ? $this->input->post('os_id') : (!empty($this->input->post('documento_parc')) ? $this->input->post('documento_parc') : 0);
-                                    $tipoCobranca = !empty($this->input->post('os_id')) ? 'os' : (!empty($this->input->post('documento_parc')) ? 'venda' : 'cliente');
-                                    if ($idEntidade > 0) {
-                                        $this->asaas->gerarCobranca($idEntidade, $tipoCobranca, $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
-                                    }
-                                }
-                            } catch (\Exception $e) {
-                                log_message('error', 'Erro ao emitir parcela no Asaas: ' . $e->getMessage());
-                            }
-                        }
-                        $this->session->set_flashdata('success', 'Lançamentos adicionados com sucesso!');
+                        $lancamentos_ids[] = $idLancParc;
+                        $totalInstallmentCount = $qtdparcelas_parc + 1;
+                        $parcNum = $loops + 1;
+                        $custom_installments[] = [
+                            'valor' => round($total_com_desconto, 2),
+                            'vencimento' => date_format($myDateTime, "Y-m-d"),
+                            'descricao' => !empty($vendas_id) ? "OS #{$vendas_id} - Parcela {$parcNum}/{$totalInstallmentCount}" : "Parcela {$parcNum}/{$totalInstallmentCount}"
+                        ];
+                        $this->session->set_flashdata('success', 'Lançamento adicionado com sucesso!');
                         log_info('Adicionou um lançamento em Financeiro');
                     } else {
                         $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um erro.</p></div>';
                     }
                     $loops++;
+                }
+
+                if (!empty($lancamentos_ids) && ($this->input->post('formaPgto_parc') === 'Boleto (Asaas)' || $this->input->post('formaPgto_parc') === 'Pix (Asaas)')) {
+                    try {
+                        $this->load->library('Gateways/Asaas');
+                        $totalInstallmentCount = $qtdparcelas_parc + 1;
+                        $totalValorParc = round($entrada + ($total_com_desconto * $qtdparcelas_parc), 2);
+
+                        $cobrancaDados = [
+                            'vencimento' => !empty($dia_pgto) ? $dia_pgto : date("Y-m-d"),
+                            'valor' => $totalValorParc,
+                            'forma_pagamento' => $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'PIX' : 'BOLETO',
+                            'descricao' => !empty($vendas_id) ? "OS #{$vendas_id} - Parcelamento com Entrada {$totalInstallmentCount}x" : "Parcelamento com Entrada {$totalInstallmentCount}x",
+                            'lancamentos_id' => !empty($lancamentos_ids[0]) ? $lancamentos_ids[0] : 0,
+                            'lancamentos_ids' => $lancamentos_ids,
+                            'installmentCount' => $totalInstallmentCount,
+                            'installmentValue' => round($totalValorParc / $totalInstallmentCount, 2),
+                            'custom_installments' => $custom_installments
+                        ];
+
+                        $idEntidade = !empty($this->input->post('os_id')) ? $this->input->post('os_id') : (!empty($this->input->post('documento_parc')) ? $this->input->post('documento_parc') : 0);
+                        $tipoCobranca = !empty($this->input->post('os_id')) ? 'os' : (!empty($this->input->post('documento_parc')) ? 'venda' : 'cliente');
+                        if ($idEntidade > 0) {
+                            $this->asaas->gerarCobranca($idEntidade, $tipoCobranca, $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
+                        }
+                    } catch (\Exception $e) {
+                        log_message('error', 'Erro ao emitir parcelamento com entrada no Asaas: ' . $e->getMessage());
+                    }
                 }
                 $osId = $this->input->post('os_id');
                 if (isset($osId)) {

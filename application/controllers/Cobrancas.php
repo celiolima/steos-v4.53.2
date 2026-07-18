@@ -43,15 +43,12 @@ class Cobrancas extends MY_Controller
 
             $this->load->model('Os_model');
             $this->load->model('vendas_model');
-            $cobranca = $tipo === 'os'
-                ? $this->Os_model->getCobrancas($this->input->post('id'))
-                : $this->vendas_model->getCobrancas($this->input->post('id'));
-            if ($cobranca) {
-                return $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(400)
-                    ->set_output(json_encode(['message' => 'Já existe cobrança!']));
-            }
+
+            $data = [
+                'tipo_cobranca' => $this->input->post('tipo_cobranca'),
+                'installmentCount' => ($this->input->post('tipo_cobranca') === 'parcelamento' && $this->input->post('installment_count')) ? intval($this->input->post('installment_count')) : 1,
+                'vencimento' => $this->input->post('vencimento'),
+            ];
 
             $this->load->library("Gateways/$gatewayDePagamento", null, 'PaymentGateway');
 
@@ -59,7 +56,8 @@ class Cobrancas extends MY_Controller
                 $cobranca = $this->PaymentGateway->gerarCobranca(
                     $id,
                     $tipo,
-                    $formaPagamento
+                    $formaPagamento,
+                    $data
                 );
 
                 return $this->output

@@ -425,11 +425,13 @@
                                         <?php if(empty($faturas)){ echo '<tr><td colspan="5">Nenhuma cobrança vinculada.</td></tr>'; }
                                         else{
                                             foreach($faturas as $f){
+                                                $venc = !empty($f->expire_at) ? date('d/m/Y', strtotime($f->expire_at)) : (!empty($f->vencimento) ? date('d/m/Y', strtotime($f->vencimento)) : '—');
+                                                $val = !empty($f->total) ? ($f->total / 100) : (!empty($f->valor) ? $f->valor : 0);
                                                 echo '<tr>';
                                                 echo '<td>'.$f->idCobranca.'</td>';
-                                                echo '<td>'.date('d/m/Y', strtotime($f->vencimento)).'</td>';
+                                                echo '<td>'.$venc.'</td>';
                                                 echo '<td>'.$f->status.'</td>';
-                                                echo '<td>R$ '.number_format($f->valor, 2, ',', '.').'</td>';
+                                                echo '<td>R$ '.number_format($val, 2, ',', '.').'</td>';
                                                 echo '<td><a href="'.base_url().'index.php/cobrancas/visualizar/'.$f->idCobranca.'" target="_blank" class="btn btn-mini btn-info">Ver Cobrança</a></td>';
                                                 echo '</tr>';
                                             }

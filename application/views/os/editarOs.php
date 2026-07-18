@@ -82,11 +82,42 @@ if (!empty($lancamentos)) {
                     <a href="<?php echo base_url(); ?>index.php/os/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Ordem de Serviço</span></a>
 
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
+                        <?php if (empty($result->asaas_invoice_status) || $result->asaas_invoice_status === 'CANCELED') { ?>
+                            <a href="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-info" style="max-width: 140px; margin-left: 3px;">
+                                <span class="button__icon"><i class='bx bx-file'></i></span> <span class="button__text">NFS-e</span></a>
+                        <?php } elseif ($result->asaas_invoice_status === 'SCHEDULED' || $result->asaas_invoice_status === 'SYNCHRONIZED') { ?>
+                            <a href="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-warning" style="max-width: 160px; margin-left: 3px;">
+                                <span class="button__icon"><i class='bx bx-time'></i></span> <span class="button__text">NFS-e Agendada</span></a>
+                        <?php } elseif ($result->asaas_invoice_status === 'AUTHORIZED') { ?>
+                            <a href="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-success" style="max-width: 160px; margin-left: 3px;">
+                                <span class="button__icon"><i class='bx bx-check-double'></i></span> <span class="button__text">NFS-e #<?php echo $result->asaas_invoice_number; ?></span></a>
+                        <?php } elseif ($result->asaas_invoice_status === 'ERROR') { ?>
+                            <a href="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-danger" style="max-width: 160px; margin-left: 3px;" title="<?php echo $result->asaas_invoice_error; ?>">
+                                <span class="button__icon"><i class='bx bx-error'></i></span> <span class="button__text">NFS-e Rejeitada</span></a>
+                        <?php } ?>
+                    <?php } ?>
+
                 </div>
             </div>
             <div class="widget-content nopadding tab-content">
                 <div class="span12" id="divProdutosServicos" style=" margin-left: 0">
                     <!--  Tabs -->
+                    <?php
+                    // Cálculo seguro de $valorHerdado no topo (evita Undefined variable $valorHerdado na renderização e scripts)
+                    $valorHerdado = ($result->valorTotal > 0) ? $result->valorTotal : (($totalProdutos ?? 0) + ($totalServico ?? 0) - ($result->desconto ?? 0));
+                    if ($valorHerdado < 0) {
+                        $valorHerdado = 0;
+                    }
+
+                    // Busca de cobranças da OS
+                    $cobrancas_da_os_tab = isset($cobrancas_os) ? $cobrancas_os : (!empty($result->idOs) ? $this->db->where('os_id', $result->idOs)->get('cobrancas')->result() : []);
+                    $tem_cobranca_tab = !empty($cobrancas_da_os_tab);
+
+                    // Isolamento rigoroso das abas dinâmicas: Faturas (#tab8) surge apenas quando existirem faturas/cobranças; Notas (#tab9) surge apenas quando existir NFS-e/nota.
+                    $exibir_aba_faturas = ($result->faturado == 1 || $despesa == 1 || !empty($lancamentos) || $tem_cobranca_tab);
+                    $exibir_aba_notas = (!empty($result->asaas_invoice_status) || !empty($result->asaas_invoice_number) || !empty($result->asaas_invoice_id));
+                    ?>
                     <ul class="nav nav-tabs">
                         <li class="active" id="tabDetalhes"><a href="#tab1" data-toggle="tab">Detalhes da OS</a></li>
                         <li id="tabDesconto"><a href="#tab2" data-toggle="tab">Desconto</a></li>
@@ -95,8 +126,10 @@ if (!empty($lancamentos)) {
                         <li id="tabAnexos"><a href="#tab5" data-toggle="tab">Anexos</a></li>
                         <li id="tabAnotacoes"><a href="#tab6" data-toggle="tab">Anotações</a></li>
                         <li id="tabAnotacoes"><a href="#tab7" data-toggle="tab">Assinatura</a></li>
-                        <?php if ($result->faturado == 1 || $despesa == 1) { ?>
+                        <?php if ($exibir_aba_faturas) { ?>
                             <li id="tabFaturas"><a href="#tab8" data-toggle="tab">Faturas</a></li>
+                        <?php } ?>
+                        <?php if ($exibir_aba_notas) { ?>
                             <li id="tabNotas"><a href="#tab9" data-toggle="tab">Notas</a></li>
                         <?php } ?>
                     </ul>
@@ -789,7 +822,7 @@ if (!empty($lancamentos)) {
                             </div>
                         </div>
                         <!--  TAB FATURAS -->
-                        <?php if ($result->faturado == 1 || $despesa == 1) { ?>
+                        <?php if ($exibir_aba_faturas) { ?>
 
                             <?php
                             $cobrancas_da_os = isset($cobrancas_os) ? $cobrancas_os : (!empty($result->idOs) ? $this->db->where('os_id', $result->idOs)->get('cobrancas')->result() : []);
@@ -960,9 +993,73 @@ if (!empty($lancamentos)) {
                                 </div>
 
                             </div>
-                            <!--  TAB NOTAS -->
-                            <div class="tab-pane" id="tab9">
+                        <?php } ?>
 
+                        <!--  TAB NOTAS -->
+                        <?php if ($exibir_aba_notas) { ?>
+                            <div class="tab-pane" id="tab9">
+                                <div class="widget-box" style="margin-top: 15px;">
+                                    <div class="widget-title">
+                                        <span class="icon"><i class="bx bx-file"></i></span>
+                                        <h5>Notas Fiscais de Serviço (NFS-e) da O.S. #<?php echo $result->idOs; ?></h5>
+                                    </div>
+                                    <div class="widget-content nopadding tab-content">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th># ID</th>
+                                                    <th>Status Asaas</th>
+                                                    <th>Nº NFS-e</th>
+                                                    <th>Descrição / Serviço</th>
+                                                    <th>Valor Total</th>
+                                                    <th>PDF</th>
+                                                    <th>XML</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><?php echo $result->idOs; ?></td>
+                                                    <td>
+                                                        <?php
+                                                        $statusNota = $result->asaas_invoice_status;
+                                                        $badgeColor = 'info';
+                                                        $statusTxt = $statusNota;
+                                                        if ($statusNota === 'SCHEDULED') { $badgeColor = 'warning'; $statusTxt = 'Agendada (SCHEDULED)'; }
+                                                        elseif ($statusNota === 'AUTHORIZED') { $badgeColor = 'success'; $statusTxt = 'Autorizada (AUTHORIZED)'; }
+                                                        elseif ($statusNota === 'PROCESSING') { $badgeColor = 'info'; $statusTxt = 'Processando (PROCESSING)'; }
+                                                        elseif ($statusNota === 'CANCELED' || $statusNota === 'CANCELLED') { $badgeColor = 'important'; $statusTxt = 'Cancelada'; }
+                                                        elseif ($statusNota === 'ERROR') { $badgeColor = 'important'; $statusTxt = 'Erro na Emissão'; }
+                                                        echo '<span class="label label-' . $badgeColor . '">' . $statusTxt . '</span>';
+                                                        ?>
+                                                    </td>
+                                                    <td><?php echo !empty($result->asaas_invoice_number) ? $result->asaas_invoice_number : '-'; ?></td>
+                                                    <td><?php echo 'NFS-e referente à O.S. #' . $result->idOs . ' - ' . htmlspecialchars(substr($result->descricaoProduto ?? 'Serviços de Manutenção', 0, 40)); ?></td>
+                                                    <td>R$ <?php echo number_format($valorHerdado ?? ($result->valorTotal ?? 0), 2, ',', '.'); ?></td>
+                                                    <td style="text-align: center;">
+                                                        <?php if (!empty($result->asaas_invoice_pdf)) { ?>
+                                                            <a href="<?php echo $result->asaas_invoice_pdf; ?>" target="_blank" class="btn btn-mini btn-success" title="Baixar PDF"><i class="bx bx-download"></i> PDF</a>
+                                                        <?php } else { echo '-'; } ?>
+                                                    </td>
+                                                    <td style="text-align: center;">
+                                                        <?php if (!empty($result->asaas_invoice_xml)) { ?>
+                                                            <a href="<?php echo $result->asaas_invoice_xml; ?>" target="_blank" class="btn btn-mini btn-info" title="Baixar XML"><i class="bx bx-code"></i> XML</a>
+                                                        <?php } else { echo '-'; } ?>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-mini btn-warning btn-consultar-nfse-tab" data-id="<?php echo $result->idOs; ?>" title="Atualizar Status"><i class="bx bx-refresh"></i> Atualizar</button>
+                                                        <?php if ($result->asaas_invoice_status !== 'CANCELED' && $result->asaas_invoice_status !== 'CANCELLED') { ?>
+                                                            <button type="button" class="btn btn-mini btn-danger btn-cancelar-nfse-tab" data-id="<?php echo $result->idOs; ?>" title="Cancelar NFS-e"><i class="bx bx-trash"></i> Cancelar</button>
+                                                        <?php } ?>
+                                                        <?php if (!empty($result->asaas_invoice_error)) { ?>
+                                                            <div style="color: red; font-size: 11px; margin-top: 4px;"><strong>Erro:</strong> <?php echo $result->asaas_invoice_error; ?></div>
+                                                        <?php } ?>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         <?php } ?>
 
@@ -1651,6 +1748,203 @@ if (!empty($lancamentos)) {
             <button class="button btn btn-success" id="submitReceita"><span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar Registro</span></button>
         </div>
     </form>
+</div>
+
+<!-- Estilo Responsivo do Modal NFS-e para Dispositivos Mobile -->
+<style>
+@media (max-width: 767px) {
+    #modal-nfse {
+        position: fixed !important;
+        left: 2% !important;
+        right: 2% !important;
+        top: 2% !important;
+        bottom: 2% !important;
+        width: 96% !important;
+        margin: 0 !important;
+        max-width: 96% !important;
+        height: 96% !important;
+        max-height: 96% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    #modal-nfse .modal-header {
+        flex: 0 0 auto !important;
+        padding: 10px 15px !important;
+    }
+    #modal-nfse .modal-header h3 {
+        font-size: 16px !important;
+        margin: 0 !important;
+    }
+    #modal-nfse .modal-body {
+        flex: 1 1 auto !important;
+        max-height: none !important;
+        height: auto !important;
+        overflow-y: auto !important;
+        padding: 12px !important;
+    }
+    #modal-nfse .modal-footer {
+        flex: 0 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 10px !important;
+        margin-top: auto !important;
+    }
+    #modal-nfse .modal-footer .button, #modal-nfse .modal-footer .btn {
+        width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+    #modal-nfse .row-fluid .span6, #modal-nfse .row-fluid .span12 {
+        width: 100% !important;
+        display: block !important;
+        float: none !important;
+        margin-left: 0 !important;
+        margin-bottom: 12px !important;
+        box-sizing: border-box !important;
+    }
+}
+</style>
+
+<!-- Modal NFS-e Asaas (Fase 4) -->
+<div id="modal-nfse" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelNfse" aria-hidden="true" style="width: 650px; margin-left: -325px;">
+    <div class="modal-header" style="background: #2b3643; color: #fff;">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color:#fff;">×</button>
+        <h3 id="myModalLabelNfse" style="color: #fff;"><i class="bx bx-file"></i> Emissão de NFS-e (Asaas)</h3>
+    </div>
+    <div class="modal-body" style="max-height: 480px; overflow-y: auto;">
+        <?php 
+        $valorHerdado = $result->valorTotal > 0 ? $result->valorTotal : (($totalProdutos ?? 0) + ($totalServico ?? 0) - ($result->desconto ?? 0));
+        ?>
+        <?php if (!empty($result->asaas_invoice_status) && $result->asaas_invoice_status !== 'CANCELED') { ?>
+            <!-- Tela de Gerenciamento da Nota já gerada -->
+            <div class="alert alert-success" style="margin-top: 10px;">
+                <h4><i class="bx bx-check-double"></i> Nota Fiscal Eletrônica (NFS-e)</h4>
+                <p><strong>Status Asaas:</strong> <?php echo $result->asaas_invoice_status; ?></p>
+                <?php if (!empty($result->asaas_invoice_number)) { ?>
+                    <p><strong>Número da NFS-e:</strong> <?php echo $result->asaas_invoice_number; ?></p>
+                <?php } ?>
+                <?php if (!empty($result->asaas_invoice_error)) { ?>
+                    <p style="color: #b94a48;"><strong>Mensagem / Erro:</strong> <?php echo $result->asaas_invoice_error; ?></p>
+                <?php } ?>
+            </div>
+            <div style="text-align: center; margin: 20px 0;">
+                <?php if (!empty($result->asaas_invoice_pdf)) { ?>
+                    <a href="<?php echo $result->asaas_invoice_pdf; ?>" target="_blank" class="btn btn-success"><i class="bx bx-download"></i> Baixar PDF</a>
+                <?php } ?>
+                <?php if (!empty($result->asaas_invoice_xml)) { ?>
+                    <a href="<?php echo $result->asaas_invoice_xml; ?>" target="_blank" class="btn btn-info"><i class="bx bx-code"></i> Baixar XML</a>
+                <?php } ?>
+                <button type="button" class="btn btn-warning" id="btn-consultar-nfse" data-id="<?php echo $result->idOs; ?>"><i class="bx bx-refresh"></i> Atualizar Status</button>
+                <button type="button" class="btn btn-danger" id="btn-cancelar-nfse" data-id="<?php echo $result->idOs; ?>"><i class="bx bx-trash"></i> Cancelar na Prefeitura</button>
+            </div>
+        <?php } else { ?>
+            <!-- Formulário para agendar ou emitir nova NFS-e -->
+            <form id="form-nfse">
+                <input type="hidden" name="os_id" value="<?php echo $result->idOs; ?>" />
+                
+                <div class="alert alert-info">
+                    <strong>Cliente:</strong> <?php echo $result->nomeCliente; ?> (<?php echo $result->documento; ?>)<br>
+                    <small>Verifique se o CPF/CNPJ e Endereço com CEP do cliente estão corretos, pois são exigidos pela Prefeitura.</small>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12">
+                        <label style="font-weight: bold;">Tipo de Emissão</label>
+                        <div id="box-opcoes-cobranca" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                            <label class="radio">
+                                <input type="radio" name="tipo_emissao" value="avulsa" checked id="radio_nfse_avulsa" />
+                                <strong>Emissão Avulsa</strong> <small class="muted">(Sem vincular a boleto/pix do Asaas)</small>
+                            </label>
+                            <div id="lista-cobrancas-nfse" style="margin-top: 8px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label for="valor_nfse">Valor da Nota Fiscal (R$)*</label>
+                        <?php $valorHerdado = $result->valorTotal > 0 ? $result->valorTotal : ($totalProdutos + $totalServico - ($result->desconto ?? 0)); ?>
+                        <input type="text" name="valor_nfse" id="valor_nfse" class="span12 money" value="<?php echo number_format($valorHerdado, 2, ',', '.'); ?>" required />
+                    </div>
+                    <div class="span6">
+                        <label for="effective_date">Data de Emissão/Competência*</label>
+                        <input type="date" name="effective_date" id="effective_date" class="span12" value="<?php echo date('Y-m-d'); ?>" required />
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12">
+                        <label for="select_servico_nfse" style="font-weight: bold; color: #1b55e2;"><i class="bx bx-select-multiple"></i> Selecionar Serviço Municipal (Pré-cadastro)</label>
+                        <select id="select_servico_nfse" class="span12" style="margin-bottom: 10px;">
+                            <option value="">-- Selecione um Serviço Cadastrado --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label for="municipal_service_code">Cód. Serviço Municipal (LC 116/2003)*</label>
+                        <input type="text" name="municipal_service_code" id="municipal_service_code" class="span12" placeholder="Ex: 6203100 ou 14.01" value="" required />
+                    </div>
+                    <div class="span6">
+                        <label for="codigo_nbs">Código NBS (Padrão Nacional)</label>
+                        <input type="text" name="codigo_nbs" id="codigo_nbs" class="span12" placeholder="Ex: 1.0101.10.00" value="" />
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label for="retain_iss">Tipo de Recolhimento do ISS*</label>
+                        <select name="retain_iss" id="retain_iss" class="span12">
+                            <option value="false" selected>A Recolher (Normal / Pelo Prestador)</option>
+                            <option value="true">Retido na Fonte (Pelo Tomador / Cliente)</option>
+                        </select>
+                    </div>
+                    <div class="span6">
+                        <label for="aliquota_iss">Alíquota do ISS (%)*</label>
+                        <input type="text" name="aliquota_iss" id="aliquota_iss" class="span12 money" placeholder="Ex: 3,50 ou 2,00" value="" required />
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12">
+                        <label for="service_description">Discriminação dos Serviços na Nota Fiscal*</label>
+                        <?php
+                        $descServicos = "Prestação de Serviços - OS Nº " . $result->idOs . "\n";
+                        if (!empty($result->descricaoProduto)) {
+                            $descServicos .= "Equipamento/Ref: " . $result->descricaoProduto . "\n";
+                        }
+                        if (!empty($servicos)) {
+                            $descServicos .= "Itens executados:\n";
+                            foreach ($servicos as $s) {
+                                $descServicos .= "- " . $s->nome . " (" . $s->quantidade . "x)\n";
+                            }
+                        } else {
+                            $descServicos .= "Serviço geral de manutenção / suporte.\n";
+                        }
+                        ?>
+                        <textarea name="service_description" id="service_description" class="span12" rows="4" required><?php echo trim($descServicos); ?></textarea>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12">
+                        <label for="observations_nfse">Observações Adicionais</label>
+                        <input type="text" name="observations" id="observations_nfse" class="span12" value="Ordem de Serviço Nº <?php echo $result->idOs; ?> - STEOS" />
+                    </div>
+                </div>
+            </form>
+        <?php } ?>
+    </div>
+    <div class="modal-footer" style="display:flex; justify-content: flex-end; gap: 8px;">
+        <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Fechar</span></button>
+        <?php if (empty($result->asaas_invoice_status) || $result->asaas_invoice_status === 'CANCELED') { ?>
+            <button class="button btn btn-primary" id="btn-submit-nfse"><span class="button__icon"><i class='bx bx-check'></i></span><span class="button__text2">Agendar / Emitir NFS-e</span></button>
+        <?php } ?>
+    </div>
 </div>
 
 
@@ -3681,6 +3975,293 @@ if (!empty($lancamentos)) {
             $("#tipo").val("Avulso").trigger('change');
         }
     });
+    // Controle do Modal de Emissão de NFS-e (Fase 4)
+    $(document).on('click', '#btn-nfse', function() {
+        var idOs = '<?php echo $result->idOs; ?>';
+        $.getJSON('<?php echo base_url(); ?>index.php/os/get_cobrancas_nfse/' + idOs, function(response) {
+            var data = response.cobrancas || (Array.isArray(response) ? response : []);
+            var config = response.config || {};
+            var servicosNfse = response.servicos_nfse || (Array.isArray(response.servicos_nfse) ? response.servicos_nfse : []);
+
+            var selectServico = $('#select_servico_nfse');
+            selectServico.empty();
+            selectServico.append('<option value="">-- Selecione um Serviço Cadastrado --</option>');
+            if (servicosNfse && servicosNfse.length > 0) {
+                $.each(servicosNfse, function(i, srv) {
+                    var optText = srv.nome_servico;
+                    var opt = $('<option></option>').val(srv.idServicosNfse).text(optText);
+                    opt.data('cod-municipal', srv.codigo_servico_municipal);
+                    opt.data('cod-nbs', srv.codigo_nbs || '');
+                    opt.data('aliquota', srv.aliquota || '0');
+                    selectServico.append(opt);
+                });
+                // Por padrão, seleciona o primeiro serviço da lista
+                if (servicosNfse.length >= 1) {
+                    selectServico.val(servicosNfse[0].idServicosNfse).trigger('change');
+                }
+            } else if (config.municipal_service_code) {
+                $('#municipal_service_code').val(config.municipal_service_code);
+                if (config.codigo_nbs) $('#codigo_nbs').val(config.codigo_nbs);
+                if (config.aliquota_iss) {
+                    $('#aliquota_iss').val(config.aliquota_iss);
+                    if (typeof calcularValorNfseComISS === 'function') calcularValorNfseComISS();
+                }
+            }
+
+            var boxLista = $('#lista-cobrancas-nfse');
+            boxLista.empty();
+            if (data && data.length > 0) {
+                if (data.length > 1) {
+                    var totalCobrancas = 0;
+                    var chargeIds = [];
+                    var commonInstallment = null;
+                    $.each(data, function(i, item) {
+                        var valReal = parseFloat(item.total_formatado !== undefined ? item.total_formatado : (item.total > 1000 ? item.total / 100 : item.total)) || 0;
+                        totalCobrancas += valReal;
+                        if (item.charge_id) chargeIds.push(item.charge_id);
+                        if (item.installment_id && commonInstallment !== false) {
+                            if (commonInstallment === null) commonInstallment = item.installment_id;
+                            else if (commonInstallment !== item.installment_id) commonInstallment = false;
+                        }
+                    });
+                    var instAttr = (commonInstallment && commonInstallment !== false) ? ' data-installment="' + commonInstallment + '"' : '';
+                    boxLista.append(
+                        '<label class="radio" style="margin-left: 20px; color: #005580; background: #e6f7ff; padding: 6px 10px; border-radius: 4px; border: 1px dashed #99d6ff; margin-bottom: 8px;">' +
+                        '<input type="radio" name="tipo_emissao" value="cobranca_todas" class="radio_cobranca_item" data-total="' + totalCobrancas + '" data-charges="' + chargeIds.join(',') + '"' + instAttr + ' /> ' +
+                        '<strong>Vincular a TODAS as ' + data.length + ' Cobranças da O.S.</strong> (Parcelamento) - Total: R$ ' + totalCobrancas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+                        '</label>'
+                    );
+                }
+                $.each(data, function(i, item) {
+                    if (item.charge_id) {
+                        var valReal = parseFloat(item.total_formatado !== undefined ? item.total_formatado : (item.total > 1000 ? item.total / 100 : item.total)) || 0;
+                        var valReaisStr = valReal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        var instAttrSingle = item.installment_id ? ' data-installment="' + item.installment_id + '"' : '';
+                        boxLista.append(
+                            '<label class="radio" style="margin-left: 20px;">' +
+                            '<input type="radio" name="tipo_emissao" value="cobranca" class="radio_cobranca_item" data-total="' + valReal + '" data-charge="' + item.charge_id + '"' + instAttrSingle + ' /> ' +
+                            '<strong>Cobrança Asaas #' + item.charge_id + '</strong> (' + (item.payment_method || 'Boleto/Pix') + ') - R$ ' + valReaisStr + ' - Venc.: ' + item.expire_at + ' <span class="label label-info">' + item.status + '</span>' +
+                            '</label>'
+                        );
+                    }
+                });
+            } else {
+                boxLista.append('<p class="muted" style="margin-left: 20px; font-size: 12px;">Nenhuma cobrança Asaas ativa vinculada a esta O.S.</p>');
+            }
+        });
+    });
+
+    // Evento de seleção de serviço no dropdown de Serviços NFS-e cadastrados
+    $(document).on('change', '#select_servico_nfse', function() {
+        var selectedOpt = $(this).find('option:selected');
+        if (selectedOpt && selectedOpt.val()) {
+            var codMunicipal = selectedOpt.data('cod-municipal');
+            var codNbs = selectedOpt.data('cod-nbs');
+            var aliquota = selectedOpt.data('aliquota');
+
+            if (codMunicipal) $('#municipal_service_code').val(codMunicipal);
+            if (codNbs !== undefined) $('#codigo_nbs').val(codNbs);
+            if (aliquota !== undefined) {
+                $('#aliquota_iss').val(aliquota);
+                if (typeof calcularValorNfseComISS === 'function') {
+                    calcularValorNfseComISS();
+                }
+            }
+        }
+    });
+
+    // Função para calcular ou recalcular o valor líquido da NFS-e conforme retenção do ISS
+    function calcularValorNfseComISS() {
+        var retainIss = $('#retain_iss').val() === 'true';
+        var aliquotaStr = $('#aliquota_iss').val() || '0';
+        var aliquota = parseFloat(aliquotaStr.replace(/\./g, '').replace(',', '.')) || 0;
+        
+        var inputValor = $('#valor_nfse');
+        var baseValue = inputValor.data('base-value');
+        if (baseValue === undefined || baseValue === null || isNaN(baseValue)) {
+            var atualStr = inputValor.val() || '0';
+            baseValue = parseFloat(atualStr.replace(/\./g, '').replace(',', '.')) || 0;
+            inputValor.data('base-value', baseValue);
+        }
+
+        var novoValor = baseValue;
+        if (retainIss && aliquota > 0) {
+            var descontoIss = (baseValue * aliquota) / 100;
+            novoValor = baseValue - descontoIss;
+        }
+
+        inputValor.val(novoValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+
+    $(document).on('change', '#retain_iss', calcularValorNfseComISS);
+    $(document).on('change keyup', '#aliquota_iss', function() {
+        if ($('#retain_iss').val() === 'true') {
+            calcularValorNfseComISS();
+        }
+    });
+
+    $(document).on('change blur', '#valor_nfse', function() {
+        var valStr = $(this).val() || '0';
+        var valFloat = parseFloat(valStr.replace(/\./g, '').replace(',', '.')) || 0;
+        var retainIss = $('#retain_iss').val() === 'true';
+        var aliquotaStr = $('#aliquota_iss').val() || '0';
+        var aliquota = parseFloat(aliquotaStr.replace(/\./g, '').replace(',', '.')) || 0;
+
+        if (retainIss && aliquota > 0 && aliquota < 100) {
+            $(this).data('base-value', valFloat / (1 - (aliquota / 100)));
+        } else {
+            $(this).data('base-value', valFloat);
+        }
+    });
+
+    $(document).on('change', 'input[name="tipo_emissao"]', function() {
+        $('#nfse_charge_id, #nfse_installment_id, #nfse_charges_list').remove();
+        var valorSelecionado = null;
+
+        if ($(this).val() === 'cobranca') {
+            var charge = $(this).data('charge') || '';
+            var installment = $(this).data('installment') || '';
+            valorSelecionado = parseFloat($(this).data('total')) || null;
+            $('#form-nfse').append('<input type="hidden" name="charge_id" id="nfse_charge_id" value="' + charge + '" />');
+            if (installment) {
+                $('#form-nfse').append('<input type="hidden" name="installment_id" id="nfse_installment_id" value="' + installment + '" />');
+            }
+        } else if ($(this).val() === 'cobranca_todas') {
+            var allCharges = $(this).data('charges') || '';
+            var installment = $(this).data('installment') || '';
+            valorSelecionado = <?php echo $valorHerdado; ?>;
+            $('#form-nfse').append('<input type="hidden" name="charges_list" id="nfse_charges_list" value="' + allCharges + '" />');
+            if (installment) {
+                $('#form-nfse').append('<input type="hidden" name="installment_id" id="nfse_installment_id" value="' + installment + '" />');
+            }
+        } else if ($(this).val() === 'avulsa') {
+            valorSelecionado = <?php echo $valorHerdado; ?>;
+        }
+
+        if (valorSelecionado !== null && !isNaN(valorSelecionado)) {
+            $('#valor_nfse').data('base-value', valorSelecionado);
+            calcularValorNfseComISS();
+        }
+    });
+
+    $(document).on('click', '#btn-submit-nfse', function(e) {
+        e.preventDefault();
+        var form = $('#form-nfse');
+        if (!form[0].checkValidity()) {
+            form[0].reportValidity();
+            return;
+        }
+
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
+
+        $('#modal-nfse').modal('hide');
+
+        setTimeout(function() {
+            Swal.fire({
+                title: 'Agendando NFS-e no Asaas...',
+                text: 'Aguarde a validação na prefeitura.',
+                allowOutsideClick: false,
+                didOpen: function() {
+                    Swal.showLoading();
+                }
+            });
+        }, 200);
+
+        $.ajax({
+            url: '<?php echo base_url(); ?>index.php/os/emitir_nfse',
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(res) {
+                if (res.result) {
+                    Swal.fire('Sucesso!', res.message, 'success').then(function() {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Erro!', res.message, 'error');
+                }
+            },
+            error: function() {
+                Swal.fire('Erro!', 'Falha de comunicação ao emitir NFS-e.', 'error');
+            }
+        });
+    });
+
+    $(document).on('click', '#btn-consultar-nfse, .btn-consultar-nfse-tab', function(e) {
+        e.preventDefault();
+        var idOs = $(this).data('id');
+        $('#modal-nfse').modal('hide');
+        Swal.fire({
+            title: 'Consultando status...',
+            allowOutsideClick: false,
+            didOpen: function() {
+                Swal.showLoading();
+            }
+        });
+
+        $.ajax({
+            url: '<?php echo base_url(); ?>index.php/os/consultar_nfse/' + idOs,
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) {
+                if (res.result) {
+                    Swal.fire('Status Atualizado!', 'O status da NFS-e é: ' + res.status, 'success').then(function() {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Aviso', res.message, 'info');
+                }
+            },
+            error: function() {
+                Swal.fire('Erro!', 'Falha na consulta ao Asaas.', 'error');
+            }
+        });
+    });
+
+    $(document).on('click', '#btn-cancelar-nfse, .btn-cancelar-nfse-tab', function(e) {
+        e.preventDefault();
+        var idOs = $(this).data('id');
+        Swal.fire({
+            title: 'Cancelar NFS-e na Prefeitura?',
+            text: 'Isso enviará um pedido de cancelamento da Nota Fiscal de Serviço para a prefeitura.',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Sim, cancelar!'
+        }).then(function(result) {
+            if (result.value || result.isConfirmed) {
+                $('#modal-nfse').modal('hide');
+                Swal.fire({
+                    title: 'Cancelando...',
+                    allowOutsideClick: false,
+                    didOpen: function() {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: '<?php echo base_url(); ?>index.php/os/cancelar_nfse/' + idOs,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(res) {
+                        if (res.result) {
+                            Swal.fire('Sucesso!', res.message, 'success').then(function() {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Erro!', res.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Erro!', 'Falha de comunicação ao cancelar.', 'error');
+                    }
+                });
+            }
+        });
+    });
+
     //***** */
 </script>
 <script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
