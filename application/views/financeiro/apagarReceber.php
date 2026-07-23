@@ -819,6 +819,7 @@ exit; */
                     <div class="span4">
                         <label for="conta">Conta Pgto</label>
                         <select name="conta" id="conta" class="span12">
+                            <option value="">Selecione...</option>
                             <?php foreach ($contas as $u) {
                                 echo '<option value="' . $u->idContas . '">' . $u->conta . '</option>';
                             } ?>
@@ -1163,6 +1164,7 @@ exit; */
                             <div class="span4">
                                 <label for="conta">Conta Pgto</label>
                                 <select name="conta" id="conta" class="span12">
+                                    <option value="">Selecione...</option>
                                     <?php foreach ($contas as $u) {
                                         echo '<option value="' . $u->idContas . '">' . $u->conta . '</option>';
                                     } ?>

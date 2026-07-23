@@ -373,7 +373,9 @@ class Financeiro extends MY_Controller
         $this->data['custom_error'] = '';
         $urlAtual = $this->input->post('urlAtual');
         if ($this->form_validation->run('receita') == false) {
-            $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
+            $this->session->set_flashdata('error', validation_errors() ? validation_errors() : 'Erro de validação.');
+            redirect($urlAtual);
+            return;
         } else {
             /* echo '<pre>';
             print_r($this->input->post());
@@ -384,6 +386,11 @@ class Financeiro extends MY_Controller
             $this->load->model('classificacao_financeira_model');
             $data = $this->data['classificacao_financeira'] = $this->classificacao_financeira_model->getByClassFin($classificacao_fin);
 
+            if (!$data) {
+                $this->session->set_flashdata('error', 'Classificação Financeira inválida ou não selecionada.');
+                redirect($urlAtual);
+                return;
+            }
             $grupo_finaceiro = $data->grupoFinaceiro;
 
             if (empty($this->input->post('usuario'))) {
@@ -429,7 +436,14 @@ class Financeiro extends MY_Controller
                 $valor = str_replace([',', '.'], ['', ''], $valor);
             }
 
-            $conta = $this->contas_model->getById($this->input->post('conta'));
+            $conta_id = $this->input->post('conta');
+            $conta = $this->contas_model->getById($conta_id);
+            
+            if (!$conta) {
+                $this->session->set_flashdata('error', 'Conta de Pagamento não encontrada ou não informada. Por favor, cadastre/selecione uma Conta.');
+                redirect($urlAtual);
+                return;
+            }
 
             $idContas = $conta->idContas;
             $saldo = (float)$conta->saldo;
@@ -629,7 +643,9 @@ class Financeiro extends MY_Controller
             if ($this->input->post('tipo') == "despesa") {
 
                 if ((float)$valor > $saldo) {
-                    $this->session->set_flashdata('error', 'Não tem saldo suficiete para o Pagamento.');
+                    $this->session->set_flashdata('error', 'Não tem saldo suficiente para o Pagamento (Saldo atual: R$ ' . number_format($saldo, 2, ',', '.') . ').');
+                    redirect($urlAtual);
+                    return;
                 } else {
 
                     $total = $saldo - (float)$valor;
@@ -707,6 +723,11 @@ class Financeiro extends MY_Controller
             $this->load->model('classificacao_financeira_model');
             $data = $this->data['classificacao_financeira'] = $this->classificacao_financeira_model->getByClassFin($classificacao_fin);
 
+            if (!$data) {
+                $this->session->set_flashdata('error', 'Classificação Financeira inválida ou não selecionada no parcelamento.');
+                redirect($urlAtual);
+                return;
+            }
             $grupo_finaceiro = $data->grupoFinaceiro;
 
             if (empty($this->input->post('usuario_parc'))) {
@@ -1316,10 +1337,9 @@ class Financeiro extends MY_Controller
             // Começa a transação
             $this->db->trans_start();
 
-            // Atualiza a tabela vendas, removendo o ID do lançamento e alterando o faturado e status
+            // Atualiza a tabela vendas, removendo o ID do lançamento e alterando o faturado
             $this->db->set('lancamentos_id', null);
             $this->db->set('faturado', 0);
-            $this->db->set('status', 'Finalizado');
             $this->db->where('lancamentos_id', $id);
             $this->db->update('vendas');
 

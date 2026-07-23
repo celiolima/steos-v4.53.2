@@ -74,21 +74,23 @@ Para reescrever este sistema de forma modular, a ordem recomendada de construç�
 
 ---
 
-## 6. Novo Módulo: Contratos (A Ser Implementado)
+## 6. Módulos Avançados Implementados
 
-Com o ecossistema estabilizado, nossa próxima demanda é o **Módulo de Contratos**.
-Ele utilizará a estrutura já preparada e seguirá os mesmos padrões CI3 mapeados.
+Com a evolução do ecossistema, os seguintes módulos já estão plenamente implementados e integrados à estrutura CI3:
 
-### Estrutura Projetada (`.specs/contratos/`):
-- **Tabela:** O arquivo já existe em `migrations/sql/017_criar_tabela_contratos.sql`.
-- **Model:** `Contratos_model.php` (CRUD: getById, add, edit, delete).
-- **Controller:** `Contratos.php` (Endpoints para index, adicionar, editar, imprimir, excluir).
-- **Views:**
-  - `views/contratos/contratos.php` (DataTables listando).
-  - `views/contratos/adicionarContrato.php`
-  - `views/contratos/editarContrato.php`
-  - `views/contratos/imprimirContrato.php` (Layout de assinatura física/digital).
-- **Dependências:** Estará ligado à `Clientes_model` (para puxar os dados de quem contrata).
+### 6.1 Módulo de Contratos (`.specs/contratos/`)
+- **Tabelas:** Criadas via migrations (`contratos`, `sistemas_contratos`, etc).
+- **Model:** `Contratos_model.php` (CRUD avançado com agregações).
+- **Controller:** `Contratos.php` (Motor de cálculo, gestão de sistemas e geração de checklists).
+- **Integrações:** Altamente acoplado à `Clientes_model` e à API do Asaas para gerar faturas recorrentes.
+
+### 6.2 Módulo de NFSe (`.specs/nfse/`)
+- **Controller:** `Nfse.php` e `Servicos_nfse.php`.
+- **Objetivo:** Emissão automatizada de Notas Fiscais de Serviço Eletrônicas atreladas às O.S. e faturamentos.
+
+### 6.3 Sistemas e Ativos (`.specs/sistemas/`)
+- **Controller:** `Sistemas.php`.
+- **Objetivo:** Catálogo de equipamentos ou sistemas (ex: Câmeras, Software, Alarmes) que são atrelados aos Contratos para base de cálculo de faturamento e geração de Checklists preventivos.
 
 ---
 

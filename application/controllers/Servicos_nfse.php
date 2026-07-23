@@ -69,6 +69,8 @@ class Servicos_nfse extends MY_Controller
             } else {
                 $aliquota = $this->input->post('aliquota');
                 $aliquota = str_replace('%', '', $aliquota);
+                $aliquota = str_replace('.', '', $aliquota);
+                $aliquota = str_replace(',', '.', $aliquota);
                 $aliquota = trim($aliquota);
 
                 $data = [
@@ -116,6 +118,8 @@ class Servicos_nfse extends MY_Controller
             } else {
                 $aliquota = $this->input->post('aliquota');
                 $aliquota = str_replace('%', '', $aliquota);
+                $aliquota = str_replace('.', '', $aliquota);
+                $aliquota = str_replace(',', '.', $aliquota);
                 $aliquota = trim($aliquota);
 
                 $data = [

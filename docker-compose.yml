@@ -21,16 +21,16 @@ services:
   steosMyadmin:
     image: phpmyadmin:latest
     container_name: steos_phpmyadmin
-    #restart: unless-stopped
-    profiles:
-      - manual
+    restart: unless-stopped
+    #profiles:
+    #  - manual
     depends_on:
       - steosMySql
     environment:
       PMA_ARBITRARY: 1
       PMA_HOST: steosMySql
-      PMA_USER: steos
-      PMA_PASSWORD: steos
+      #PMA_USER: steos
+      #PMA_PASSWORD: steos
       UPLOAD_LIMIT: 1024M
       MEMORY_LIMIT: 1024M
       MAX_EXECUTION_TIME: 3600

@@ -269,7 +269,7 @@ $config = [
         [
             'field' => 'cliente',
             'label' => 'Cliente',
-            'rules' => 'required|trim',
+            'rules' => 'trim',
         ],
         [
             'field' => 'tipo',

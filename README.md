@@ -1,51 +1,29 @@
-# SteosSteos v4.53.2
+# 🚀 STEOS - Sistema de Gestão ERP
 
-Bem-vindo ao **SteosSteos**, uma solução de Sistema de Ordem de Serviço (Steos) atualizada e superpoderosa. Este projeto combina a base oficial e mais recente do Steos v4.53.2 com os módulos exclusivos criados sob medida para o "Steos".
+**Versão:** 4.53.2 (Custom Steos Branch)
 
-## Visão Geral do Sistema
-O **SteosSteos** foi desenhado para oferecer a estabilidade da versão mais moderna do framework CodeIgniter e Bootstrap (trazidos na v4.53.2 oficial), enquanto mantém a inteligência de negócios customizada:
+O **STEOS** é um ERP e sistema de gestão robusto, desenvolvido especialmente para empresas de serviços, locação, contratos de manutenção e assistências técnicas. Construído sobre o framework CodeIgniter (PHP) com banco de dados MySQL, o sistema oferece gestão financeira completa integrada com gateways de pagamento.
 
-- **Controle de Comissões e Relatórios Avançados:** Comissões por Venda, Serviço e Impressões parametrizadas.
-- **Módulo de Assinaturas (Recorrência):** Controle de contratos e serviços recorrentes.
-- **Gateway de Pagamento Asaas Integrado:** Geração inteligente de cobranças, links de pagamentos e Pix nativo.
-- **Layout Modernizado:** Interfaces enxutas e focadas no usuário.
+## 🛠️ Tecnologias e Setup
+- **Backend:** CodeIgniter 3 (PHP)
+- **Banco de Dados:** MySQL 8.0
+- **Frontend:** Bootstrap 4, jQuery, DataTables, SweetAlert2
+- **Infraestrutura:** Docker e Docker Compose
 
-## Tecnologias e Requisitos
-* **Linguagem:** PHP 8+
-* **Framework:** CodeIgniter 3
-* **Frontend:** Bootstrap 4, jQuery
-* **Banco de Dados:** MySQL / MariaDB (Driver mysqli)
-* **API:** Asaas REST API
+### 🐳 Subindo o Ambiente (Docker)
+Para iniciar o projeto localmente com as configurações padrão e orquestração automatizada:
+```bash
+docker-compose up -d --build
+```
+O Docker orquestrará os seguintes contêineres:
+- `steosMySql`: Servidor de Banco de Dados MySQL
+- `steos`: Servidor Web Apache (rodando a aplicação na porta 8080)
+- `steosMyadmin`: Interface PHPMyAdmin (disponível na porta 9080)
 
-## Como Rodar Localmente (Desenvolvimento)
+> **Dica:** As migrações do CodeIgniter (`php index.php tools migrate`) e a verificação de dependências do Composer são executadas automaticamente no boot do contêiner da aplicação web, garantindo que o banco de dados esteja sempre na estrutura mais recente.
 
-1. **Baixe o Projeto:** Extraia a pasta `steosSteos v4.53.2` no diretório raiz do seu servidor web (Ex: `htdocs` no XAMPP ou `www` no WAMP).
-2. **Configuração do Banco de Dados:**
-   - Crie um banco de dados no MySQL (ex: `steos`).
-   - Importe o script `banco.sql` na base criada para obter toda a estrutura de tabelas.
-3. **Variáveis de Ambiente:**
-   - Acesse o arquivo `application/config/database.php` ou crie um arquivo `.env` para apontar as credenciais do seu banco de dados local (`username`, `password`, `database`).
-4. **Base URL:**
-   - Se estiver usando em localhost, garanta que a URL base no arquivo `application/config/config.php` esteja apontando corretamente (ex: `http://localhost/steosSteos/`).
+## 📖 Documentação Completa e Arquitetura
 
-## Configurando o Gateway Asaas
+Para obter detalhes profundos sobre as regras de negócio, estrutura MVC, Integrações (Asaas API V3), Portal do Cliente e o Módulo de Contratos, preparamos um documento estendido:
 
-O sistema está blindado e programado para gerar cobranças integradas via Asaas.
-1. Faça login com uma conta nível Administrador.
-2. Acesse: **Configurações > Financeiro**.
-3. Na aba **Asaas**, insira sua **Chave de API (Access Token)** oficial do Asaas (Sandbox para testes ou Produção para valer).
-4. O sistema irá automaticamente ler a chave e permitir a emissão de Pix e Boletos nas Ordens de Serviço.
-
-## Estrutura de Customizações
-As customizações exclusivas deste projeto em relação ao Steos oficial encontram-se principalmente nos arquivos:
-- `application/controllers/Assinaturas.php` (Fluxos de Recorrência)
-- `application/controllers/Vendas.php` (Proteção e lógicas do Asaas injetadas)
-- `application/controllers/Relatorios.php` (Busca de comissões nativa `comissaoOs` e `comissaoVendas`)
-- `application/models/Os_model.php` (Função extra `getOsComissao` para cruzamento de dados)
-
-## Notas de Versão
-- **Versão:** 4.53.2 (Custom Steos Branch)
-- **Status da Migração:** Concluída com sucesso, com testes e depurações completas. Todos os métodos de código espaguete/antigos foram adaptados para o novo padrão CodeIgniter.
-
----
-*Documentação gerada após a limpeza e migração do sistema legado para a infraestrutura moderna.*
+👉 **[Acessar a Documentação Técnica Detalhada (DOCUMENTACAO_STEOS.md)](./DOCUMENTACAO_STEOS.md)**
