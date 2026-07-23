@@ -29,7 +29,7 @@ if (! function_exists('asaas_api_request')) {
 
         $baseUrl = $isProduction 
             ? 'https://api.asaas.com' 
-            : 'https://sandbox.asaas.com/api';
+            : 'https://api-sandbox.asaas.com';
 
         // Garante que o endpoint comece com a barra se não tiver
         if ($endpoint[0] !== '/') {
