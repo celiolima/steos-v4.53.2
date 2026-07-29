@@ -46,7 +46,7 @@ if (!empty($lancamentos)) {
                 <!-- Botões -->
                 <div class="buttons">
                     <?php if ($result->faturado == 0) { ?>
-                        <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
+                        <a href="javascript:void(0)" data-target="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
                             <span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text">Faturar</span></a>
                     <?php
                     } ?>
@@ -84,16 +84,16 @@ if (!empty($lancamentos)) {
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
                         <?php if (empty($result->asaas_invoice_status) || $result->asaas_invoice_status === 'CANCELED') { ?>
-                            <a href="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-info" style="max-width: 140px; margin-left: 3px;">
+                            <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-info" style="max-width: 140px; margin-left: 3px;">
                                 <span class="button__icon"><i class='bx bx-file'></i></span> <span class="button__text">NFS-e</span></a>
                         <?php } elseif ($result->asaas_invoice_status === 'SCHEDULED' || $result->asaas_invoice_status === 'SYNCHRONIZED') { ?>
-                            <a href="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-warning" style="max-width: 160px; margin-left: 3px;">
+                            <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-warning" style="max-width: 160px; margin-left: 3px;">
                                 <span class="button__icon"><i class='bx bx-time'></i></span> <span class="button__text">NFS-e Agendada</span></a>
                         <?php } elseif ($result->asaas_invoice_status === 'AUTHORIZED') { ?>
-                            <a href="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-success" style="max-width: 160px; margin-left: 3px;">
+                            <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-success" style="max-width: 160px; margin-left: 3px;">
                                 <span class="button__icon"><i class='bx bx-check-double'></i></span> <span class="button__text">NFS-e #<?php echo $result->asaas_invoice_number; ?></span></a>
                         <?php } elseif ($result->asaas_invoice_status === 'ERROR') { ?>
-                            <a href="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-danger" style="max-width: 160px; margin-left: 3px;" title="<?php echo $result->asaas_invoice_error; ?>">
+                            <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-danger" style="max-width: 160px; margin-left: 3px;" title="<?php echo $result->asaas_invoice_error; ?>">
                                 <span class="button__icon"><i class='bx bx-error'></i></span> <span class="button__text">NFS-e Rejeitada</span></a>
                         <?php } ?>
                     <?php } ?>
@@ -727,7 +727,7 @@ if (!empty($lancamentos)) {
                                             $thumb_content = '<img src="' . $thumb . '" alt="' . $a->anexo . '" style="max-height: 150px;">';
                                         }
                                         echo '<div class="span3" style="min-height: 150px; margin-left: 0; margin-bottom: 10px;">
-                                                    <a style="min-height: 150px; display: block; border: 1px solid #ddd; overflow: hidden; background: #fff;" href="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal">
+                                                    <a style="min-height: 150px; display: block; border: 1px solid #ddd; overflow: hidden; background: #fff;" href="javascript:void(0)" data-target="#modal-anexo" imagem="' . $a->idAnexos . '" link="' . $link . '" role="button" class="btn anexo span12" data-toggle="modal">
                                                         ' . $thumb_content . '
                                                     </a>
                                                 </div>';
@@ -743,7 +743,7 @@ if (!empty($lancamentos)) {
 
                                 <div class="span12" id="divAnotacoes" style="margin-left: 0">
 
-                                    <a href="#modal-anotacao" id="btn-anotacao" role="button" data-toggle="modal" class="button btn btn-success" style="max-width: 160px">
+                                    <a href="javascript:void(0)" data-target="#modal-anotacao" id="btn-anotacao" role="button" data-toggle="modal" class="button btn btn-success" style="max-width: 160px">
                                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar anotação</span></a>
                                     <hr>
                                     <table class="table table-bordered">
@@ -949,13 +949,13 @@ if (!empty($lancamentos)) {
 
                                                             /*   if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
                                                                 if ($r->valor_desconto == 0) {
-                                                                    echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->valor . '" valorEditar_sem_desconto="' . $r->valor . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                                                    echo '<a href="javascript:void(0)" data-target="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->valor . '" valorEditar_sem_desconto="' . $r->valor . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
                                                                 } else {
-                                                                    echo '<a href="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor_desconto . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->desconto . '" valorEditar_sem_desconto="' . $r->valor  . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
+                                                                    echo '<a href="javascript:void(0)" data-target="#modalEditar" style="margin-right: 1%" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" descricao="' . $r->descricao . '" valor="' . $r->valor_desconto . '" vencimento="' . date('d/m/Y', strtotime($r->data_vencimento)) . '" pagamento="' . $data_pagamento . '" baixado="' . $r->baixado . '" cliente="' . $r->cliente_fornecedor . '" formaPgto="' . $r->forma_pgto . '" tipo="' . $r->tipo . '" observacoes="' . $r->observacoes . '" descontos_editar="' . $r->desconto . '" valor_desconto_editar="' . $r->desconto . '" valorEditar_sem_desconto="' . $r->valor  . '" usuario="' . $r->nome . '" centro_de_gastos="' . $r->centro_de_gastos . '" classificacao_fin="' . $r->classificacao_fin . '" grupo_finaceiro="' . $r->grupo_finaceiro . '" class="btn-nwe3 editar" title="Editar OS"><i class="bx bx-edit"></i></a>';
                                                                 }
                                                             }
                                                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
-                                                                echo '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
+                                                                echo '<a href="javascript:void(0)" data-target="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
                                                             } */
 
                                                             echo '</td>';
@@ -1502,7 +1502,7 @@ if (!empty($lancamentos)) {
                         <option value="41">41x</option>
                         <option value="42">42x</option>
                     </select>
-                    <a href="#modalReceitaParcelada" id="abrirmodalreceitaparcelada" data-toggle="modal" style="display: none;" role="button"> </a>
+                    <a href="javascript:void(0)" data-target="#modalReceitaParcelada" id="abrirmodalreceitaparcelada" data-toggle="modal" style="display: none;" role="button"> </a>
                 </div>
                 <div class="span2" style="margin-left: 0">
                     <div class="span3" style="margin-left: 0">
@@ -1753,7 +1753,7 @@ if (!empty($lancamentos)) {
 <!-- Estilo Responsivo do Modal NFS-e para Dispositivos Mobile -->
 <style>
 @media (max-width: 767px) {
-    #modal-nfse {
+    #modal-nfse.in {
         position: fixed !important;
         left: 2% !important;
         right: 2% !important;
@@ -1881,6 +1881,8 @@ if (!empty($lancamentos)) {
                         <select id="select_servico_nfse" class="span12" style="margin-bottom: 10px;">
                             <option value="">-- Selecione um Serviço Cadastrado --</option>
                         </select>
+                        <input type="hidden" name="municipal_service_name" id="municipal_service_name" value="" />
+                        <input type="hidden" name="asaas_service_id" id="asaas_service_id" value="" />
                     </div>
                 </div>
 
@@ -2740,7 +2742,7 @@ if (!empty($lancamentos)) {
                 $("#quantidade").focus();
             },
             open: function(event, ui) {
-                $('.ui-autocomplete').append('<a href="#modal-adicionarProduto" id="btn-adicionarProduto" role="button" data-toggle="modal" class="button btn btn-success" > <span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Adicionar Produto</span></a>');
+                $('.ui-autocomplete').append('<a href="javascript:void(0)" data-target="#modal-adicionarProduto" id="btn-adicionarProduto" role="button" data-toggle="modal" class="button btn btn-success" > <span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Adicionar Produto</span></a>');
             }
         });
 
@@ -2753,7 +2755,7 @@ if (!empty($lancamentos)) {
                 $("#quantidade_servico").focus();
             },
             open: function(event, ui) {
-                $('.ui-autocomplete').append('<a href="#modal-adicionarServico" id="btn-adicionarServico" role="button" data-toggle="modal" class="button btn btn-success" > <span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Adicionar Serviço</span></a>');
+                $('.ui-autocomplete').append('<a href="javascript:void(0)" data-target="#modal-adicionarServico" id="btn-adicionarServico" role="button" data-toggle="modal" class="button btn btn-success" > <span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Adicionar Serviço</span></a>');
             }
         });
 
@@ -2774,7 +2776,7 @@ if (!empty($lancamentos)) {
                 }
             },
             open: function(event, ui) {
-                $('.ui-autocomplete').append('<li class="ui-menu-item" role="presentation"><a href="#modal-adicionaclietes" id="btn-adicionaCliente" role="button" data-toggle="modal" class="button btn btn-success" style="width: 90%; margin: 4px auto; display: flex; justify-content: center; align-items: center;"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cadastrar Novo Cliente</span></a></li>');
+                $('.ui-autocomplete').append('<li class="ui-menu-item" role="presentation"><a href="javascript:void(0)" data-target="#modal-adicionaclietes" id="btn-adicionaCliente" role="button" data-toggle="modal" class="button btn btn-success" style="width: 90%; margin: 4px auto; display: flex; justify-content: center; align-items: center;"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cadastrar Novo Cliente</span></a></li>');
             }
         });
 
@@ -2804,7 +2806,7 @@ if (!empty($lancamentos)) {
                 }
             },
             open: function(event, ui) {
-                $('.ui-autocomplete').append('<li class="ui-menu-item" role="presentation"><a href="#modal-adicionaEquipamentos" id="btn-adicionaEquipamentos" role="button" data-toggle="modal" class="button btn btn-success" style="width: 90%; margin: 4px auto; display: flex; justify-content: center; align-items: center;"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cadastrar Novo Equipamento</span></a></li>');
+                $('.ui-autocomplete').append('<li class="ui-menu-item" role="presentation"><a href="javascript:void(0)" data-target="#modal-adicionaEquipamentos" id="btn-adicionaEquipamentos" role="button" data-toggle="modal" class="button btn btn-success" style="width: 90%; margin: 4px auto; display: flex; justify-content: center; align-items: center;"><span class="button__icon"><i class="bx bx-plus-circle"></i></span><span class="button__text2">Cadastrar Novo Equipamento</span></a></li>');
             }
         });
 
@@ -3993,6 +3995,7 @@ if (!empty($lancamentos)) {
                     opt.data('cod-municipal', srv.codigo_servico_municipal);
                     opt.data('cod-nbs', srv.codigo_nbs || '');
                     opt.data('aliquota', srv.aliquota || '0');
+                    opt.data('asaas-id', srv.asaas_service_id || '');
                     selectServico.append(opt);
                 });
                 // Por padrão, seleciona o primeiro serviço da lista
@@ -4004,7 +4007,6 @@ if (!empty($lancamentos)) {
                 if (config.codigo_nbs) $('#codigo_nbs').val(config.codigo_nbs);
                 if (config.aliquota_iss) {
                     $('#aliquota_iss').val(config.aliquota_iss);
-                    if (typeof calcularValorNfseComISS === 'function') calcularValorNfseComISS();
                 }
             }
 
@@ -4058,59 +4060,16 @@ if (!empty($lancamentos)) {
             var codMunicipal = selectedOpt.data('cod-municipal');
             var codNbs = selectedOpt.data('cod-nbs');
             var aliquota = selectedOpt.data('aliquota');
+            var asaasId = selectedOpt.data('asaas-id');
+            var nomeServico = selectedOpt.text();
 
             if (codMunicipal) $('#municipal_service_code').val(codMunicipal);
+            if (nomeServico) $('#municipal_service_name').val(nomeServico);
             if (codNbs !== undefined) $('#codigo_nbs').val(codNbs);
+            if (asaasId !== undefined) $('#asaas_service_id').val(asaasId);
             if (aliquota !== undefined) {
                 $('#aliquota_iss').val(aliquota);
-                if (typeof calcularValorNfseComISS === 'function') {
-                    calcularValorNfseComISS();
-                }
             }
-        }
-    });
-
-    // Função para calcular ou recalcular o valor líquido da NFS-e conforme retenção do ISS
-    function calcularValorNfseComISS() {
-        var retainIss = $('#retain_iss').val() === 'true';
-        var aliquotaStr = $('#aliquota_iss').val() || '0';
-        var aliquota = parseFloat(aliquotaStr.replace(/\./g, '').replace(',', '.')) || 0;
-        
-        var inputValor = $('#valor_nfse');
-        var baseValue = inputValor.data('base-value');
-        if (baseValue === undefined || baseValue === null || isNaN(baseValue)) {
-            var atualStr = inputValor.val() || '0';
-            baseValue = parseFloat(atualStr.replace(/\./g, '').replace(',', '.')) || 0;
-            inputValor.data('base-value', baseValue);
-        }
-
-        var novoValor = baseValue;
-        if (retainIss && aliquota > 0) {
-            var descontoIss = (baseValue * aliquota) / 100;
-            novoValor = baseValue - descontoIss;
-        }
-
-        inputValor.val(novoValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    }
-
-    $(document).on('change', '#retain_iss', calcularValorNfseComISS);
-    $(document).on('change keyup', '#aliquota_iss', function() {
-        if ($('#retain_iss').val() === 'true') {
-            calcularValorNfseComISS();
-        }
-    });
-
-    $(document).on('change blur', '#valor_nfse', function() {
-        var valStr = $(this).val() || '0';
-        var valFloat = parseFloat(valStr.replace(/\./g, '').replace(',', '.')) || 0;
-        var retainIss = $('#retain_iss').val() === 'true';
-        var aliquotaStr = $('#aliquota_iss').val() || '0';
-        var aliquota = parseFloat(aliquotaStr.replace(/\./g, '').replace(',', '.')) || 0;
-
-        if (retainIss && aliquota > 0 && aliquota < 100) {
-            $(this).data('base-value', valFloat / (1 - (aliquota / 100)));
-        } else {
-            $(this).data('base-value', valFloat);
         }
     });
 
@@ -4139,8 +4098,7 @@ if (!empty($lancamentos)) {
         }
 
         if (valorSelecionado !== null && !isNaN(valorSelecionado)) {
-            $('#valor_nfse').data('base-value', valorSelecionado);
-            calcularValorNfseComISS();
+            $('#valor_nfse').val(valorSelecionado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         }
     });
 

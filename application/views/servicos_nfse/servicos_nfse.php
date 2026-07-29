@@ -32,6 +32,7 @@
                         <th>Cod.</th>
                         <th>Nome do Serviço</th>
                         <th>Cód. Serviço Municipal (LC 116)</th>
+                        <th>ID Asaas</th>
                         <th>Código NBS</th>
                         <th>Alíquota ISS (%)</th>
                         <th>Ações</th>
@@ -41,7 +42,7 @@
                     <?php
                         if (!$results) {
                             echo '<tr>
-                                    <td colspan="6">Nenhum Serviço NFS-e Cadastrado</td>
+                                    <td colspan="7">Nenhum Serviço NFS-e Cadastrado</td>
                                 </tr>';
                         }
         foreach ($results as $r) {
@@ -49,6 +50,7 @@
             echo '<td>' . $r->idServicosNfse . '</td>';
             echo '<td>' . $r->nome_servico . '</td>';
             echo '<td>' . $r->codigo_servico_municipal . '</td>';
+            echo '<td>' . (isset($r->asaas_service_id) && $r->asaas_service_id ? $r->asaas_service_id : '<span class="label">N/A</span>') . '</td>';
             echo '<td>' . ($r->codigo_nbs ?: '-') . '</td>';
             echo '<td>' . $r->aliquota . '%</td>';
             echo '<td>';

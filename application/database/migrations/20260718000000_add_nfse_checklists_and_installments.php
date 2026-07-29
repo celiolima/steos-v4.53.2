@@ -13,6 +13,7 @@ class Migration_add_nfse_checklists_and_installments extends CI_Migration
             `idServicosNfse` int(11) NOT NULL AUTO_INCREMENT,
             `nome_servico` varchar(255) NOT NULL,
             `codigo_servico_municipal` varchar(50) NOT NULL,
+            `asaas_service_id` varchar(50) DEFAULT NULL,
             `codigo_nbs` varchar(50) DEFAULT NULL,
             `aliquota` decimal(5,2) NOT NULL DEFAULT 0.00,
             PRIMARY KEY (`idServicosNfse`)

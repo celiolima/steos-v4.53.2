@@ -3385,8 +3385,10 @@ form {
 
 @media (max-width: 600px) {
   .widget-title .buttons {
-    float : left;
-    margin: 0 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: 0 8px 8px 8px;
   }
 
   .panel-left {

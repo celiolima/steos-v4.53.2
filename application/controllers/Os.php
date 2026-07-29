@@ -1671,7 +1671,20 @@ class Os extends MY_Controller
                         ];
                         $this->asaas->gerarCobranca($os_id, 'os', $this->input->post('formaPgto'), $cobrancaDados);
                     } catch (\Exception $e) {
+                        $this->db->where('idLancamentos', $idLancamento)->delete('lancamentos');
+                        $this->db->where('idOs', $os_id)->update('os', [
+                            'faturado' => 0,
+                            'valorTotal' => $osEntity->valorTotal,
+                            'status' => $osEntity->status,
+                            'desconto' => $osEntity->desconto,
+                            'valor_desconto' => $osEntity->valor_desconto
+                        ]);
                         log_message('error', 'Erro ao emitir cobrança no Asaas para OS: ' . $e->getMessage());
+                        return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode([
+                            'result' => false,
+                            'message' => 'Erro ao faturar no Asaas: ' . $e->getMessage(),
+                            'messages' => 'Erro ao faturar no Asaas: ' . $e->getMessage()
+                        ]));
                     }
                 }
                 log_info('Faturou uma OS. ID: ' . $os_id);
@@ -2000,8 +2013,53 @@ class Os extends MY_Controller
         $tipoEmissao = $this->input->post('tipo_emissao'); // 'avulsa' ou 'cobranca'
         $chargeId = $this->input->post('charge_id');
         $valorNfseInput = $this->input->post('valor_nfse');
-        $municipalServiceCode = $this->input->post('municipal_service_code');
-        $codigoNbs = trim($this->input->post('codigo_nbs'));
+        $municipalServiceCodeRaw = trim($this->input->post('municipal_service_code'));
+        $municipalServiceCode = $municipalServiceCodeRaw;
+        $municipalServiceId = $this->input->post('asaas_service_id') ? trim($this->input->post('asaas_service_id')) : null;
+
+        if (!empty($municipalServiceCodeRaw)) {
+            $partsM = explode(' - ', $municipalServiceCodeRaw);
+            $searchTerm = trim($partsM[0]); // ex: '952150001 | 14.01' ou '14.01'
+
+            if (empty($municipalServiceId)) {
+                try {
+                    $this->load->library('Gateways/Asaas');
+                    $res = $this->asaas->obterServicosMunicipais($searchTerm);
+                    
+                    // $res é um objeto stdClass retornado pelo json_decode
+                    if (!empty($res) && is_object($res) && isset($res->data) && is_array($res->data)) {
+                        foreach ($res->data as $ms) {
+                            if (strpos($ms->description, $searchTerm) !== false || strpos($ms->description, $municipalServiceCodeRaw) !== false) {
+                                $municipalServiceId = $ms->id;
+                                break;
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Silenciosamente ignora o erro de busca para não interromper a emissão
+                    log_message('error', 'Erro ao buscar municipalServiceId no Asaas: ' . $e->getMessage());
+                }
+            }
+
+            // Se encontrou o ID, o Asaas só aceita o municipalServiceCode nulo, então não precisa tratar o código texto.
+            // Mas se NÃO encontrou o ID, usamos a lógica de extração do código para enviar como texto.
+            if (empty($municipalServiceId)) {
+                $partsM2 = explode(' | ', $searchTerm);
+                $municipalServiceCode = trim(end($partsM2));
+            }
+        }
+        
+        $municipalServiceName = trim($this->input->post('municipal_service_name'));
+        if (!empty($municipalServiceName) && !empty($municipalServiceCode) && strpos($municipalServiceName, $municipalServiceCode) === false) {
+            $municipalServiceName = $municipalServiceCode . ' - ' . $municipalServiceName;
+        }
+        
+        $codigoNbsRaw = trim($this->input->post('codigo_nbs'));
+        $codigoNbs = $codigoNbsRaw;
+        if (!empty($codigoNbsRaw)) {
+            $partsN = explode(' - ', $codigoNbsRaw);
+            $codigoNbs = trim($partsN[0]);
+        }
         $retainIssInput = $this->input->post('retain_iss');
         $aliquotaIssInput = $this->input->post('aliquota_iss');
         $serviceDescription = $this->input->post('service_description');
@@ -2038,8 +2096,9 @@ class Os extends MY_Controller
                 'observations' => $observations,
                 'value' => $valorFloat,
                 'effectiveDate' => $effectiveDate,
-                'municipalServiceCode' => !empty($municipalServiceCode) ? $municipalServiceCode : '14.01',
-                'municipalServiceName' => !empty($municipalServiceCode) ? $municipalServiceCode : '14.01',
+                'municipalServiceId' => $municipalServiceId,
+                'municipalServiceCode' => $municipalServiceId ? null : (!empty($municipalServiceCode) ? $municipalServiceCode : '14.01'),
+                'municipalServiceName' => !empty($municipalServiceName) ? $municipalServiceName : (!empty($municipalServiceCode) ? $municipalServiceCode . ' - Serviços' : '14.01 - Lubrificação, limpeza e revisão de máquinas'),
                 'taxes' => [
                     'retainIss' => $retainIss,
                     'iss' => $aliquotaIss,
@@ -2052,7 +2111,7 @@ class Os extends MY_Controller
             ];
 
             if (!empty($codigoNbs)) {
-                $payload['nbsCode'] = $codigoNbs;
+                $payload['taxes']['nbsCode'] = $codigoNbs;
             }
 
             if ($tipoEmissao === 'cobranca_todas') {
@@ -2176,4 +2235,7 @@ class Os extends MY_Controller
         }
     }
 }
+
+
+
 

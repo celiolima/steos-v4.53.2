@@ -80,6 +80,27 @@ class Servicos_nfse extends MY_Controller
                     'aliquota' => $aliquota,
                 ];
 
+                // Busca o asaas_service_id na API do Asaas
+                $municipalServiceCodeRaw = $data['codigo_servico_municipal'];
+                $parts = explode(' - ', $municipalServiceCodeRaw);
+                $searchTerm = trim($parts[0]);
+                $asaas_service_id = null;
+                try {
+                    $this->load->library('Gateways/Asaas');
+                    $res = $this->asaas->obterServicosMunicipais($searchTerm);
+                    if (!empty($res) && is_object($res) && isset($res->data) && is_array($res->data)) {
+                        foreach ($res->data as $ms) {
+                            if (strpos($ms->description, $searchTerm) !== false || strpos($ms->description, $municipalServiceCodeRaw) !== false) {
+                                $asaas_service_id = $ms->id;
+                                break;
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {
+                    log_message('error', 'Erro ao buscar asaas_service_id no cadastro: ' . $e->getMessage());
+                }
+                $data['asaas_service_id'] = $asaas_service_id;
+
                 if ($this->servicos_nfse_model->add('servicos_nfse', $data) == true) {
                     $this->session->set_flashdata('success', 'Serviço NFS-e adicionado com sucesso!');
                     log_info('Adicionou um serviço NFS-e');
@@ -128,6 +149,27 @@ class Servicos_nfse extends MY_Controller
                     'codigo_nbs' => $this->input->post('codigo_nbs'),
                     'aliquota' => $aliquota,
                 ];
+
+                // Busca o asaas_service_id na API do Asaas
+                $municipalServiceCodeRaw = $data['codigo_servico_municipal'];
+                $parts = explode(' - ', $municipalServiceCodeRaw);
+                $searchTerm = trim($parts[0]);
+                $asaas_service_id = null;
+                try {
+                    $this->load->library('Gateways/Asaas');
+                    $res = $this->asaas->obterServicosMunicipais($searchTerm);
+                    if (!empty($res) && is_object($res) && isset($res->data) && is_array($res->data)) {
+                        foreach ($res->data as $ms) {
+                            if (strpos($ms->description, $searchTerm) !== false || strpos($ms->description, $municipalServiceCodeRaw) !== false) {
+                                $asaas_service_id = $ms->id;
+                                break;
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {
+                    log_message('error', 'Erro ao buscar asaas_service_id na edição: ' . $e->getMessage());
+                }
+                $data['asaas_service_id'] = $asaas_service_id;
 
                 if ($this->servicos_nfse_model->edit('servicos_nfse', $data, 'idServicosNfse', $this->input->post('idServicosNfse')) == true) {
                     $this->session->set_flashdata('success', 'Serviço NFS-e editado com sucesso!');

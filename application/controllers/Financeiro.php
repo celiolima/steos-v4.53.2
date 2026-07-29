@@ -511,13 +511,15 @@ class Financeiro extends MY_Controller
                         if (in_array($this->input->post('formaPgto'), ['Boleto (Asaas)', 'Pix (Asaas)'])) {
                             $this->load->library('Gateways/Asaas');
                             if ($erros = $this->asaas->errosCadastro($os)) {
+                                $this->db->trans_rollback();
                                 $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
                                 redirect($urlAtual);
                                 return;
                             }
                         }
 
-                        if ($idLancamento = $this->financeiro_model->add('lancamentos', $data2, true)) {
+                    $this->db->trans_begin();
+                    if ($idLancamento = $this->financeiro_model->add('lancamentos', $data2, true)) {
 
                             $this->db->set('afaturar', 0);
                             $this->db->set('faturado', 1);
@@ -539,13 +541,17 @@ class Financeiro extends MY_Controller
                                     $this->asaas->gerarCobranca($os->idOs, 'os', $this->input->post('formaPgto'), $cobrancaDados);
                                     $this->session->set_flashdata('success', 'Lançamento e Cobrança Asaas adicionados com sucesso!');
                                 } catch (\Exception $e) {
-                                    $this->session->set_flashdata('error', 'Lançamento criado, porém erro ao emitir cobrança no Asaas: ' . $e->getMessage());
+                                    $this->db->trans_rollback();
+                                    $this->session->set_flashdata('error', 'Erro ao emitir cobrança no Asaas: ' . $e->getMessage());
+                                    redirect($urlAtual);
+                                    return;
                                 }
                             } else {
                                 $this->session->set_flashdata('success', 'Lançamento adicionado com sucesso!');
                             }
 
                             log_info('Adicionou um lançamento em Financeiro');
+                            $this->db->trans_commit();
                             redirect($urlAtual);
                         } else {
                             $this->data['custom_error'] = '<div class="form_error"><p>Ocorreu um erro.</p></div>';
@@ -600,6 +606,7 @@ class Financeiro extends MY_Controller
                         if ($idEnt > 0 || !empty($clien_forn_user)) {
                             $entity = ($idEnt > 0) ? $this->asaas->findEntity($idEnt, $tipoCob) : $this->asaas->findEntity($clien_forn_user, 'cliente');
                             if ($erros = $this->asaas->errosCadastro($entity)) {
+                                $this->db->trans_rollback();
                                 $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
                                 redirect($urlAtual);
                                 return;
@@ -607,6 +614,7 @@ class Financeiro extends MY_Controller
                         }
                     }
 
+                    $this->db->trans_begin();
                     if ($idLancamento = $this->financeiro_model->add('lancamentos', $data2, true)) {
                         if ($this->input->post('formaPgto') === 'Boleto (Asaas)' || $this->input->post('formaPgto') === 'Pix (Asaas)') {
                             try {
@@ -627,12 +635,16 @@ class Financeiro extends MY_Controller
                                     $this->session->set_flashdata('success', 'Adicionou uma Receita em Financeiro!');
                                 }
                             } catch (\Exception $e) {
-                                $this->session->set_flashdata('error', 'Receita criada, porém erro ao emitir cobrança no Asaas: ' . $e->getMessage());
+                                $this->db->trans_rollback();
+                                $this->session->set_flashdata('error', 'Erro ao emitir cobrança no Asaas: ' . $e->getMessage());
+                                redirect($urlAtual);
+                                return;
                             }
                         } else {
                             $this->session->set_flashdata('success', 'Adicionou uma Receita em Financeiro!');
                         }
                         log_info('Adicionou uma Receita em Financeiro');
+                        $this->db->trans_commit();
                         redirect($urlAtual);
                     } else {
                         $this->session->set_flashdata('error', 'não foi possivel Adicionoar uma Receita em Financeiro!');
@@ -709,6 +721,7 @@ class Financeiro extends MY_Controller
             $this->session->set_flashdata('error', 'Você não tem permissão para adicionar lançamentos.');
             redirect(base_url());
         } else {
+            $this->db->trans_begin();
 
             $centro_de_gastos = $this->input->post('centGast');
             $classificacao_fin = $this->input->post('clasFin');
@@ -818,6 +831,7 @@ class Financeiro extends MY_Controller
                 if ($idEntidade > 0 || !empty($idClietFor)) {
                     $entity = ($idEntidade > 0) ? $this->asaas->findEntity($idEntidade, $tipoCobranca) : $this->asaas->findEntity($idClietFor, 'cliente');
                     if ($erros = $this->asaas->errosCadastro($entity)) {
+                        $this->db->trans_rollback();
                         $this->session->set_flashdata('error', "Não foi possível faturar no Asaas.\n" . trim($erros));
                         redirect($urlAtual);
                         return;
@@ -883,7 +897,10 @@ class Financeiro extends MY_Controller
                                         $this->asaas->gerarCobranca($idEntidade, $tipoCobranca, $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
                                     }
                                 } catch (\Exception $e) {
-                                    log_message('error', 'Erro ao emitir parcelamento no Asaas: ' . $e->getMessage());
+                                    $this->db->trans_rollback();
+                                    $this->session->set_flashdata('error', 'Erro ao emitir parcelamento no Asaas: ' . $e->getMessage());
+                                    redirect($urlAtual);
+                                    return;
                                 }
                             } elseif ($qtdparcelas_parc <= 1) {
                                 try {
@@ -901,7 +918,10 @@ class Financeiro extends MY_Controller
                                         $this->asaas->gerarCobranca($idEntidade, $tipoCobranca, $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
                                     }
                                 } catch (\Exception $e) {
-                                    log_message('error', 'Erro ao emitir parcela no Asaas: ' . $e->getMessage());
+                                    $this->db->trans_rollback();
+                                    $this->session->set_flashdata('error', 'Erro ao emitir parcela no Asaas: ' . $e->getMessage());
+                                    redirect($urlAtual);
+                                    return;
                                 }
                             }
                         }
@@ -923,6 +943,7 @@ class Financeiro extends MY_Controller
                     $this->db->where('idOs', $os->idOs);
                     $this->db->update('os');
                 }
+                $this->db->trans_commit();
                 redirect($urlAtual);
             } else {
 
@@ -1046,7 +1067,10 @@ class Financeiro extends MY_Controller
                             $this->asaas->gerarCobranca($idEntidade, $tipoCobranca, $this->input->post('formaPgto_parc') === 'Pix (Asaas)' ? 'Pix (Asaas)' : 'Boleto (Asaas)', $cobrancaDados);
                         }
                     } catch (\Exception $e) {
-                        log_message('error', 'Erro ao emitir parcelamento com entrada no Asaas: ' . $e->getMessage());
+                        $this->db->trans_rollback();
+                        $this->session->set_flashdata('error', 'Erro ao emitir parcelamento com entrada no Asaas: ' . $e->getMessage());
+                        redirect($urlAtual);
+                        return;
                     }
                 }
                 $osId = $this->input->post('os_id');
@@ -1061,6 +1085,7 @@ class Financeiro extends MY_Controller
                     $this->db->update('os');
                 }
 
+                $this->db->trans_commit();
                 redirect($urlAtual);
             }
         }

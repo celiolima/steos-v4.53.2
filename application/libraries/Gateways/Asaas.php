@@ -537,7 +537,16 @@ class Asaas extends BasePaymentGateway
         }
 
         if (!empty($cliente['asaas_id'])) {
-            return $cliente['asaas_id'];
+            $this->ci->load->helper('asaas');
+            try {
+                $check = asaas_api_request('/v3/customers/' . $cliente['asaas_id'], 'GET');
+                if (!empty($check->id)) {
+                    return $cliente['asaas_id'];
+                }
+            } catch (\Exception $e) {
+                // Cliente não encontrado neste ambiente (ex: estava em Prod e foi para Sandbox)
+                $this->ci->clientes_model->edit('clientes', ['asaas_id' => ''], 'idClientes', $clienteId);
+            }
         }
 
         $this->ci->load->helper('asaas');
@@ -652,10 +661,16 @@ class Asaas extends BasePaymentGateway
     /**
      * Fase 4: Consulta de Serviços Municipais Configurados na Conta Asaas (GET /v3/invoices/municipalServices)
      */
-    public function obterServicosMunicipais()
+    public function obterServicosMunicipais($description = null)
     {
         $this->ci->load->helper('asaas');
-        $response = asaas_api_request('/v3/invoices/municipalServices?limit=5', 'GET');
+        $endpoint = '/v3/invoices/municipalServices';
+        if (!empty($description)) {
+            $endpoint .= '?description=' . urlencode($description);
+        } else {
+            $endpoint .= '?limit=100';
+        }
+        $response = asaas_api_request($endpoint, 'GET');
         return $response;
     }
 

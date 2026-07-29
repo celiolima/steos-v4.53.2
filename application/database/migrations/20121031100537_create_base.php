@@ -523,6 +523,7 @@ class Migration_create_base extends CI_Migration
   `idServicosNfse` int(11) NOT NULL AUTO_INCREMENT,
   `nome_servico` varchar(255) NOT NULL,
   `codigo_servico_municipal` varchar(255) NOT NULL,
+  `asaas_service_id` varchar(50) DEFAULT NULL,
   `codigo_nbs` varchar(100) DEFAULT NULL,
   `aliquota` varchar(50) NOT NULL,
   PRIMARY KEY (`idServicosNfse`)
