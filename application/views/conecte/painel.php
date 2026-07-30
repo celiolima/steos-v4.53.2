@@ -71,6 +71,137 @@
             </div>
         </div>
     </div>
+    
+    <div class="widget-box">
+        <div class="widget-title" style="margin: -20px 0 0">
+            <span class="icon"><i class="fas fa-signal"></i></span>
+            <h5>Últimas Ordens de Serviço (Negociação)</h5>
+        </div>
+        <div class="widget-content">
+            <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table id="tabela_grafico" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Responsável</th>
+                        <th>Data Inicial</th>
+                        <th>Data Final</th>
+                        <th>Venc. da Garantia</th>
+                        <th>Prioridade</th>
+                        <th>Classificação</th>
+                        <th>Observações</th>
+                        <th>Valor Total</th>
+                        <th>Valor com Desconto</th>
+                        <th>Status</th>
+                        <th style="text-align:right">Visualizar / Imprimir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if (isset($osGrafico) && $osGrafico != null) {
+                        foreach ($osGrafico as $o) {
+                            $vencGarantia = '';
+
+                            if ($o->garantia && is_numeric($o->garantia)) {
+                                $vencGarantia = dateInterval($o->dataFinal, $o->garantia);
+                            }
+                            $corGarantia = '';
+                            if (!empty($vencGarantia)) {
+                                $dataGarantia = explode('/', $vencGarantia);
+                                $dataGarantiaFormatada = $dataGarantia[2] . '-' . $dataGarantia[1] . '-' . $dataGarantia[0];
+                                if (strtotime($dataGarantiaFormatada) >= strtotime(date('d-m-Y'))) {
+                                    $corGarantia = '#4d9c79';
+                                } else {
+                                    $corGarantia = '#f24c6f';
+                                }
+                            } elseif ($o->garantia == "0") {
+                                $vencGarantia = 'Sem Garantia';
+                                $corGarantia = '';
+                            } else {
+                                $vencGarantia = '';
+                                $corGarantia = '';
+                            }
+
+                            // Prioridade color
+                            $corPrioridade = '#d9d9d9'; // Sem
+                            $prioridadeText = $o->prioridade ? mb_strtoupper($o->prioridade, 'UTF-8') : 'SEM';
+                            switch ($prioridadeText) {
+                                case 'URGENTE':
+                                    $corPrioridade = '#f55776';
+                                    break;
+                                case 'ALTA':
+                                    $corPrioridade = '#f89406';
+                                    break;
+                                case 'MÉDIA':
+                                    $corPrioridade = '#2f96b4';
+                                    break;
+                                case 'BAIXA':
+                                    $corPrioridade = '#51a351';
+                                    break;
+                            }
+
+                            // Classificação color
+                            $corClassificacao = '#999999'; // Sem
+                            $classificacaoText = $o->classificacao ? mb_strtoupper($o->classificacao, 'UTF-8') : 'SEM';
+                            // Fixing possible encoding issues dynamically
+                            $mapClassificacao = [
+                                'CORREÃ‡Ã£O' => 'CORREÇÃO', 'CORREÃ§Ã£O' => 'CORREÇÃO',
+                                'AMPLIAÃ‡Ã£O' => 'AMPLIAÇÃO', 'AMPLIAÃ§Ã£O' => 'AMPLIAÇÃO',
+                                'SUGESTÃ£O' => 'SUGESTÃO',
+                                'PREVENÃ‡Ã£O' => 'PREVENÇÃO', 'PREVENÃ§Ã£O' => 'PREVENÇÃO'
+                            ];
+                            if (array_key_exists($classificacaoText, $mapClassificacao)) {
+                                $classificacaoText = $mapClassificacao[$classificacaoText];
+                            }
+                            switch ($classificacaoText) {
+                                case 'CORREÇÃO':
+                                    $corClassificacao = '#f55776';
+                                    break;
+                                case 'AMPLIAÇÃO':
+                                    $corClassificacao = '#2f96b4';
+                                    break;
+                                case 'SUGESTÃO':
+                                    $corClassificacao = '#f89406';
+                                    break;
+                                case 'PREVENÇÃO':
+                                    $corClassificacao = '#51a351';
+                                    break;
+                            }
+                            
+                            $cor = '#AEB404'; // Negociação color
+
+                            $valorTotalOS = $o->valorTotal != 0 ? $o->valorTotal : ($o->totalProdutos + $o->totalServicos);
+                            $valorDescontoOS = $o->valor_desconto != 0 ? $o->valor_desconto : $valorTotalOS;
+
+                            echo '<tr>';
+                            echo '<td>' . $o->idOs . '</td>';
+                            echo '<td>' . $o->nome . '</td>';
+                            echo '<td>' . date('d/m/Y', strtotime($o->dataInicial)) . '</td>';
+                            echo '<td>' . date('d/m/Y', strtotime($o->dataFinal)) . '</td>';
+                            echo '<td><span class="badge" style="background-color: ' . $corGarantia . '; border-color: ' . $corGarantia . '">' . $vencGarantia . '</span> </td>';
+                            
+                            echo '<td><span class="badge" style="background-color: ' . $corPrioridade . '; border-color: ' . $corPrioridade . '">' . $prioridadeText . '</span> </td>';
+                            echo '<td><span class="badge" style="background-color: ' . $corClassificacao . '; border-color: ' . $corClassificacao . '">' . $classificacaoText . '</span> </td>';
+                            
+                            echo '<td><div style="max-height: 80px; overflow-y: auto; max-width: 350px;">' . (!empty($o->observacoes) ? strip_tags(str_replace(['&nbsp;', '&amp;nbsp;'], ' ', html_entity_decode($o->observacoes))) : '') . '</div></td>';
+                            echo '<td>R$ ' . number_format($valorTotalOS, 2, ',', '.') . '</td>';
+                            echo '<td>R$ ' . number_format($valorDescontoOS, 2, ',', '.') . '</td>';
+                            echo '<td><span class="badge" style="background-color: ' . $cor . '; border-color: ' . $cor . '">' . $o->status . '</span> </td>';
+                            echo '<td style="text-align:right">';
+                            echo '<a href="' . base_url() . 'index.php/mine/visualizarOs/' . $o->idOs . '" class="btn"> <i class="fas fa-eye" ></i></a> ';
+                            echo '<a href="' . base_url('index.php/mine/imprimirOs/' . $o->idOs) . '" class="btn" target="_blank"> <i class="fas fa-print"></i></a>';
+                            echo '</td>';
+                            echo '</tr>';
+                        }
+                    } else {
+                        echo '<tr><td colspan="12">Nenhuma ordem de serviço em negociação encontrada.</td></tr>';
+                    }
+                    ?>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
     <?php else: ?>
     <div class="widget-box">
         <div class="widget-title" style="margin: -20px 0 0">

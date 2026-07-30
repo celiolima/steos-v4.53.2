@@ -404,6 +404,20 @@ class Conecte_model extends CI_Model
                 
         return $this->db->query($sql, [$cliente_id])->result();
     }
+
+    public function getOsContratoNegociacao($cliente)
+    {
+        $this->db->select('os.*, usuarios.nome, COALESCE((SELECT SUM(produtos_os.preco * produtos_os.quantidade ) FROM produtos_os WHERE produtos_os.os_id = os.idOs), 0) totalProdutos, COALESCE((SELECT SUM(servicos_os.preco * servicos_os.quantidade ) FROM servicos_os WHERE servicos_os.os_id = os.idOs), 0) totalServicos', false);
+        $this->db->from('os');
+        $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
+        $this->db->where('clientes_id', $cliente);
+        $this->db->where('contratos_id IS NOT NULL');
+        $this->db->where('status', 'Negociação');
+        $this->db->limit(10);
+        $this->db->order_by('idOs', 'desc');
+
+        return $this->db->get()->result();
+    }
 }
 
 /* End of file conecte_model.php */

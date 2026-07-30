@@ -255,6 +255,7 @@ class Mine extends CI_Controller
         if ($temContrato) {
             $data['graficoPrioridade'] = $this->Conecte_model->getGraficoOsPrioridade($cliente_id);
             $data['graficoClassificacao'] = $this->Conecte_model->getGraficoOsClassificacao($cliente_id);
+            $data['osGrafico'] = $this->Conecte_model->getOsContratoNegociacao($cliente_id);
         }
         
         $data['output'] = 'conecte/painel';
