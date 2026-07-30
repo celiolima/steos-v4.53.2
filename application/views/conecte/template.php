@@ -335,6 +335,9 @@
                     <li class="<?php if (isset($menuCobrancas)) {
                         echo 'active';
                     }; ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/cobrancas"><i class='bx bx-credit-card-front iconX'></i> <span class="title">Cobranças</span></a></li>
+                    <li class="<?php if (isset($menuNfse)) {
+                        echo 'active';
+                    }; ?>"><a class="tip-bottom" title="" href="<?php echo base_url() ?>index.php/mine/notasfiscais"><i class='bx bx-receipt iconX'></i> <span class="title">Notas Fiscais</span></a></li>
                 </ul>
             </div>
 

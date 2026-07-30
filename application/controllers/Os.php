@@ -170,6 +170,8 @@ class Os extends MY_Controller
                 'laudoTecnico' => set_value('laudoTecnico'),
                 'local' => set_value('local'),
                 'tipo' => set_value('tipo'),
+                'prioridade' => $this->input->post('contratos_id') ? $this->input->post('prioridade') : 'sem',
+                'classificacao' => $this->input->post('contratos_id') ? $this->input->post('classificacao') : 'CORREÇÃO',
                 'faturado' => 0,
             ];
 
@@ -560,6 +562,8 @@ class Os extends MY_Controller
                 'usuarios_id' => $this->input->post('usuarios_id'),
                 'clientes_id' => $this->input->post('clientes_id'),
                 'contratos_id' => $this->input->post('contratos_id') ?: null,
+                'prioridade' => $this->input->post('contratos_id') ? $this->input->post('prioridade') : 'sem',
+                'classificacao' => $this->input->post('contratos_id') ? $this->input->post('classificacao') : 'CORREÇÃO',
             ];
             $os = $this->os_model->getById($this->input->post('idOs'));
 

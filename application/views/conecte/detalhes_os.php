@@ -31,6 +31,7 @@
                         <li id="tabProdutos"><a href="#tab2" data-toggle="tab">Produtos</a></li>
                         <li id="tabServicos"><a href="#tab3" data-toggle="tab">Serviços</a></li>
                         <li id="tabAnexos"><a href="#tab4" data-toggle="tab">Anexos</a></li>
+                        <li id="tabNfse"><a href="#tab5" data-toggle="tab">NFS-e</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab1">
@@ -224,7 +225,68 @@ foreach ($servicos as $s) {
                             </div>
                         </div>
 
+                        <!--NFS-e-->
+                        <div class="tab-pane" id="tab5">
+                            <div class="span12" style="padding: 1%; margin-left: 0">
+                                
+                                <div class="span12" id="divNfse" style="margin-left: 0">
+                                    <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Status Asaas</th>
+                                                <th>Nº NFS-e</th>
+                                                <th>PDF</th>
+                                                <th>XML</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (!empty($result->asaas_invoice_status)) : ?>
+                                                <?php
+                                                $statusNota = $result->asaas_invoice_status;
+                                                $badgeColor = 'info';
+                                                $statusTxt = $statusNota;
+                                                if ($statusNota === 'SCHEDULED') { $badgeColor = 'warning'; $statusTxt = 'Agendada (SCHEDULED)'; }
+                                                elseif ($statusNota === 'AUTHORIZED') { $badgeColor = 'success'; $statusTxt = 'Autorizada (AUTHORIZED)'; }
+                                                elseif ($statusNota === 'PROCESSING') { $badgeColor = 'info'; $statusTxt = 'Processando (PROCESSING)'; }
+                                                elseif ($statusNota === 'CANCELED' || $statusNota === 'CANCELLED') { $badgeColor = 'important'; $statusTxt = 'Cancelada'; }
+                                                elseif ($statusNota === 'ERROR') { $badgeColor = 'important'; $statusTxt = 'Erro na Emissão'; }
+                                                ?>
+                                                <tr>
+                                                    <td>
+                                                        <span class="label label-<?= $badgeColor ?>"><?= $statusTxt ?></span>
+                                                        <?php if (!empty($result->asaas_invoice_error)) : ?>
+                                                            <div style="color: red; font-size: 11px; margin-top: 4px;"><strong>Erro:</strong> <?= htmlspecialchars($result->asaas_invoice_error) ?></div>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td><?= !empty($result->asaas_invoice_number) ? htmlspecialchars($result->asaas_invoice_number) : '-' ?></td>
+                                                    <td>
+                                                        <?php if (!empty($result->asaas_invoice_pdf)) : ?>
+                                                            <a href="<?= $result->asaas_invoice_pdf ?>" target="_blank" class="btn btn-mini btn-info tip-top" title="Baixar PDF"><i class="bx bxs-file-pdf"></i> PDF</a>
+                                                        <?php else: ?>
+                                                            -
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php if (!empty($result->asaas_invoice_xml)) : ?>
+                                                            <a href="<?= $result->asaas_invoice_xml ?>" target="_blank" class="btn btn-mini btn-warning tip-top" title="Baixar XML"><i class="bx bx-code-alt"></i> XML</a>
+                                                        <?php else: ?>
+                                                            -
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <tr>
+                                                    <td colspan="4">Nenhuma NFS-e gerada para esta Ordem de Serviço.</td>
+                                                </tr>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                </div>
 
+                            </div>
+                        </div>
 
                     </div>
 

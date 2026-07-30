@@ -63,12 +63,33 @@
                                              <label for="cliente">Cliente<span class="required">*</span></label>
                                              <input id="cliente" class="span12" autocomplete="off" style="padding: 1; margin-right: 0" type="text" name="cliente" value="" />
                                              <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="" />
+                                             
+                                             <div class="contratoDetalhes" style="display: none; margin-top: 10px;">
+                                                 <label for="prioridade">Prioridade do Contrato</label>
+                                                 <select id="prioridade" name="prioridade" class="span12 select2-color" style="width: 100%;">
+                                                     <option value="sem" data-color="#ffffff" data-text-color="#333333">Sem</option>
+                                                     <option value="URGENTE" data-color="#f55776" data-text-color="#ffffff">Urgente</option>
+                                                     <option value="ALTA" data-color="#f89406" data-text-color="#ffffff">Alta</option>
+                                                     <option value="MÉDIA" data-color="#2f96b4" data-text-color="#ffffff">Média</option>
+                                                     <option value="BAIXA" data-color="#51a351" data-text-color="#ffffff">Baixa</option>
+                                                 </select>
+                                             </div>
                                          </div>
                                          <div class="span3">
                                              <label for="contratos_id">Contrato Vinculado</label>
                                              <select id="contratos_id" name="contratos_id" class="span12">
                                                  <option value="">Nenhum</option>
                                              </select>
+                                             
+                                             <div class="contratoDetalhes" style="display: none; margin-top: 10px;">
+                                                 <label for="classificacao">Classificação do Contrato</label>
+                                                 <select id="classificacao" name="classificacao" class="span12">
+                                                     <option value="CORREÇÃO">Correção</option>
+                                                     <option value="AMPLIAÇÃO">Ampliação</option>
+                                                     <option value="SUGESTÃO">Sugestão</option>
+                                                     <option value="PREVENÇÃO">Prevenção</option>
+                                                 </select>
+                                             </div>
                                          </div>
                                          <!--  OPERADOR -->
                                          <div class="span3">
@@ -90,7 +111,9 @@
                                                  <button style=" margin: 0" class="btn btn-success " type="button" name="add_tecnico" id="add_tecnico">+</button>
                                              </div>
                                          </div>
+                                         </div>
                                      </div>
+
                                      <!--  SEGUNDA LINHA-->
                                      <div class="span12" style="padding: 1%; margin-left: 0">
                                          <!--  STATUS -->
@@ -758,9 +781,38 @@
              var contratoVal = $(this).val();
              if (contratoVal !== "" && contratoVal !== null && contratoVal !== "0") {
                  $("#tipo").val("Contrato").trigger('change');
+                 $(".contratoDetalhes").slideDown();
              } else {
                  $("#tipo").val("Avulso").trigger('change');
+                 $(".contratoDetalhes").slideUp();
+                 $("#prioridade").val("sem").trigger("change");
+                 $("#classificacao").val("CORREÇÃO").trigger("change");
              }
+         });
+
+         function formatColor(opt) {
+             if (!opt.id) {
+                 return opt.text;
+             }
+             var color = $(opt.element).data('color');
+             var textColor = $(opt.element).data('text-color');
+             if(!color) return opt.text;
+             var $opt = $('<span style="background-color:' + color + '; color:' + textColor + '; padding: 0px 8px; border-radius: 3px; font-weight: bold; display: inline-block; font-size: 13px; line-height: 1.6;">' + opt.text + '</span>');
+             return $opt;
+         }
+         
+         // Carrega CSS do Select2 dinamicamente se não existir
+         if (!$('link[href*="select2.min.css"]').length) {
+             $('head').append('<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />');
+         }
+
+         // Inicializa após carregar o script do Select2
+         $.getScript('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', function() {
+             $('.select2-color').select2({
+                 templateResult: formatColor,
+                 templateSelection: formatColor,
+                 escapeMarkup: function(m) { return m; }
+             });
          });
      });
  </script>

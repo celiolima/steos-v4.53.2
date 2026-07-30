@@ -154,12 +154,23 @@ if (!empty($lancamentos)) {
 
                                         <!-- CLIENTE, CONTRATO E MAPS -->
                                         <div class="span6" style="padding: 0; margin: 0;">
-                                            <div style="display: flex; align-items: flex-end; gap: 10px; width: 100%; flex-wrap: wrap;">
+                                            <div style="display: flex; align-items: flex-start; gap: 10px; width: 100%; flex-wrap: wrap;">
                                                 <div style="flex: 2; min-width: 150px; margin: 0;">
                                                     <label for="cliente" style="margin-bottom: 4px;">Cliente<span class="required">*</span></label>
                                                     <input id="cliente" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" style="width: 100%; box-sizing: border-box; margin: 0; height: 30px;" />
                                                     <input id="clientes_id" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
                                                     <input id="valor" type="hidden" name="valor" value="" />
+                                                    
+                                                    <div class="contratoDetalhes" style="display: <?php echo (isset($result->contratos_id) && $result->contratos_id != null) ? 'block' : 'none'; ?>; margin-top: 10px;">
+                                                        <label for="prioridade">Prioridade do Contrato</label>
+                                                        <select id="prioridade" name="prioridade" class="span12 select2-color" style="width: 100%;">
+                                                            <option value="sem" data-color="#ffffff" data-text-color="#333333" <?php echo ($result->prioridade == 'sem') ? 'selected' : ''; ?>>Sem</option>
+                                                            <option value="URGENTE" data-color="#f55776" data-text-color="#ffffff" <?php echo ($result->prioridade == 'URGENTE') ? 'selected' : ''; ?>>Urgente</option>
+                                                            <option value="ALTA" data-color="#f89406" data-text-color="#ffffff" <?php echo ($result->prioridade == 'ALTA') ? 'selected' : ''; ?>>Alta</option>
+                                                            <option value="MÉDIA" data-color="#2f96b4" data-text-color="#ffffff" <?php echo ($result->prioridade == 'MÉDIA') ? 'selected' : ''; ?>>Média</option>
+                                                            <option value="BAIXA" data-color="#51a351" data-text-color="#ffffff" <?php echo ($result->prioridade == 'BAIXA') ? 'selected' : ''; ?>>Baixa</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <div style="flex: 2; min-width: 150px; margin: 0;">
                                                     <label for="contratos_id" style="margin-bottom: 4px;">Contrato Vinculado</label>
@@ -169,6 +180,16 @@ if (!empty($lancamentos)) {
                                                             <option value="<?php echo $result->contratos_id; ?>" selected>Manter Atual</option>
                                                         <?php } ?>
                                                     </select>
+                                                    
+                                                    <div class="contratoDetalhes" style="display: <?php echo (isset($result->contratos_id) && $result->contratos_id != null) ? 'block' : 'none'; ?>; margin-top: 10px;">
+                                                        <label for="classificacao">Classificação do Contrato</label>
+                                                        <select id="classificacao" name="classificacao" class="span12">
+                                                            <option value="CORREÇÃO" <?php echo ($result->classificacao == 'CORREÇÃO') ? 'selected' : ''; ?>>Correção</option>
+                                                            <option value="AMPLIAÇÃO" <?php echo ($result->classificacao == 'AMPLIAÇÃO') ? 'selected' : ''; ?>>Ampliação</option>
+                                                            <option value="SUGESTÃO" <?php echo ($result->classificacao == 'SUGESTÃO') ? 'selected' : ''; ?>>Sugestão</option>
+                                                            <option value="PREVENÇÃO" <?php echo ($result->classificacao == 'PREVENÇÃO') ? 'selected' : ''; ?>>Prevenção</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <div style="flex: 0 0 auto; margin: 0;">
                                                     <label style="margin-bottom: 4px; visibility: hidden;">Maps</label>
@@ -4221,6 +4242,45 @@ if (!empty($lancamentos)) {
     });
 
     //***** */
+    
+    $(document).on('change', '#contratos_id', function() {
+        var contratoVal = $(this).val();
+        if (contratoVal !== "" && contratoVal !== null && contratoVal !== "0") {
+            $("#tipo").val("Contrato").trigger('change');
+            $(".contratoDetalhes").slideDown();
+        } else {
+            $("#tipo").val("Avulso").trigger('change');
+            $(".contratoDetalhes").slideUp();
+            $("#prioridade").val("sem").trigger("change");
+            $("#classificacao").val("CORREÇÃO").trigger("change");
+        }
+    });
+
+    function formatColor(opt) {
+        if (!opt.id) {
+            return opt.text;
+        }
+        var color = $(opt.element).data('color');
+        var textColor = $(opt.element).data('text-color');
+        if(!color) return opt.text;
+        var $opt = $('<span style="background-color:' + color + '; color:' + textColor + '; padding: 0px 8px; border-radius: 3px; font-weight: bold; display: inline-block; font-size: 13px; line-height: 1.6;">' + opt.text + '</span>');
+        return $opt;
+    }
+    
+    // Carrega CSS do Select2 dinamicamente se não existir
+    if (!$('link[href*="select2.min.css"]').length) {
+        $('head').append('<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />');
+    }
+
+    // Inicializa após carregar o script do Select2
+    $.getScript('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', function() {
+        $('.select2-color').select2({
+            templateResult: formatColor,
+            templateSelection: formatColor,
+            escapeMarkup: function(m) { return m; }
+        });
+    });
+
 </script>
 <script src="<?php echo base_url() ?>assets/js/jquery.mask.min.js"></script>
 <script src="<?php echo base_url() ?>assets/js/funcoes.js"></script>

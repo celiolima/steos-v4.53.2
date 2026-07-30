@@ -46,6 +46,32 @@
 </div>
 
 <div class="span12" style="margin-left: 0">
+    <?php if (isset($temContrato) && $temContrato): ?>
+    <div class="row-fluid" style="margin-top: 0">
+        <div class="span6">
+            <div class="widget-box">
+                <div class="widget-title" style="margin: -20px 0 0">
+                    <span class="icon"><i class="fas fa-chart-pie"></i></span>
+                    <h5>Ordens de Serviço por Prioridade</h5>
+                </div>
+                <div class="widget-content">
+                    <canvas id="chartPrioridade" style="width:100%; height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="span6">
+            <div class="widget-box">
+                <div class="widget-title" style="margin: -20px 0 0">
+                    <span class="icon"><i class="fas fa-chart-area"></i></span>
+                    <h5>Ordens de Serviço por Classificação</h5>
+                </div>
+                <div class="widget-content">
+                    <canvas id="chartClassificacao" style="width:100%; height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php else: ?>
     <div class="widget-box">
         <div class="widget-title" style="margin: -20px 0 0">
             <span class="icon"><i class="fas fa-signal"></i></span>
@@ -157,6 +183,7 @@
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <div class="widget-box">
         <div class="widget-title" style="margin: -20px 0 0">
@@ -265,3 +292,86 @@
         </div>
     </div>
 </div>
+
+<?php if (isset($temContrato) && $temContrato): ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const prioridadeData = <?php echo json_encode($graficoPrioridade ?? []); ?>;
+        const classificacaoData = <?php echo json_encode($graficoClassificacao ?? []); ?>;
+        
+        // Setup Prioridade Pie Chart
+        const prioridadeLabels = prioridadeData.map(item => item.prioridade || 'Sem');
+        const prioridadeValues = prioridadeData.map(item => parseFloat(item.total));
+        const prioridadeColorsMap = {
+            'sem': '#d9d9d9', // Cinza claro
+            'URGENTE': '#f55776',
+            'ALTA': '#f89406',
+            'MÉDIA': '#2f96b4',
+            'BAIXA': '#51a351'
+        };
+        const prioridadeColors = prioridadeLabels.map(label => prioridadeColorsMap[label] || '#cccccc');
+        
+        const ctxPrioridade = document.getElementById('chartPrioridade').getContext('2d');
+        new Chart(ctxPrioridade, {
+            type: 'pie',
+            data: {
+                labels: prioridadeLabels,
+                datasets: [{
+                    data: prioridadeValues,
+                    backgroundColor: prioridadeColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Setup Classificacao Polar Area Chart
+        // Tratamento para caracteres especiais que podem vir corrompidos do banco
+        const fixEncoding = (str) => {
+            if (!str) return 'Sem';
+            const map = {
+                'CORREÃ‡Ã£O': 'CORREÇÃO', 'CORREÃ§Ã£O': 'CORREÇÃO',
+                'AMPLIAÃ‡Ã£O': 'AMPLIAÇÃO', 'AMPLIAÃ§Ã£O': 'AMPLIAÇÃO',
+                'SUGESTÃ£O': 'SUGESTÃO',
+                'PREVENÃ‡Ã£O': 'PREVENÇÃO', 'PREVENÃ§Ã£O': 'PREVENÇÃO'
+            };
+            return map[str.toUpperCase()] || str;
+        };
+
+        const classificacaoLabels = classificacaoData.map(item => fixEncoding(item.classificacao));
+        const classificacaoValues = classificacaoData.map(item => parseFloat(item.total));
+        const classificacaoColorsMap = {
+            'CORREÇÃO': '#f55776', // vermelho
+            'AMPLIAÇÃO': '#2f96b4', // azul
+            'SUGESTÃO': '#f89406', // laranja
+            'PREVENÇÃO': '#51a351' // verde
+        };
+        
+        const classificacaoColors = classificacaoLabels.map(label => {
+            const hex = classificacaoColorsMap[label.toUpperCase()] || '#999999';
+            return hex + 'cc'; // adiciona transparência (cc)
+        });
+
+        const ctxClassificacao = document.getElementById('chartClassificacao').getContext('2d');
+        new Chart(ctxClassificacao, {
+            type: 'polarArea',
+            data: {
+                labels: classificacaoLabels,
+                datasets: [{
+                    data: classificacaoValues,
+                    backgroundColor: classificacaoColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    });
+</script>
+<?php endif; ?>

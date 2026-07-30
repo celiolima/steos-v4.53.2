@@ -1,11 +1,12 @@
 <div class="row-fluid" style="margin-top:0">
     <div class="span12">
         <div class="widget-box">
-            <div class="widget-title" style="margin: -20px 0 0">
-                <span class="icon">
+            <div class="widget-title" style="margin: -20px 0 0; height: auto; min-height: 36px;">
+                <span class="icon" style="float: left; padding: 8px 10px;">
                     <i class="fas fa-file-signature"></i>
                 </span>
-                <h5>Contrato: #<?php echo $result->idContratos; ?> - <?php echo $result->nomeContratos; ?></h5>
+                <h5 style="float: left; line-height: 1.5; padding: 8px 10px; margin: 0; white-space: normal; width: calc(100% - 60px);">Contrato: #<?php echo $result->idContratos; ?> - <?php echo $result->nomeContratos; ?></h5>
+                <div style="clear: both;"></div>
             </div>
             <div class="widget-content nopadding tab-content">
                 <div class="span12" id="divContratos" style="margin-left: 0">
@@ -16,7 +17,8 @@
                         <li><a href="#tab5" data-toggle="tab">Anexos</a></li>
                         <li><a href="#tab6" data-toggle="tab">Sistemas</a></li>
                         <li><a href="#tab8" data-toggle="tab">Checklists do Contrato</a></li>
-                        <li><a href="#tab9" data-toggle="tab">Faturas/Notas e Boletos</a></li>
+                        <li><a href="#tab9" data-toggle="tab">Cobranças</a></li>
+                        <li><a href="#tab10" data-toggle="tab">NFS-e</a></li>
                     </ul>
                     
                     <div class="tab-content" style="padding: 15px;">
@@ -114,12 +116,14 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Nº O.S.</th>
-                                                <th>Data</th>
-                                                <th>Status</th>
+                                                <th style="text-align: center;">Nº O.S.</th>
+                                                <th style="text-align: center;">Data</th>
+                                                <th style="text-align: center;">Status</th>
                                                 <th>Técnico</th>
-                                                <th>Valor Total</th>
-                                                <th>Ações</th>
+                                                <th style="text-align: right;">Valor Total</th>
+                                                <th style="text-align: center;">Status NFS-e</th>
+                                                <th style="text-align: center;">Ações NFS-e</th>
+                                                <th style="text-align: center;">Ações OS</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -151,6 +155,37 @@
                                                         <td><?php echo $tecnico; ?></td>
                                                         <td style="text-align: right;">R$ <?php echo number_format($valTotalOs, 2, ',', '.'); ?></td>
                                                         <td style="text-align: center;">
+                                                            <?php if (!empty($o->asaas_invoice_status)): ?>
+                                                                <?php
+                                                                $statusNota = $o->asaas_invoice_status;
+                                                                $badgeColorNfse = 'info';
+                                                                $statusTxtNfse = $statusNota;
+                                                                if ($statusNota === 'SCHEDULED') { $badgeColorNfse = 'warning'; $statusTxtNfse = 'Agendada'; }
+                                                                elseif ($statusNota === 'AUTHORIZED') { $badgeColorNfse = 'success'; $statusTxtNfse = 'Autorizada'; }
+                                                                elseif ($statusNota === 'PROCESSING') { $badgeColorNfse = 'info'; $statusTxtNfse = 'Processando'; }
+                                                                elseif ($statusNota === 'CANCELED' || $statusNota === 'CANCELLED') { $badgeColorNfse = 'important'; $statusTxtNfse = 'Cancelada'; }
+                                                                elseif ($statusNota === 'ERROR') { $badgeColorNfse = 'important'; $statusTxtNfse = 'Erro'; }
+                                                                ?>
+                                                                <span class="label label-<?php echo $badgeColorNfse; ?>"><?php echo $statusTxtNfse; ?></span>
+                                                                <?php if (!empty($o->asaas_invoice_number)): ?>
+                                                                    <br><small>#<?php echo $o->asaas_invoice_number; ?></small>
+                                                                <?php endif; ?>
+                                                            <?php else: ?>
+                                                                -
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td style="text-align: center;">
+                                                            <?php if (!empty($o->asaas_invoice_pdf)): ?>
+                                                                <a href="<?php echo $o->asaas_invoice_pdf; ?>" target="_blank" class="btn btn-mini btn-info tip-top" title="Baixar PDF"><i class="bx bxs-file-pdf"></i></a>
+                                                            <?php endif; ?>
+                                                            <?php if (!empty($o->asaas_invoice_xml)): ?>
+                                                                <a href="<?php echo $o->asaas_invoice_xml; ?>" target="_blank" class="btn btn-mini btn-warning tip-top" title="Baixar XML"><i class="bx bx-code-alt"></i></a>
+                                                            <?php endif; ?>
+                                                            <?php if (empty($o->asaas_invoice_pdf) && empty($o->asaas_invoice_xml)): ?>
+                                                                -
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td style="text-align: center;">
                                                             <a href="<?php echo base_url(); ?>index.php/mine/visualizarOs/<?php echo $o->idOs; ?>" class="btn-nwe" title="Visualizar OS"><i class="bx bx-show-alt"></i></a>
                                                             <a href="<?php echo base_url(); ?>index.php/mine/imprimirOs/<?php echo $o->idOs; ?>" target="_blank" class="btn-nwe3" title="Imprimir OS"><i class="bx bx-printer"></i></a>
                                                         </td>
@@ -171,11 +206,11 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Nº Venda</th>
-                                                <th>Data</th>
+                                                <th style="text-align: center;">Nº Venda</th>
+                                                <th style="text-align: center;">Data</th>
                                                 <th>Vendedor</th>
-                                                <th>Valor Total</th>
-                                                <th>Ações</th>
+                                                <th style="text-align: right;">Valor Total</th>
+                                                <th style="text-align: center;">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -318,15 +353,15 @@
                         <!-- ABA FATURAS E BOLETOS -->
                         <div class="tab-pane" id="tab9">
                             <div class="span12" style="margin-left: 0;">
-                                <h4>Cobranças, Faturas e Boletos</h4>
+                                <h4>Cobranças</h4>
                                 <div class="table-responsive" style="overflow-x: auto;">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Nº Cobrança</th>
-                                                <th>Vencimento</th>
-                                                <th>Status</th>
-                                                <th>Valor</th>
+                                                <th style="text-align: center;">Nº Cobrança</th>
+                                                <th style="text-align: center;">Vencimento</th>
+                                                <th style="text-align: center;">Status</th>
+                                                <th style="text-align: right;">Valor</th>
                                                 <th style="text-align: center;">Visualizar Boleto</th>
                                             </tr>
                                         </thead>
@@ -355,6 +390,75 @@
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ABA NFS-e -->
+                        <div class="tab-pane" id="tab10">
+                            <div class="span12" style="margin-left: 0;">
+                                <h4>Notas Fiscais de Serviço (NFS-e)</h4>
+                                <div class="table-responsive" style="overflow-x: auto;">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: center;">Nº O.S.</th>
+                                                <th style="text-align: center;">Status Asaas</th>
+                                                <th style="text-align: center;">Nº NFS-e</th>
+                                                <th style="text-align: center;">PDF</th>
+                                                <th style="text-align: center;">XML</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                                $temNfse = false;
+                                                if (!empty($os)) {
+                                                    foreach ($os as $o) {
+                                                        if (!empty($o->asaas_invoice_status)) {
+                                                            $temNfse = true;
+                                                            $statusNota = $o->asaas_invoice_status;
+                                                            $badgeColorNfse = 'info';
+                                                            $statusTxtNfse = $statusNota;
+                                                            if ($statusNota === 'SCHEDULED') { $badgeColorNfse = 'warning'; $statusTxtNfse = 'Agendada'; }
+                                                            elseif ($statusNota === 'AUTHORIZED') { $badgeColorNfse = 'success'; $statusTxtNfse = 'Autorizada'; }
+                                                            elseif ($statusNota === 'PROCESSING') { $badgeColorNfse = 'info'; $statusTxtNfse = 'Processando'; }
+                                                            elseif ($statusNota === 'CANCELED' || $statusNota === 'CANCELLED') { $badgeColorNfse = 'important'; $statusTxtNfse = 'Cancelada'; }
+                                                            elseif ($statusNota === 'ERROR') { $badgeColorNfse = 'important'; $statusTxtNfse = 'Erro'; }
+                                            ?>
+                                                            <tr>
+                                                                <td style="text-align: center;"><?php echo $o->idOs; ?></td>
+                                                                <td style="text-align: center;">
+                                                                    <span class="label label-<?php echo $badgeColorNfse; ?>"><?php echo $statusTxtNfse; ?></span>
+                                                                    <?php if (!empty($o->asaas_invoice_error)): ?>
+                                                                        <br><small style="color: red;"><?php echo htmlspecialchars($o->asaas_invoice_error); ?></small>
+                                                                    <?php endif; ?>
+                                                                </td>
+                                                                <td style="text-align: center;"><?php echo !empty($o->asaas_invoice_number) ? $o->asaas_invoice_number : '-'; ?></td>
+                                                                <td style="text-align: center;">
+                                                                    <?php if (!empty($o->asaas_invoice_pdf)): ?>
+                                                                        <a href="<?php echo $o->asaas_invoice_pdf; ?>" target="_blank" class="btn btn-mini btn-info tip-top" title="Baixar PDF"><i class="bx bxs-file-pdf"></i></a>
+                                                                    <?php else: ?>
+                                                                        -
+                                                                    <?php endif; ?>
+                                                                </td>
+                                                                <td style="text-align: center;">
+                                                                    <?php if (!empty($o->asaas_invoice_xml)): ?>
+                                                                        <a href="<?php echo $o->asaas_invoice_xml; ?>" target="_blank" class="btn btn-mini btn-warning tip-top" title="Baixar XML"><i class="bx bx-code-alt"></i></a>
+                                                                    <?php else: ?>
+                                                                        -
+                                                                    <?php endif; ?>
+                                                                </td>
+                                                            </tr>
+                                            <?php
+                                                        }
+                                                    }
+                                                }
+                                                if (!$temNfse):
+                                            ?>
+                                                <tr><td colspan="5" style="text-align: center;">Nenhuma NFS-e vinculada às Ordens de Serviço deste contrato.</td></tr>
                                             <?php endif; ?>
                                         </tbody>
                                     </table>

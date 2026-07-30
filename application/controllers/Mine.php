@@ -245,8 +245,18 @@ class Mine extends CI_Controller
         }
 
         $data['menuPainel'] = 'painel';
-        $data['compras'] = $this->Conecte_model->getLastCompras($this->session->userdata('cliente_id'));
-        $data['os'] = $this->Conecte_model->getLastOs($this->session->userdata('cliente_id'));
+        $cliente_id = $this->session->userdata('cliente_id');
+        $data['compras'] = $this->Conecte_model->getLastCompras($cliente_id);
+        $data['os'] = $this->Conecte_model->getLastOs($cliente_id);
+        
+        $temContrato = $this->Conecte_model->clienteTemContrato($cliente_id);
+        $data['temContrato'] = $temContrato;
+        
+        if ($temContrato) {
+            $data['graficoPrioridade'] = $this->Conecte_model->getGraficoOsPrioridade($cliente_id);
+            $data['graficoClassificacao'] = $this->Conecte_model->getGraficoOsClassificacao($cliente_id);
+        }
+        
         $data['output'] = 'conecte/painel';
         $this->load->view('conecte/template', $data);
     }
@@ -455,6 +465,73 @@ class Mine extends CI_Controller
 
         $this->load->view('conecte/template', $data);
     }
+
+    public function notasfiscais()
+    {
+        if (!session_id() || !$this->session->userdata('conectado')) {
+            redirect('mine');
+        }
+
+        $this->load->library('pagination');
+
+        $data['menuNfse'] = 'nfse';
+
+        $where = [];
+        $pesquisa = $this->input->get('pesquisa');
+        $status = $this->input->get('status');
+        $data_de = $this->input->get('data_de');
+        $data_ate = $this->input->get('data_ate');
+
+        if (!empty($pesquisa)) {
+            $where['pesquisa'] = $pesquisa;
+        }
+        if (!empty($status) && $status !== 'Todos') {
+            $where['status'] = $status;
+        }
+        if (!empty($data_de)) {
+            $where['data_de'] = $data_de;
+        }
+        if (!empty($data_ate)) {
+            $where['data_ate'] = $data_ate;
+        }
+
+        $config['base_url'] = base_url() . 'index.php/mine/notasfiscais/';
+        $config['total_rows'] = $this->Conecte_model->count('nfse', $this->session->userdata('cliente_id'), $where);
+        $config['per_page'] = 10;
+        $config['reuse_query_string'] = true;
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            $config['suffix'] = '?' . $_SERVER['QUERY_STRING'];
+            $config['first_url'] = $config['base_url'] . '?' . $_SERVER['QUERY_STRING'];
+        }
+        $config['next_link'] = 'Próxima';
+        $config['prev_link'] = 'Anterior';
+        $config['full_tag_open'] = '<div class="pagination alternate"><ul>';
+        $config['full_tag_close'] = '</ul></div>';
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
+        $config['cur_tag_open'] = '<li><a style="color: #2D335B"><b>';
+        $config['cur_tag_close'] = '</b></a></li>';
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
+        $config['first_link'] = 'Primeira';
+        $config['last_link'] = 'Última';
+        $config['first_tag_open'] = '<li>';
+        $config['first_tag_close'] = '</li>';
+        $config['last_tag_open'] = '<li>';
+        $config['last_tag_close'] = '</li>';
+
+        $this->pagination->initialize($config);
+
+        $fields = 'os.*, usuarios.nome, COALESCE((SELECT SUM(produtos_os.preco * produtos_os.quantidade ) FROM produtos_os WHERE produtos_os.os_id = os.idOs), 0) totalProdutos, COALESCE((SELECT SUM(servicos_os.preco * servicos_os.quantidade ) FROM servicos_os WHERE servicos_os.os_id = os.idOs), 0) totalServicos';
+        
+        $data['results'] = $this->Conecte_model->getNfse('nfse', $fields, $where, $config['per_page'], $this->uri->segment(3), '', '', $this->session->userdata('cliente_id'));
+        $data['output'] = 'conecte/notas_fiscais';
+
+        $this->load->view('conecte/template', $data);
+    }
+
 
     public function contratos()
     {

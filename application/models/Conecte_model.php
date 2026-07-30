@@ -202,6 +202,71 @@ class Conecte_model extends CI_Model
         return $result;
     }
 
+    protected function _applyNfseFilters($where = [])
+    {
+        if (empty($where) || !is_array($where)) {
+            return;
+        }
+
+        if (!empty($where['pesquisa'])) {
+            $pesquisa = $where['pesquisa'];
+            $this->db->group_start();
+            $this->db->like('os.asaas_invoice_number', $pesquisa);
+            if (is_numeric($pesquisa)) {
+                $this->db->or_where('os.idOs', $pesquisa);
+            }
+            $this->db->group_end();
+        }
+
+        if (!empty($where['status']) && $where['status'] !== 'Todos') {
+            $this->db->where('os.asaas_invoice_status', $where['status']);
+        }
+
+        if (!empty($where['data_de'])) {
+            $deArr = explode('/', $where['data_de']);
+            if (count($deArr) == 3) {
+                $this->db->where('os.dataInicial >=', $deArr[2] . '-' . $deArr[1] . '-' . $deArr[0]);
+            } else {
+                $this->db->where('os.dataInicial >=', $where['data_de']);
+            }
+        }
+        if (!empty($where['data_ate'])) {
+            $ateArr = explode('/', $where['data_ate']);
+            if (count($ateArr) == 3) {
+                $this->db->where('os.dataInicial <=', $ateArr[2] . '-' . $ateArr[1] . '-' . $ateArr[0]);
+            } else {
+                $this->db->where('os.dataInicial <=', $where['data_ate']);
+            }
+        }
+    }
+
+    public function getNfse($table, $fields, $where, $perpage, $start, $one, $array, $cliente)
+    {
+        $this->db->select($fields);
+        $this->db->from('os'); // The actual table is 'os'
+        $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
+        $this->db->where('os.clientes_id', $cliente);
+        $this->db->where('os.asaas_invoice_status IS NOT NULL');
+        $this->db->where('os.asaas_invoice_status !=', '');
+        
+        $this->db->limit($perpage, $start);
+        $this->db->order_by('os.idOs', 'desc');
+        
+        if ($where) {
+            if (is_array($where)) {
+                $this->_applyNfseFilters($where);
+            } else {
+                $this->db->where($where);
+            }
+        }
+
+        $query = $this->db->get();
+
+        $result = ! $one ? $query->result() : $query->row();
+
+        return $result;
+    }
+
     public function getById($id)
     {
         $this->db->select('os.*, clientes.*, clientes.celular as celular_cliente, garantias.refGarantia, garantias.textoGarantia, usuarios.telefone as telefone_usuario, usuarios.email as email_usuario, usuarios.nome');
@@ -217,8 +282,13 @@ class Conecte_model extends CI_Model
 
     public function count($table, $cliente, $where = '')
     {
-        $this->db->from($table);
-        if ($table === 'os') {
+        if ($table === 'nfse') {
+            $this->db->from('os');
+        } else {
+            $this->db->from($table);
+        }
+        
+        if ($table === 'os' || $table === 'nfse') {
             $this->db->join('usuarios', 'os.usuarios_id = usuarios.idUsuarios', 'left');
         } elseif ($table === 'cobrancas') {
             $this->db->join('clientes', 'cobrancas.clientes_id = clientes.idClientes', 'left');
@@ -227,11 +297,18 @@ class Conecte_model extends CI_Model
         if ($where) {
             if (is_array($where) && $table === 'os') {
                 $this->_applyOsFilters($where);
+            } elseif (is_array($where) && $table === 'nfse') {
+                $this->_applyNfseFilters($where);
             } elseif (is_array($where) && $table === 'cobrancas') {
                 $this->_applyCobrancasFilters($where);
             } else {
                 $this->db->where($where);
             }
+        }
+        
+        if ($table === 'nfse') {
+            $this->db->where('os.asaas_invoice_status IS NOT NULL');
+            $this->db->where('os.asaas_invoice_status !=', '');
         }
 
         return $this->db->count_all_results();
@@ -279,6 +356,53 @@ class Conecte_model extends CI_Model
             ->setMerchantCity($emitente->cidade);
 
         return $pix->getQRCode();
+    }
+    public function clienteTemContrato($cliente_id)
+    {
+        $this->db->where('clientes_id', $cliente_id);
+        $this->db->where('contratos_id IS NOT NULL');
+        $query = $this->db->get('os');
+        return $query->num_rows() > 0;
+    }
+
+    public function getGraficoOsPrioridade($cliente_id)
+    {
+        $sql = "SELECT prioridade, 
+                       SUM(
+                           CASE 
+                               WHEN valorTotal > 0 THEN valorTotal 
+                               ELSE (
+                                   COALESCE((SELECT SUM(preco * quantidade) FROM produtos_os WHERE os_id = os.idOs), 0) + 
+                                   COALESCE((SELECT SUM(preco * quantidade) FROM servicos_os WHERE os_id = os.idOs), 0) - 
+                                   COALESCE(desconto, 0)
+                               ) 
+                           END
+                       ) as total
+                FROM os
+                WHERE clientes_id = ? AND contratos_id IS NOT NULL AND status = 'Negociação'
+                GROUP BY prioridade";
+                
+        return $this->db->query($sql, [$cliente_id])->result();
+    }
+
+    public function getGraficoOsClassificacao($cliente_id)
+    {
+        $sql = "SELECT classificacao, 
+                       SUM(
+                           CASE 
+                               WHEN valorTotal > 0 THEN valorTotal 
+                               ELSE (
+                                   COALESCE((SELECT SUM(preco * quantidade) FROM produtos_os WHERE os_id = os.idOs), 0) + 
+                                   COALESCE((SELECT SUM(preco * quantidade) FROM servicos_os WHERE os_id = os.idOs), 0) - 
+                                   COALESCE(desconto, 0)
+                               ) 
+                           END
+                       ) as total
+                FROM os
+                WHERE clientes_id = ? AND contratos_id IS NOT NULL AND status = 'Negociação'
+                GROUP BY classificacao";
+                
+        return $this->db->query($sql, [$cliente_id])->result();
     }
 }
 
