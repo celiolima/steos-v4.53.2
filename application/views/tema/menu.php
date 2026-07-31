@@ -155,12 +155,21 @@
                             <span class="title-tooltip">Cobranças</span>
                         </a>
                     </li>
+
                     <li class="<?php if (isset($menuNfse)) {
                                     echo 'active';
                                 }; ?>">
                         <a class="tip-bottom" title="" href="<?= site_url('nfse') ?>"><i class='bx bx-file iconX'></i>
                             <span class="title">NFS-e</span>
                             <span class="title-tooltip">NFS-e</span>
+                        </a>
+                    </li>
+                    <li class="<?php if (isset($menuLogsAsaas)) {
+                                    echo 'active';
+                                }; ?>">
+                        <a class="tip-bottom" title="" href="<?= site_url('financeiro/logsAsaas') ?>"><i class='bx bx-history iconX'></i>
+                            <span class="title">Logs Asaas</span>
+                            <span class="title-tooltip">Logs Asaas</span>
                         </a>
                     </li>
                 <?php } ?>

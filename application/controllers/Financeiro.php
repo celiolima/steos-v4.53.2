@@ -1600,4 +1600,18 @@ class Financeiro extends MY_Controller
             $this->zip->download('file' . date('d-m-Y-H.i.s') . '.zip');
         }
     }
+    public function logsAsaas()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar essa página.');
+            redirect(base_url());
+        }
+
+        $this->data['menuFinanceiro'] = true;
+        $this->data['menuLogsAsaas'] = true;
+        $this->data['results'] = $this->db->order_by('id', 'DESC')->get('asaas_webhooks_logs')->result();
+        
+        $this->data['view'] = 'financeiro/logs_asaas';
+        return $this->layout();
+    }
 }

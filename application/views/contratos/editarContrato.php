@@ -87,6 +87,11 @@
                                     <div class="span12" style="padding: 1%; margin-left: 0; display: flex; justify-content: center; align-items: center;">
                                         <button class="button btn btn-primary" id="btnContinuar" style="min-width: 150px; margin: 0 5px"><span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
                                         <a href="#modal-gerar-os" role="button" data-toggle="modal" class="button btn btn-info" id="btnGerarOs" style="min-width: 150px; margin: 0 5px"><span class="button__icon"><i class="bx bx-calendar-event"></i></span><span class="button__text2">Gerar OS Preventivas</span></a>
+                                        <?php if(empty($result->asaas_subscription_id)): ?>
+                                        <a href="#modal-ativar-assinatura" role="button" data-toggle="modal" class="button btn btn-success" id="btnAtivarAssinatura" style="min-width: 150px; margin: 0 5px"><span class="button__icon"><i class="bx bx-credit-card"></i></span><span class="button__text2">Ativar Assinatura Asaas</span></a>
+                                        <?php else: ?>
+                                        <button type="button" disabled class="button btn btn-default" style="min-width: 150px; margin: 0 5px" title="Assinatura Ativa: <?php echo $result->asaas_subscription_id; ?>"><span class="button__icon"><i class="bx bx-check-shield"></i></span><span class="button__text2">Assinatura Ativa</span></button>
+                                        <?php endif; ?>
                                         <a href="<?php echo base_url() ?>index.php/contratos" class="button btn btn-warning" style="min-width: 150px; margin: 0 5px"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
                                     </div>
                                     </div>
@@ -808,6 +813,45 @@ $(document).ready(function(){
         },
         messages: {
             dataPrimeiraVisita: { required: 'Campo Requerido.' }
+        }
+    });
+});
+</script>
+
+<!-- Modal Ativar Assinatura Asaas -->
+<div id="modal-ativar-assinatura" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelAsaas" aria-hidden="true">
+    <form id="formAtivarAssinatura" action="<?php echo base_url() ?>index.php/contratos/ativarAssinaturaAsaas" method="post">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabelAsaas">Ativar Assinatura Mensal (Asaas)</h3>
+        </div>
+        <div class="modal-body">
+            <div class="span12 alert alert-success">
+                A cobrança (Boleto/Pix) e a Nota Fiscal serão emitidas automaticamente <strong>todo dia 1º do mês</strong>, com vencimento para o <strong>dia 10</strong>.
+            </div>
+            <div class="span12 alert alert-info">
+                <strong>Importante:</strong> Ao ativar, o sistema vinculará as cobranças apenas às O.S. Preventivas que tiverem Data Inicial a partir da <strong>Data de Ativação</strong> definida abaixo.
+            </div>
+            <input type="hidden" name="idContratos" value="<?php echo $result->idContratos; ?>" />
+            <div class="span12" style="margin-left: 0">
+                <label for="dataAtivacao">Data de Ativação (Início do Vínculo) <span class="required">*</span></label>
+                <input id="dataAtivacao" class="span12 datepicker" type="text" name="dataAtivacao" value="<?php echo date('d/m/Y'); ?>" required />
+            </div>
+        </div>
+        <div class="modal-footer" style="display:flex;justify-content:center;">
+            <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span></button>
+            <button class="button btn btn-primary" id="btnSalvarAssinatura"><span class="button__icon"><i class="bx bx-check"></i></span><span class="button__text2">Ativar Assinatura</span></button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#formAtivarAssinatura').validate({
+        rules: {
+            dataAtivacao: { required: true }
+        },
+        messages: {
+            dataAtivacao: { required: 'Campo Requerido.' }
         }
     });
 });

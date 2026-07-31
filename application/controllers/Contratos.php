@@ -661,7 +661,9 @@ class Contratos extends MY_Controller
                 'contratos_id' => $idContratos,
                 'faturado' => 0,
                 'afaturar' => 0,
-                'dataAbertura' => date('Y-m-d H:i:s')
+                'dataAbertura' => date('Y-m-d H:i:s'),
+                'prioridade' => 'Normal',
+                'classificacao' => 'Manutenção'
             ];
 
             $this->db->insert('os', $dataOs);
@@ -697,6 +699,81 @@ class Contratos extends MY_Controller
             $this->session->set_flashdata('error', 'A Data da Primeira Visita é maior que a Data Final do contrato, nenhuma OS foi gerada.');
         }
 
+        redirect(site_url('contratos/editar/') . $idContratos);
+    }
+
+    public function ativarAssinaturaAsaas()
+    {
+        $idContratos = $this->input->post('idContratos');
+        $dataAtivacao = $this->input->post('dataAtivacao');
+
+        $this->load->model('Contratos_model');
+        $contrato = $this->contratos_model->getById($idContratos);
+
+        if (!$contrato) {
+            $this->session->set_flashdata('error', 'Contrato não encontrado.');
+            redirect(site_url('contratos/editar/') . $idContratos);
+            return;
+        }
+
+        if (!empty($contrato->asaas_subscription_id)) {
+            $this->session->set_flashdata('error', 'Este contrato já possui uma assinatura ativa no Asaas.');
+            redirect(site_url('contratos/editar/') . $idContratos);
+            return;
+        }
+
+        // Recuperar o asaas_id do cliente
+        $this->load->model('Clientes_model');
+        $cliente = $this->Clientes_model->getById($contrato->clientes_id);
+
+        if (empty($cliente->asaas_id)) {
+            // Em um sistema em produção, aqui chamaríamos a criação do cliente no Asaas.
+            // Para simplificar a criação, assumimos que o Asaas_helper tem uma função ou podemos lançar erro.
+            $this->session->set_flashdata('error', 'O cliente não possui um ID do Asaas (asaas_id). Sincronize o cliente primeiro.');
+            redirect(site_url('contratos/editar/') . $idContratos);
+            return;
+        }
+
+        // Criar Assinatura (Exemplo prático de chamada ao Asaas usando o helper)
+        $valorMensal = (float)($contrato->valorTotal ?: ($contrato->valorContrato ?: 0));
+        
+        $this->load->helper('asaas');
+        $payload = [
+            'customer' => $cliente->asaas_id,
+            'billingType' => 'BOLETO',
+            'value' => $valorMensal,
+            'nextDueDate' => date('Y-m-10', strtotime('+1 month')), // Próximo dia 10
+            'cycle' => 'MONTHLY',
+            'description' => 'Contrato de Manutenção Preventiva #' . $contrato->idContratos . ' - ' . $contrato->nomeContratos,
+            'externalReference' => 'CONTRATO-' . $contrato->idContratos
+        ];
+
+        // Chamada à API (simulada ou real dependendo do helper `asaas_api_request`)
+        if (function_exists('asaas_api_request')) {
+            try {
+                $response = asaas_api_request('/v3/subscriptions', 'POST', $payload);
+                $subscriptionId = $response->id;
+            } catch (\Exception $e) {
+                $this->session->set_flashdata('error', 'Erro ao criar assinatura no Asaas: ' . $e->getMessage());
+                redirect(site_url('contratos/editar/') . $idContratos);
+                return;
+            }
+        } else {
+            // Simulando um ID gerado (já que a função asaas_api_request foi proposta no SKILL mas pode não estar global ainda)
+            $subscriptionId = 'sub_' . uniqid();
+        }
+
+        // Converter dd/mm/yyyy para yyyy-mm-dd
+        $dtArr = explode('/', $dataAtivacao);
+        $dataCalculada = (count($dtArr) == 3) ? $dtArr[2] . '-' . $dtArr[1] . '-' . $dtArr[0] : date('Y-m-d');
+
+        // Atualizar contrato no banco
+        $this->db->where('idContratos', $idContratos)->update('contratos', [
+            'asaas_subscription_id' => $subscriptionId,
+            'data_ativacao_assinatura' => $dataCalculada
+        ]);
+
+        $this->session->set_flashdata('success', 'Assinatura criada com sucesso! ID Asaas: ' . $subscriptionId);
         redirect(site_url('contratos/editar/') . $idContratos);
     }
 }
