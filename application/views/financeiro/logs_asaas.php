@@ -1,7 +1,12 @@
 <div class="new122">
-    <div class="widget-title" style="margin: -20px 0 0">
-        <span class="icon"><i class="fas fa-list-alt"></i></span>
-        <h5>Monitor de Integração - Webhooks Asaas</h5>
+    <div class="widget-title" style="margin: -20px 0 0; display: flex; justify-content: space-between; align-items: center; padding-right: 15px;">
+        <div>
+            <span class="icon"><i class="fas fa-list-alt"></i></span>
+            <h5>Monitor de Integração - Webhooks Asaas</h5>
+        </div>
+        <div>
+            <a href="<?= site_url('financeiro/sincronizar_assinaturas_orfans') ?>" class="btn btn-warning"><i class="fas fa-sync-alt"></i> Sincronizar Assinaturas Órfãs</a>
+        </div>
     </div>
 
     <div class="widget-box">

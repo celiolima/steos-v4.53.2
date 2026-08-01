@@ -1614,4 +1614,79 @@ class Financeiro extends MY_Controller
         $this->data['view'] = 'financeiro/logs_asaas';
         return $this->layout();
     }
+
+    public function sincronizar_assinaturas_orfans()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para usar esta função.');
+            redirect(base_url('index.php/financeiro/logsAsaas'));
+        }
+
+        $this->load->helper('asaas');
+
+        // Pega todos os contratos que possuem assinatura ativada
+        $contratos = $this->db->where('asaas_subscription_id IS NOT NULL')->where("asaas_subscription_id !=", "")->get('contratos')->result();
+        $vinculados = 0;
+
+        foreach ($contratos as $contrato) {
+            // Consulta as cobranças da assinatura no asaas
+            $res = asaas_api_request('/subscriptions/' . $contrato->asaas_subscription_id . '/payments');
+            if ($res['success'] && !empty($res['data']->data)) {
+                $payments = $res['data']->data;
+                foreach ($payments as $payment) {
+                    $chargeId = $payment->id;
+                    
+                    // Verifica se já existe em alguma O.S
+                    $osExistente = $this->db->where('asaas_payment_id', $chargeId)->get('os')->row();
+                    
+                    if (!$osExistente) {
+                        // Não está! Vamos achar a próxima O.S preventiva livre deste contrato
+                        $this->db->where('contratos_id', $contrato->idContratos);
+                        $this->db->where('manutPreventiva', 1);
+                        $this->db->group_start();
+                        $this->db->where('asaas_payment_id IS NULL', null, false);
+                        $this->db->or_where('asaas_payment_id', '');
+                        $this->db->group_end();
+                        if (!empty($contrato->data_ativacao_assinatura)) {
+                            $this->db->where('dataInicial >=', date('Y-m-d', strtotime($contrato->data_ativacao_assinatura)));
+                        }
+                        $this->db->order_by('dataInicial', 'ASC')->limit(1);
+                        $os_alvo = $this->db->get('os')->row();
+
+                        if ($os_alvo) {
+                            $updateData = [
+                                'asaas_payment_id' => $chargeId,
+                                'faturado' => 1
+                            ];
+
+                            // Tentar buscar nota fiscal daquela cobrança para já preencher também
+                            $invoiceRes = asaas_api_request('/invoices?payment=' . $chargeId);
+                            if ($invoiceRes['success'] && !empty($invoiceRes['data']->data[0])) {
+                                $inv = $invoiceRes['data']->data[0];
+                                $updateData['asaas_invoice_id'] = $inv->id;
+                                $updateData['asaas_invoice_number'] = $inv->number ?? null;
+                                $updateData['asaas_invoice_status'] = $inv->status ?? null;
+                                $updateData['asaas_invoice_pdf'] = $inv->pdfUrl ?? null;
+                                $updateData['asaas_invoice_xml'] = $inv->xmlUrl ?? null;
+                            }
+
+                            $this->db->where('idOs', $os_alvo->idOs)->update('os', $updateData);
+                            $vinculados++;
+                            
+                            $this->db->insert('asaas_webhooks_logs', [
+                                'event' => 'SYNC_MANUAL',
+                                'asaas_payment_id' => $chargeId,
+                                'status' => 'SUCESSO',
+                                'mensagem_erro' => "Cobrança (e Nota Fiscal) órfã vinculada manualmente à OS {$os_alvo->idOs} via Sincronizador",
+                                'data_recebimento' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->session->set_flashdata('success', "Sincronização concluída! {$vinculados} cobranças órfãs foram localizadas no Asaas e vinculadas às Ordens de Serviço.");
+        redirect(base_url('index.php/financeiro/logsAsaas'));
+    }
 }
