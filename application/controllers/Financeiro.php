@@ -1630,7 +1630,7 @@ class Financeiro extends MY_Controller
 
         foreach ($contratos as $contrato) {
             // Consulta as cobranças da assinatura no asaas
-            $res = asaas_api_request('/subscriptions/' . $contrato->asaas_subscription_id . '/payments');
+            $res = asaas_api_request('/payments?subscription=' . $contrato->asaas_subscription_id);
             if ($res['success'] && !empty($res['data']->data)) {
                 $payments = $res['data']->data;
                 foreach ($payments as $payment) {
