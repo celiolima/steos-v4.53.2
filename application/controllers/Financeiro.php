@@ -1622,6 +1622,7 @@ class Financeiro extends MY_Controller
             redirect(base_url('index.php/financeiro/logsAsaas'));
         }
 
+        $this->load->model('Os_model');
         $this->load->helper('asaas');
 
         // Pega todos os contratos que possuem assinatura ativada
@@ -1638,9 +1639,12 @@ class Financeiro extends MY_Controller
                     
                     // Verifica se já existe em alguma O.S
                     $osExistente = $this->db->where('asaas_payment_id', $chargeId)->get('os')->row();
+                    $cobrancaExistente = $this->db->where('charge_id', $chargeId)->get('cobrancas')->row();
                     
+                    $os_alvo = null;
+
                     if (!$osExistente) {
-                        // Não está! Vamos achar a próxima O.S preventiva livre deste contrato
+                        // Não está em nenhuma OS! Vamos achar a próxima O.S preventiva livre deste contrato
                         $this->db->where('contratos_id', $contrato->idContratos);
                         $this->db->where('manutPreventiva', 1);
                         $this->db->group_start();
@@ -1652,32 +1656,95 @@ class Financeiro extends MY_Controller
                         }
                         $this->db->order_by('dataInicial', 'ASC')->limit(1);
                         $os_alvo = $this->db->get('os')->row();
+                    } else {
+                        // A OS já foi vinculada em um sincronismo anterior, mas talvez faltou criar a cobrança!
+                        if (!$cobrancaExistente) {
+                            $os_alvo = $osExistente;
+                        }
+                    }
 
-                        if ($os_alvo) {
-                            $updateData = [
-                                'asaas_payment_id' => $chargeId,
-                                'faturado' => 1
-                            ];
+                    if ($os_alvo && !$cobrancaExistente) {
+                        $valorTotal = floatval($payment->value);
+                        
+                        $updateData = [
+                            'asaas_payment_id' => $chargeId,
+                            'faturado' => 1,
+                            'valorTotal' => $valorTotal,
+                            'status' => 'Faturado',
+                            'desconto' => 0,
+                            'valor_desconto' => $valorTotal
+                        ];
 
-                            // Tentar buscar nota fiscal daquela cobrança para já preencher também
-                            $invoiceRes = asaas_api_request('/v3/invoices?payment=' . $chargeId);
-                            if (!empty($invoiceRes->data[0])) {
-                                $inv = $invoiceRes->data[0];
-                                $updateData['asaas_invoice_id'] = $inv->id;
-                                $updateData['asaas_invoice_number'] = $inv->number ?? null;
-                                $updateData['asaas_invoice_status'] = $inv->status ?? null;
-                                $updateData['asaas_invoice_pdf'] = $inv->pdfUrl ?? null;
-                                $updateData['asaas_invoice_xml'] = $inv->xmlUrl ?? null;
-                            }
+                        // Tentar buscar nota fiscal daquela cobrança para já preencher também
+                        $invoiceRes = asaas_api_request('/v3/invoices?payment=' . $chargeId);
+                        if (!empty($invoiceRes->data[0])) {
+                            $inv = $invoiceRes->data[0];
+                            $updateData['asaas_invoice_id'] = $inv->id;
+                            $updateData['asaas_invoice_number'] = $inv->number ?? null;
+                            $updateData['asaas_invoice_status'] = $inv->status ?? null;
+                            $updateData['asaas_invoice_pdf'] = $inv->pdfUrl ?? null;
+                            $updateData['asaas_invoice_xml'] = $inv->xmlUrl ?? null;
+                        }
 
-                            $this->db->where('idOs', $os_alvo->idOs)->update('os', $updateData);
+                        $this->db->trans_start();
+
+                        // Atualiza a OS com os dados da fatura e nota fiscal
+                        $this->db->where('idOs', $os_alvo->idOs)->update('os', $updateData);
+
+                        // Cria Lançamento
+                        $nomeCliente = '(Assinatura Asaas)';
+                        $clienteObj = $this->db->where('idClientes', $os_alvo->clientes_id)->get('clientes')->row();
+                        if ($clienteObj) $nomeCliente = $clienteObj->nomeCliente;
+
+                        $dataLancamento = [
+                            'descricao' => "Fatura de OS - #{$os_alvo->idOs}",
+                            'valor' => $valorTotal,
+                            'tipo_desconto' => 'real',
+                            'desconto' => 0,
+                            'valor_desconto' => $valorTotal,
+                            'clientes_id' => $os_alvo->clientes_id,
+                            'vendas_id' => $os_alvo->idOs,
+                            'data_vencimento' => date('Y-m-d', strtotime($payment->dueDate)),
+                            'data_pagamento' => null,
+                            'baixado' => 0,
+                            'cliente_fornecedor' => $nomeCliente,
+                            'forma_pgto' => ($payment->billingType === 'PIX') ? 'Pix (Asaas)' : 'Boleto (Asaas)',
+                            'tipo' => 'receita',
+                            'observacoes' => 'Sincronizador Asaas: Faturamento Assinatura',
+                            'usuarios_id' => 1
+                        ];
+
+                        // Usa o model pra faturar e gerar lancamento
+                        $this->Os_model->faturarOs($os_alvo->idOs, $dataLancamento, $updateData);
+
+                        // Cria Cobrança
+                        $this->db->insert('cobrancas', [
+                            'charge_id' => $chargeId,
+                            'os_id' => $os_alvo->idOs,
+                            'clientes_id' => $os_alvo->clientes_id,
+                            'vendas_id' => null,
+                            'payment_url' => $payment->invoiceUrl ?? '',
+                            'link' => $payment->invoiceUrl ?? '',
+                            'pdf' => $payment->bankSlipUrl ?? '',
+                            'expire_at' => date('Y-m-d', strtotime($payment->dueDate)),
+                            'status' => 'PENDING',
+                            'total' => round($valorTotal * 100),
+                            'payment' => ($payment->billingType === 'PIX') ? 'PIX' : 'BOLETO',
+                            'payment_method' => ($payment->billingType === 'PIX') ? 'pix' : 'boleto',
+                            'payment_gateway' => 'Asaas',
+                            'barcode' => '',
+                            'message' => "OS #{$os_alvo->idOs} - Assinatura (Sync)"
+                        ]);
+
+                        $this->db->trans_complete();
+
+                        if ($this->db->trans_status() !== FALSE) {
                             $vinculados++;
-                            
                             $this->db->insert('asaas_webhooks_logs', [
                                 'event' => 'SYNC_MANUAL',
                                 'asaas_payment_id' => $chargeId,
                                 'status' => 'SUCESSO',
-                                'mensagem_erro' => "Cobrança (e Nota Fiscal) órfã vinculada manualmente à OS {$os_alvo->idOs} via Sincronizador",
+                                'mensagem_erro' => "Cobrança (Faturas e NFS-e) corrigida/vinculada à OS {$os_alvo->idOs} via Sincronizador",
                                 'data_recebimento' => date('Y-m-d H:i:s')
                             ]);
                         }
