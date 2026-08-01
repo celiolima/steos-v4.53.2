@@ -1631,8 +1631,8 @@ class Financeiro extends MY_Controller
         foreach ($contratos as $contrato) {
             // Consulta as cobranças da assinatura no asaas
             $res = asaas_api_request('/v3/payments?subscription=' . $contrato->asaas_subscription_id);
-            if ($res['success'] && !empty($res['data']->data)) {
-                $payments = $res['data']->data;
+            if (!empty($res->data)) {
+                $payments = $res->data;
                 foreach ($payments as $payment) {
                     $chargeId = $payment->id;
                     
@@ -1661,8 +1661,8 @@ class Financeiro extends MY_Controller
 
                             // Tentar buscar nota fiscal daquela cobrança para já preencher também
                             $invoiceRes = asaas_api_request('/v3/invoices?payment=' . $chargeId);
-                            if ($invoiceRes['success'] && !empty($invoiceRes['data']->data[0])) {
-                                $inv = $invoiceRes['data']->data[0];
+                            if (!empty($invoiceRes->data[0])) {
+                                $inv = $invoiceRes->data[0];
                                 $updateData['asaas_invoice_id'] = $inv->id;
                                 $updateData['asaas_invoice_number'] = $inv->number ?? null;
                                 $updateData['asaas_invoice_status'] = $inv->status ?? null;
