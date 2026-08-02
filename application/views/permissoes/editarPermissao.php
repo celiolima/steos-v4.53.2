@@ -318,6 +318,69 @@
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
                         <div class="widget-title">
+                            <a data-parent="#collapse-group" href="#collapseGVeiculos" data-toggle="collapse">
+                                <span><i class='bx bxs-car icon-cli' ></i></span>
+                                <h5 style="padding-left: 28px">Veículos</h5>
+                                <span><i class='bx bx-chevron-right icon-clic'></i></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="collapse accordion-body" id="collapseGVeiculos">
+                        <div class="widget-content">
+                        <table class="table table-bordered">
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+                            <tr>
+                                <td>
+                                    <label>
+                                            <input <?php if (isset($permissoes['vVeiculo'])) {
+                                                if ($permissoes['vVeiculo'] == '1') {
+                                                    echo 'checked';
+                                                }
+                                            }?> name="vVeiculo" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Visualizar Veículo</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php if (isset($permissoes['aVeiculo'])) {
+                                                if ($permissoes['aVeiculo'] == '1') {
+                                                    echo 'checked';
+                                                }
+                                            }?> name="aVeiculo" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Adicionar Veículo</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php if (isset($permissoes['eVeiculo'])) {
+                                                if ($permissoes['eVeiculo'] == '1') {
+                                                    echo 'checked';
+                                                }
+                                            }?> name="eVeiculo" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Editar Veículo</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php if (isset($permissoes['dVeiculo'])) {
+                                                if ($permissoes['dVeiculo'] == '1') {
+                                                    echo 'checked';
+                                                }
+                                            }?> name="dVeiculo" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Excluir Veículo</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title">
                             <a data-parent="#collapse-group" href="#collapseGFour" data-toggle="collapse">
                                 <span><i class='bx bx-spreadsheet icon-cli' ></i></span>
                                 <h5 style="padding-left: 28px">Ordens de Serviço</h5>

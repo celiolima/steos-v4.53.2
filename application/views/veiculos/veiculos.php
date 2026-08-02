@@ -21,9 +21,14 @@
                 <h5>Veiculos</h5>
                 <!-- Botões -->
                 <div class="buttons">
-
-                    <a href="#" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-plus'></i></span> <span class="button__text">Veículos</span></a>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aVeiculo')) { ?>
+                    <a href="<?php echo base_url(); ?>index.php/veiculos/adicionar" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-plus'></i></span> <span class="button__text">Novo Veículo</span>
+                    </a>
+                    <?php } ?>
+                    <a href="<?php echo base_url(); ?>index.php/veiculos/logs" class="button btn btn-mini btn-primary">
+                        <span class="button__icon"><i class='bx bx-list-ul'></i></span> <span class="button__text">Logs</span>
+                    </a>
                 </div>
             </div>
             <div class="widget-content nopadding tab-content">
@@ -81,7 +86,12 @@
                                                             echo '<td>';
                                                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/veiculos/veiculo/' . $r->idVeiculos . '" class="btn-nwe3" title="Veiculo"><i class="bx bxs-car" style="color:#2945bb" ></i></a>';
                                                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/veiculos/gasolina/' . $r->idVeiculos . '" class="btn-nwe3" title="lançar gasolina"><i class="bx bxs-gas-pump" style="color:#4a9e58"  ></i></a>';
-
+                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eVeiculo')) {
+                                                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/veiculos/editar/' . $r->idVeiculos . '" class="btn-nwe3" title="Editar"><i class="bx bx-edit" style="color:#f28511"></i></a>';
+                                                            }
+                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dVeiculo')) {
+                                                                echo '<a style="margin-right: 1%" href="#modal-excluir" role="button" data-toggle="modal" veiculo="' . $r->idVeiculos . '" class="btn-nwe3" title="Desativar"><i class="bx bx-trash" style="color:#bb2929"></i></a>';
+                                                            }
                                                             echo '</td>';
                                                             echo '</tr>';
                                                         }
@@ -149,31 +159,32 @@
                                             <h5 style="padding: 3px 0"></h5>
                                         </div>
                                         <div class="widget-content nopadding tab-content">
-                                            <table id="tabela2" class="table table-bordered ">
+                                            <table class="table table-bordered">
                                                 <thead>
                                                     <tr>
                                                         <th>ID</th>
-                                                        <th>Data Abaste.</th>
-                                                        <th>Data Óleo</th>
-                                                        <th>Veloc. Óleo</th>
-                                                        <th>Próx.Troca Óleo</th>
+                                                        <th>Tipo</th>
+                                                        <th>Data/Hora</th>
+                                                        <th>Valor Lançado / Conteúdo</th>
+                                                        <th>Usuário</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <!--    <?php
-                                                            if (!$gasolina) {
-                                                                echo '<tr>   <td colspan="5">Nenhum Usuário Cadastrado</td>  </tr>';
-                                                            }
-                                                            foreach ($gasolina as $r) {
-
-                                                                echo '<tr>';
-                                                                echo '<td>' . $r->idGasolina . '</td>';
-                                                                echo '<td>' . $r->dataLancamento . '</td>';
-                                                                echo '<td><a style="color: green">' . $r->velocimetroEntrada . '</a></td>';
-                                                                echo '<td><a style="color: green">' . $r->velocimetroSaida . '</a></td>';
-                                                                echo '<td><a style="color: green">' . $r->saldoAtual . '</a></td>';
-                                                                echo '</tr>';
-                                                            } ?> -->
+                                                    <?php
+                                                    if (empty($veiculo_logs)) {
+                                                        echo '<tr><td colspan="5">Nenhum log encontrado para este veículo.</td></tr>';
+                                                    } else {
+                                                        foreach ($veiculo_logs as $log) {
+                                                            echo '<tr>';
+                                                            echo '<td>' . $log->id . '</td>';
+                                                            echo '<td>' . $log->tipo . '</td>';
+                                                            echo '<td>' . date('d/m/Y H:i', strtotime($log->data_hora)) . '</td>';
+                                                            echo '<td>' . $log->conteudo . '</td>';
+                                                            echo '<td>' . $log->nomeUsuario . '</td>';
+                                                            echo '</tr>';
+                                                        }
+                                                    }
+                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -422,7 +433,7 @@
 
                                                         echo '<tr>';
                                                         echo '<td>' . $r->idGasolina . '</td>';
-                                                        echo '<td>' . $r->dataLancamento . '</td>';
+                                                        echo '<td>' . date('d/m/Y H:i', strtotime($r->dataLancamento)) . '</td>';
                                                         echo '<td><a style="color: green">' . $r->velocimetroEntrada . '</a></td>';
                                                         echo '<td><a style="color: green">' . $r->velocimetroSaida . '</a></td>';
                                                         echo '<td><a style="color: green">' . $r->saldoAtual . '</a></td>';
@@ -1205,4 +1216,29 @@
             show: true
         });
     }
+</script>
+<!-- Modal Excluir -->
+<div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <form action="<?php echo base_url() ?>index.php/veiculos/excluir" method="post">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h5 id="myModalLabel">Desativar Veículo</h5>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="idVeiculoExcluir" name="id" value="" />
+            <h5 style="text-align: center">Deseja realmente desativar este veículo?</h5>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
+            <button class="btn btn-danger">Desativar</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $(document).on('click', 'a[href="#modal-excluir"]', function () {
+        var id = $(this).attr('veiculo');
+        $('#idVeiculoExcluir').val(id);
+    });
+});
 </script>

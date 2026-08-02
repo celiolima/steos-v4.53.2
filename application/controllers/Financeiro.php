@@ -1617,7 +1617,7 @@ class Financeiro extends MY_Controller
 
     public function sincronizar_assinaturas_orfans()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para usar esta função.');
             redirect(base_url('index.php/financeiro/logsAsaas'));
         }

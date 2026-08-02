@@ -109,6 +109,11 @@ class Permissoes extends MY_Controller
                 'cEmail' => $this->input->post('cEmail'),
                 'cSistema' => $this->input->post('cSistema'),
 
+                'aVeiculo' => $this->input->post('aVeiculo'),
+                'eVeiculo' => $this->input->post('eVeiculo'),
+                'dVeiculo' => $this->input->post('dVeiculo'),
+                'vVeiculo' => $this->input->post('vVeiculo'),
+
                 'rCliente' => $this->input->post('rCliente'),
                 'rProduto' => $this->input->post('rProduto'),
                 'rServico' => $this->input->post('rServico'),
@@ -209,6 +214,11 @@ class Permissoes extends MY_Controller
                 'cAuditoria' => $this->input->post('cAuditoria'),
                 'cEmail' => $this->input->post('cEmail'),
                 'cSistema' => $this->input->post('cSistema'),
+
+                'aVeiculo' => $this->input->post('aVeiculo'),
+                'eVeiculo' => $this->input->post('eVeiculo'),
+                'dVeiculo' => $this->input->post('dVeiculo'),
+                'vVeiculo' => $this->input->post('vVeiculo'),
 
                 'rCliente' => $this->input->post('rCliente'),
                 'rProduto' => $this->input->post('rProduto'),
