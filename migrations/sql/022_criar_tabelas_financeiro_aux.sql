@@ -17,6 +17,12 @@ CREATE TABLE IF NOT EXISTS `grupo_financeiro` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `forma_pagamento` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Inserir dados padrão (Retrocompatibilidade)
 INSERT IGNORE INTO `centro_gastos` (`nome`) VALUES 
 ('SERVICOS'), 
@@ -29,5 +35,18 @@ INSERT IGNORE INTO `centro_gastos` (`nome`) VALUES
 ('INVESTIMENTOS');
 
 INSERT IGNORE INTO `grupo_financeiro` (`nome`) VALUES 
-('Receita'), 
-('Despesa');
+('FIXO INDIRETO'), 
+('FIXO DIRETO'), 
+('VARIAVEL DIRETO'), 
+('VARIAVEL INDIRETO'), 
+('RECEITA');
+
+INSERT IGNORE INTO `forma_pagamento` (`nome`) VALUES 
+('Dinheiro'), 
+('Cartão de Crédito'), 
+('Cartão de Débito'), 
+('Boleto'), 
+('Pix'), 
+('Cheque'), 
+('Transferência Bancária');
+

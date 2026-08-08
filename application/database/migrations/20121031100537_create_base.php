@@ -723,8 +723,15 @@ class Migration_create_base extends CI_Migration
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
 
+        $this->db->query('CREATE TABLE IF NOT EXISTS `forma_pagamento` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
+
         $this->db->query("INSERT IGNORE INTO `centro_gastos` (`nome`) VALUES ('SERVICOS'), ('VENDAS'), ('OPERACIONAIS'), ('RH'), ('ADMINISTRATIVO'), ('MARKETING'), ('GASTOS FINANCEIROS'), ('INVESTIMENTOS');");
-        $this->db->query("INSERT IGNORE INTO `grupo_financeiro` (`nome`) VALUES ('Receita'), ('Despesa');");
+        $this->db->query("INSERT IGNORE INTO `grupo_financeiro` (`nome`) VALUES ('FIXO INDIRETO'), ('FIXO DIRETO'), ('VARIAVEL DIRETO'), ('VARIAVEL INDIRETO'), ('RECEITA');");
+        $this->db->query("INSERT IGNORE INTO `forma_pagamento` (`nome`) VALUES ('Dinheiro'), ('Cartão de Crédito'), ('Cartão de Débito'), ('Boleto'), ('Pix'), ('Cheque'), ('Transferência Bancária');");
 
         $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
     }
@@ -780,6 +787,7 @@ class Migration_create_base extends CI_Migration
 
         $this->db->query('DROP TABLE IF EXISTS `centro_gastos`');
         $this->db->query('DROP TABLE IF EXISTS `grupo_financeiro`');
+        $this->db->query('DROP TABLE IF EXISTS `forma_pagamento`');
         $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
     }
 }
