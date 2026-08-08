@@ -20,7 +20,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <?php
 $situacao = $this->input->get('situacao');
 $periodo = $this->input->get('periodo');
@@ -32,6 +34,7 @@ exit; */
 ?>
 
 <style type="text/css">
+
     label.error {
         color: #b94a48;
     }
@@ -67,12 +70,18 @@ exit; */
                 <div class="buttons">
                     <!-- <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
                         <span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text">Faturar</span></a> -->
-                    <a target="_blank" title="adicionar Contas" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/contas">
+                    <a target="_blank" title="adicionar Contas" class="button btn btn-mini btn-inverse" href="<?php echo site_url('contas') ?>">
                         <span class="button__icon"><i class="bx bxs-dollar-circle"></i></span> <span class="button__text">Contas</span></a>
-                    <a target="_blank" title="adicionar Bancos" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/#">
+                    <a target="_blank" title="adicionar Bancos" class="button btn btn-mini btn-inverse" href="<?php echo site_url('bancos') ?>">
                         <span class="button__icon"><i class="bx bxs-landmark"></i></span> <span class="button__text">Bancos</span></a>
-                    <a target="_blank" title="adicionar Class.Financ" class="button btn btn-mini btn-inverse" href="<?php echo site_url() ?>/#">
+                    <a target="_blank" title="adicionar Class.Financ" class="button btn btn-mini btn-inverse" href="<?php echo site_url('classificacaofinanceira') ?>">
                         <span class="button__icon"><i class="bx bx-barcode-reader"></i></span> <span class="button__text">Class. Financeira</span></a>
+                    <a target="_blank" title="adicionar Grupo Financeiro" class="button btn btn-mini btn-inverse" href="<?php echo site_url('grupofinanceiro') ?>">
+                        <span class="button__icon"><i class="bx bx-wallet"></i></span> <span class="button__text">Grupo Financeiro</span></a>
+                    <a target="_blank" title="adicionar Centro de Gastos" class="button btn btn-mini btn-inverse" href="<?php echo site_url('centrogastos') ?>">
+                        <span class="button__icon"><i class="bx bx-money"></i></span> <span class="button__text">Centro de Gastos</span></a>
+                    <a target="_blank" title="adicionar Forma de Pagamento" class="button btn btn-mini btn-inverse" href="<?php echo site_url('formapagamento') ?>">
+                        <span class="button__icon"><i class="bx bx-credit-card"></i></span> <span class="button__text">Forma de Pgto.</span></a>
                     <!--   <a href="<?php //echo base_url(); 
                                     ?>index.php/os/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Ordem de Serviço</span></a> -->
@@ -111,6 +120,7 @@ exit; */
                         <li <?php if ($lancamento == "1") {
                                 echo 'class="active"';
                             } ?> id="tabLancamentos"><a href="#tab2" data-toggle="tab">Lançamentos</a></li>
+                        <li id="tabGraficos"><a href="#tab4" data-toggle="tab">Gráficos Financeiros</a></li>
                         <li id="tabGasolina"><a href="#tab3" data-toggle="tab">Gasolina</a></li>
                     </ul>
                     <div class="tab-content">
@@ -165,14 +175,10 @@ exit; */
                                                                         <label>Centro de Gastos</label>
                                                                         <select id="centro_de_gastos_bsca_cal" class="span12" name="centro_de_gastos_bsca">
                                                                             <option value="">Todos</option>
-                                                                            <option value="SERVICOS" <?= $this->input->get('centro_de_gastos_bsca') === 'SERVICOS' ? 'selected' : '' ?>>SERVICOS</option>
-                                                                            <option value="VENDAS" <?= $this->input->get('centro_de_gastos_bsca') === 'VENDAS' ? 'selected' : '' ?>>VENDAS</option>
-                                                                            <option value="OPERACIONAIS" <?= $this->input->get('centro_de_gastos_bsca') === 'OPERACIONAIS' ? 'selected' : '' ?>>OPERACIONAIS</option>
-                                                                            <option value="RH" <?= $this->input->get('centro_de_gastos_bsca') === 'RH' ? 'selected' : '' ?>>RH</option>
-                                                                            <option value="ADMINISTRATIVO" <?= $this->input->get('centro_de_gastos_bsca') === 'ADMINISTRATIVO' ? 'selected' : '' ?>>ADMINISTRATIVO</option>
-                                                                            <option value="MARKETING" <?= $this->input->get('centro_de_gastos_bsca') === 'MARKETING' ? 'selected' : '' ?>>MARKETING</option>
-                                                                            <option value="GASTOS FINANCEIROS" <?= $this->input->get('centro_de_gastos_bsca') === 'GASTOS FINANCEIROS' ? 'selected' : '' ?>>GASTOS FINANCEIROS</option>
-                                                                            <option value="INVESTISTIMENTOS" <?= $this->input->get('centro_de_gastos_bsca') === 'INVESTISTIMENTOS' ? 'selected' : '' ?>>INVESTIMENTOS</option>
+                                                                            <?php foreach ($centros_gastos as $c) {
+                                                                                $selected = ($this->input->get('centro_de_gastos_bsca') === $c->nome) ? 'selected' : '';
+                                                                                echo '<option value="' . $c->nome . '" ' . $selected . '>' . $c->nome . '</option>';
+                                                                            } ?>
                                                                         </select>
                                                                     </div>
 
@@ -193,18 +199,9 @@ exit; */
                                                                         <label>Grupo Financeiro</label>
                                                                         <select id="grupo_finaceiro_bsca_cal" class="span12" name="grupo_finaceiro_bsca">
                                                                             <option value="">Todos</option>
-                                                                            <?php $grupoFinavceiro = "";
-                                                                            foreach ($classificacao_financeira as $f) {
-                                                                                if ($this->input->get("grupo_finaceiro_bsca") === $f->grupoFinaceiro) {
-                                                                                    if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
-                                                                                        echo '<option value="' . $f->grupoFinaceiro . '" selected>' . $f->grupoFinaceiro . '</option>';
-                                                                                    }
-                                                                                } else {
-                                                                                    if ($f->grupoFinaceiro !=  $grupoFinavceiro) {
-                                                                                        echo '<option value="' . $f->grupoFinaceiro . '">' . $f->grupoFinaceiro . '</option>';
-                                                                                    }
-                                                                                }
-                                                                                $grupoFinavceiro = $f->grupoFinaceiro;
+                                                                            <?php foreach ($grupos_financeiro as $g) {
+                                                                                $selected = ($this->input->get('grupo_finaceiro_bsca') === $g->nome) ? 'selected' : '';
+                                                                                echo '<option value="' . $g->nome . '" ' . $selected . '>' . $g->nome . '</option>';
                                                                             } ?>
                                                                         </select>
                                                                     </div>
@@ -212,17 +209,10 @@ exit; */
                                                                         <label>Forma de Pagamento</label>
                                                                         <select id="forma_pgto_bsca_cal" class="span12" name="forma_pgto_bsca">
                                                                             <option value="">Todos</option>
-                                                                            <option value="Dinheiro" <?= $this->input->get('forma_pgto_bsca') === 'Dinheiro' ? 'selected' : '' ?>>Dinheiro</option>
-                                                                            <option value="Pix" <?= $this->input->get('forma_pgto_bsca') === 'Pix' ? 'selected' : '' ?>>Pix</option>
-                                                                            <option value="Boleto" <?= $this->input->get('forma_pgto_bsca') === 'Boleto' ? 'selected' : '' ?>>Boleto</option>
-                                                                            <option value="Cartão de Crédito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Crédito' ? 'selected' : '' ?>>Cartão de Crédito</option>
-                                                                            <option value="Cartão de Débito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Débito' ? 'selected' : '' ?>>Cartão de Débito</option>
-                                                                            <option value="Cheque" <?= $this->input->get('forma_pgto_bsca') === 'Cheque' ? 'selected' : '' ?>>Cheque</option>
-                                                                            <option value="Cheque Pré-datado" <?= $this->input->get('forma_pgto_bsca') === 'Cheque Pré-datado' ? 'selected' : '' ?>>Cheque Pré-datado</option>
-                                                                            <option value="Depósito" <?= $this->input->get('forma_pgto_bsca') === 'Depósito' ? 'selected' : '' ?>>Depósito</option>
-                                                                            <option value="Transferência DOC" <?= $this->input->get('forma_pgto_bsca') === 'Transferência DOC' ? 'selected' : '' ?>>Transferência DOC</option>
-                                                                            <option value="Transferência TED" <?= $this->input->get('forma_pgto_bsca') === 'Transferência TED' ? 'selected' : '' ?>>Transferência TED</option>
-                                                                            <option value="Promissória" <?= $this->input->get('forma_pgto_bsca') === 'Promissória' ? 'selected' : '' ?>>Promissória</option>
+                                                                            <?php foreach ($formas_pagamento as $f) {
+                                                                                $selected = ($this->input->get('forma_pgto_bsca') === $f->nome) ? 'selected' : '';
+                                                                                echo '<option value="' . $f->nome . '" ' . $selected . '>' . $f->nome . '</option>';
+                                                                            } ?>
                                                                         </select>
                                                                     </div>
 
@@ -379,24 +369,24 @@ exit; */
                                                     <div class="span2">
                                                         <label>Forma de Pagamento</label>
                                                         <select id="forma_pgto_bsca" class="span12" name="forma_pgto_bsca">
-                                                            <option value="">Todos</option>
-                                                            <option value="Dinheiro" <?= $this->input->get('forma_pgto_bsca') === 'Dinheiro' ? 'selected' : '' ?>>Dinheiro</option>
-                                                            <option value="Pix" <?= $this->input->get('forma_pgto_bsca') === 'Pix' ? 'selected' : '' ?>>Pix</option>
-                                                            <option value="Boleto" <?= $this->input->get('forma_pgto_bsca') === 'Boleto' ? 'selected' : '' ?>>Boleto</option>
-                                                            <option value="Cartão de Crédito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Crédito' ? 'selected' : '' ?>>Cartão de Crédito</option>
-                                                            <option value="Cartão de Débito" <?= $this->input->get('forma_pgto_bsca') === 'Cartão de Débito' ? 'selected' : '' ?>>Cartão de Débito</option>
-                                                            <option value="Cheque" <?= $this->input->get('forma_pgto_bsca') === 'Cheque' ? 'selected' : '' ?>>Cheque</option>
-                                                            <option value="Cheque Pré-datado" <?= $this->input->get('forma_pgto_bsca') === 'Cheque Pré-datado' ? 'selected' : '' ?>>Cheque Pré-datado</option>
-                                                            <option value="Depósito" <?= $this->input->get('forma_pgto_bsca') === 'Depósito' ? 'selected' : '' ?>>Depósito</option>
-                                                            <option value="Transferência DOC" <?= $this->input->get('forma_pgto_bsca') === 'Transferência DOC' ? 'selected' : '' ?>>Transferência DOC</option>
-                                                            <option value="Transferência TED" <?= $this->input->get('forma_pgto_bsca') === 'Transferência TED' ? 'selected' : '' ?>>Transferência TED</option>
-                                                            <option value="Promissória" <?= $this->input->get('forma_pgto_bsca') === 'Promissória' ? 'selected' : '' ?>>Promissória</option>
+                                                                            <option value="">Todos</option>
+                                                                            <?php foreach ($formas_pagamento as $f) {
+                                                                                $selected = ($this->input->get('forma_pgto_bsca') === $f->nome) ? 'selected' : '';
+                                                                                echo '<option value="' . $f->nome . '" ' . $selected . '>' . $f->nome . '</option>';
+                                                                            } ?>
                                                         </select>
                                                     </div>
-                                                    <div class="span2">
+                                                    <div class="span4">
                                                         <label>&nbsp;</label>
-                                                        <button type="submit" class="button btn btn-primary btn-sm" style="min-width: 120px">
-                                                            <span class="button__icon"><i class='bx bx-filter-alt'></i></span><span class="button__text2">Filtrar</span></button>
+                                                        <div style="display: flex; gap: 5px; align-items: flex-start;">
+                                                            <button type="submit" class="button btn btn-primary btn-sm" style="min-width: 120px; height: 32px;">
+                                                                <span class="button__icon" style="height: 32px; display: flex; align-items: center;"><i class='bx bx-filter-alt'></i></span><span class="button__text2">Filtrar</span></button>
+                                                            
+                                                            <button type="button" class="btn btn-primary btn-sm" style="height: 32px; width: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" onclick="exportarRelatorio('print')" title="Imprimir"><i class="fas fa-print" style="margin: 0; font-size: 14px;"></i></button>
+                                                            <button type="button" class="btn btn-danger btn-sm" style="height: 32px; width: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" onclick="exportarRelatorio('pdf')" title="Exportar PDF"><i class="fas fa-file-pdf" style="margin: 0; font-size: 14px;"></i></button>
+                                                            <button type="button" class="btn btn-success btn-sm" style="height: 32px; width: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" onclick="exportarRelatorio('xlsx')" title="Exportar Excel"><i class="fas fa-file-excel" style="margin: 0; font-size: 14px;"></i></button>
+                                                            <button type="button" class="btn btn-info btn-sm" style="height: 32px; width: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" onclick="exportarRelatorio('csv')" title="Exportar CSV"><i class="fas fa-file-csv" style="margin: 0; font-size: 14px;"></i></button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </form>
@@ -566,7 +556,151 @@ exit; */
                                 </div>
                             </div>
                         </div>
-                        <!--Gasolina-->
+                        <!--Gráficos Financeiros-->
+                    <div class="tab-pane" id="tab4">
+                        <div class="span12" style="padding: 1%; margin-left: 0">
+                            <div class="widget-box">
+                                <div class="widget-title">
+                                    <span class="icon">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </span>
+                                    <h5>Visualização Gráfica</h5>
+                                </div>
+                                <div class="widget-content">
+                                    <div class="row-fluid">
+                                        <form class="form-horizontal" method="get">
+                                                            <div class="widget-content nopadding tab-content">
+                                                                <div class="row-fluid">
+                                                                    <div class="span2" style="margin-left: 0">
+                                                                        <label>Receitas/Despesas</label>
+                                                                        <select style="padding-left: 30px;" name="statusOsGet" id="statusOsGet_chart">
+                                                                            <option value="">Todos os Status</option>
+                                                                            <option value="receita" <?= ($this->input->get('statusOsGet') === 'receita' || $this->input->get('tipo') === 'receita') ? 'selected' : '' ?>>Receita</option>
+                                                                            <option value="despesa" <?= ($this->input->get('statusOsGet') === 'despesa' || $this->input->get('tipo') === 'despesa') ? 'selected' : '' ?>>Despesa</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Vencimento (de)</label>
+                                                                        <input class="datepicker" style="padding-left: 30px;" id="vencimento_de_chart" placeholder="vencimento_de" required="required" name="vencimento_de_cal" type="text" value="<?= $this->input->get('vencimento_de_cal') ?: ($this->input->get('vencimento_de') ?: date('01/m/Y')) ?>">
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Vencimento (até)</label>
+                                                                        <input class="datepicker" style="padding-left: 30px;" id="vencimento_ate_chart" placeholder="vencimento_ate" required="required" name="vencimento_ate_cal" type="text" value="<?= $this->input->get('vencimento_ate_cal') ?: ($this->input->get('vencimento_ate') ?: date('t/m/Y')) ?>">
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Status</label>
+                                                                        <select name="status" id="status_chart" class="span12">
+                                                                            <option value="">Todos (Pendente e Pago)</option>
+                                                                            <option value="0" <?= $this->input->get('status') === '0' ? 'selected' : '' ?>>Pendente</option>
+                                                                            <option value="1" <?= $this->input->get('status') === '1' ? 'selected' : '' ?>>Pago</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="span4">
+                                                                        <label>Cliente/Fornecedor</label>
+                                                                        <input id="cliente_busca_chart" type="text" class="span12" name="cliente" value="<?= $this->input->get('cliente') ?>">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row-fluid" style="margin-top: 10px;">
+                                                                    <div class="span2" style="margin-left: 0;">
+                                                                        <label>Centro de Gastos</label>
+                                                                        <select id="centro_de_gastos_bsca_chart" class="span12" name="centro_de_gastos_bsca">
+                                                                            <option value="">Todos</option>
+                                                                            <?php foreach ($centros_gastos as $c) {
+                                                                                $selected = ($this->input->get('centro_de_gastos_bsca') === $c->nome) ? 'selected' : '';
+                                                                                echo '<option value="' . $c->nome . '" ' . $selected . '>' . $c->nome . '</option>';
+                                                                            } ?>
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div class="span2">
+                                                                        <label>Classificação Financeira</label>
+                                                                        <select id="classificacao_fin_bsca_chart" class="span12" name="classificacao_fin_bsca">
+                                                                            <option value="">Todos</option>
+                                                                            <?php foreach ($classificacao_financeira as $f) {
+                                                                                if ($this->input->get("classificacao_fin_bsca") === $f->nomeClassFin) {
+                                                                                    echo '<option value="' . $f->nomeClassFin . '" selected >' . $f->nomeClassFin . '</option>';
+                                                                                } else {
+                                                                                    echo '<option value="' . $f->nomeClassFin . '" >' . $f->nomeClassFin . '</option>';
+                                                                                }
+                                                                            } ?>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Grupo Financeiro</label>
+                                                                        <select id="grupo_finaceiro_bsca_chart" class="span12" name="grupo_finaceiro_bsca">
+                                                                            <option value="">Todos</option>
+                                                                            <?php foreach ($grupos_financeiro as $g) {
+                                                                                $selected = ($this->input->get('grupo_finaceiro_bsca') === $g->nome) ? 'selected' : '';
+                                                                                echo '<option value="' . $g->nome . '" ' . $selected . '>' . $g->nome . '</option>';
+                                                                            } ?>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="span2">
+                                                                        <label>Forma de Pagamento</label>
+                                                                        <select id="forma_pgto_bsca_chart" class="span12" name="forma_pgto_bsca">
+                                                                            <option value="">Todos</option>
+                                                                            <?php foreach ($formas_pagamento as $f) {
+                                                                                $selected = ($this->input->get('forma_pgto_bsca') === $f->nome) ? 'selected' : '';
+                                                                                echo '<option value="' . $f->nome . '" ' . $selected . '>' . $f->nome . '</option>';
+                                                                            } ?>
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div class="span2">
+                                                                        <label>&nbsp;</label>
+                                                                        <button type="button" class="button btn btn-mini btn-warning" id="btn-chart" onclick="atualizarGrafico()" style="min-width: 120px;">
+                                                                            <span class="button__icon"><i class='bx bx-search-alt'></i></span>
+                                                                            <span class="button__text2">Pesquisar</span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+<br>
+                                        <div class="row-fluid" style="margin-bottom: 15px;">
+                                            <div class="span3">
+                                                <label>Evolução (Data)</label>
+                                                <select id="tipo_grafico_chart" class="span12" onchange="atualizarGrafico()">
+                                                    <option value="line">Line (Programmatic)</option>
+                                                    <option value="bar">Bar (Event Triggers)</option>
+                                                    <option value="doughnut">Doughnut</option>
+                                                    <option value="bubble">Point Style (Bubble)</option>
+                                                    <option value="point_style" selected>Point Style (Shapes)</option>
+                                                </select>
+                                            </div>
+                                            <div class="span3">
+                                                <label>Categorias (Centro/Grupo)</label>
+                                                <select id="tipo_grafico_secundario" class="span12" onchange="atualizarGrafico()">
+                                                    <option value="bar">Bar (Barras)</option>
+                                                    <option value="doughnut">Doughnut</option>
+                                                </select>
+                                            </div>
+                                            <div class="span6" style="text-align: right; padding-top: 25px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row-fluid">
+                                        <div class="span6">
+                                            <h5 style="text-align: center;">Por Centro de Gastos</h5>
+                                            <canvas id="graficoCentroGastos" width="100%" height="60"></canvas>
+                                        </div>
+                                        <div class="span6">
+                                            <h5 style="text-align: center;">Por Grupo Financeiro</h5>
+                                            <canvas id="graficoGrupoFinanceiro" width="100%" height="60"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="row-fluid" style="margin-top: 30px;">
+                                        <div class="span12">
+                                            <h5 style="text-align: center;">Evolução Financeira (Por Data)</h5>
+                                            <canvas id="graficoFinanceiro" width="100%" height="30"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+<!--Gasolina-->
                         <div class="tab-pane " id="tab3">
                             <div class="span12" style="padding: 1%; margin-left: 0">
                                 <div class="span12 well" style="padding: 1%; margin-left: 0" id="form-anexos">
@@ -632,6 +766,7 @@ exit; */
                             </div>
                         </div>
                     </div>
+                                    </div>
 
 
                 </div>
@@ -668,14 +803,10 @@ exit; */
             <div class="span5" style="margin-left: 0">
                 <label for="centGast" style="margin-left: 0">Centro de gastos</label>
                 <select name="centGast" id="centGast" class="span10">
-                    <option value="SERVICOS">SERVICOS</option>
-                    <option value="VENDAS">VENDAS</option>
-                    <option value="OPERACIONAIS">OPERACIONAIS</option>
-                    <option value="MARKETING">MARKETING</option>
-                    <option value="RH">RH</option>
-                    <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
-                    <option value="GASTOS FINANCEIROS">GASTOS FINANCEIROS</option>
-                    <option value="INVESTISTIMENTOS">INVESTISTIMENTOS</option>
+                    <option value="">Selecione</option>
+                    <?php foreach ($centros_gastos as $c) {
+                        echo '<option value="' . $c->nome . '">' . $c->nome . '</option>';
+                    } ?>
                 </select>
             </div>
 
@@ -810,10 +941,10 @@ exit; */
                     <div class="span4">
                         <label for="formaPgto">Forma Pgto</label>
                         <select name="formaPgto" id="formaPgto" class="span12">
-                            <option value="Dinheiro">Dinheiro</option>
-                            <option value="Pix">Pix</option>
-                            <option value="Cartão de Débito">Cartão de Débito</option>
-                            <option value="Depósito">Depósito</option>
+                            <option value="">Selecione</option>
+                            <?php foreach ($formas_pagamento as $f) {
+                                echo '<option value="' . $f->nome . '">' . $f->nome . '</option>';
+                            } ?>
                         </select>
                     </div>
                     <div class="span4">
@@ -866,14 +997,10 @@ exit; */
             <div class="span5" style="margin-left: 0">
                 <label for="centGast" style="margin-left: 0">Centro de gastos</label>
                 <select name="centGast" id="centGast_parc" class="span10" required>
-                    <option value="SERVICOS">SERVICOS</option>
-                    <option value="VENDAS">VENDAS</option>
-                    <option value="OPERACIONAIS">OPERACIONAIS</option>
-                    <option value="RH">RH</option>
-                    <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
-                    <option value="MARKETING">MARKETING</option>
-                    <option value="GASTOS FINANCEIROS">GASTOS FINANCEIROS</option>
-                    <option value="INVESTISTIMENTOS">INVESTISTIMENTOS</option>
+                    <option value="">Selecione</option>
+                    <?php foreach ($centros_gastos as $c) {
+                        echo '<option value="' . $c->nome . '">' . $c->nome . '</option>';
+                    } ?>
                 </select>
             </div>
             <div class="span5" style="margin-left: 0">
@@ -981,14 +1108,10 @@ exit; */
                 <div class="span4" style="margin-left: 0">
                     <label for="formaPgto_parc">Forma Pgto</label>
                     <select name="formaPgto_parc" id="formaPgto_parc" class="span12" style="margin-left: 0">
-                        <option value="Boleto">Boleto</option>
-                        <option value="Cartão de Crédito">Cartão de Crédito</option>
-                        <option value="Cartão de Débito">Cartão de Débito</option>
-                        <option value="Cheque">Cheque</option>
-                        <option value="Cheque Pré-datado">Cheque Pré-datado</option>
-                        <option value="Depósito">Depósito</option>
-                        <option value="Transferência DOC">Transferência DOC</option>
-                        <option value="Transferência TED">Transferência TED</option>
+                        <option value="">Selecione</option>
+                        <?php foreach ($formas_pagamento as $f) {
+                            echo '<option value="' . $f->nome . '">' . $f->nome . '</option>';
+                        } ?>
                     </select>
                 </div>
                 <div class="span5" style="margin-left: 0">
@@ -1071,14 +1194,10 @@ exit; */
                     <div class="span5" style="margin-left: 0">
                         <label for="centGast" style="margin-left: 0">Centro de gastos</label>
                         <select name="centGast" id="centro_de_gastosEditar" class="span10">
-                            <option value="SERVICOS">SERVICOS</option>
-                            <option value="VENDAS">VENDAS</option>
-                            <option value="OPERACIONAIS">OPERACIONAIS</option>
-                            <option value="MARKETING">MARKETING</option>
-                            <option value="RH">RH</option>
-                            <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
-                            <option value="GASTOS FINANCEIROS">GASTOS FINANCEIROS</option>
-                            <option value="INVESTISTIMENTOS">INVESTISTIMENTOS</option>
+                            <option value="">Selecione</option>
+                            <?php foreach ($centros_gastos as $c) {
+                                echo '<option value="' . $c->nome . '">' . $c->nome . '</option>';
+                            } ?>
                         </select>
                     </div>
 
@@ -1156,10 +1275,11 @@ exit; */
                             <div class="span4">
                                 <label for="formaPgto">Forma Pgto</label>
                                 <select name="formaPgto" class="span12">
-                                    <option value="Dinheiro">Dinheiro</option>
-                                    <option value="Pix">Pix</option>
-                                    <option value="Depósito">Depósito</option>
-                                </select>
+                            <option value="">Selecione</option>
+                            <?php foreach ($formas_pagamento as $f) {
+                                echo '<option value="' . $f->nome . '">' . $f->nome . '</option>';
+                            } ?>
+                        </select>
                             </div>
                             <div class="span4">
                                 <label for="conta">Conta Pgto</label>
@@ -2265,7 +2385,7 @@ exit; */
         //console.log(teste.start);
 
         $('#btn-calendar').on('click', function() {
-            var dataDe = $('#vencimento_de_cal').val();
+            var dataDe = $('#vencimento_de_chart').val();
             if (dataDe) {
                 var partes = dataDe.split('/');
                 if (partes.length === 3) {
@@ -2308,5 +2428,212 @@ exit; */
             }
         });
 
+        // ===== CHART JS E EXPORTAÇÃO =====
+        $('#vencimento_de_cal, #vencimento_ate_cal, #status, #cliente_busca, #statusOsGet, #centro_de_gastos_bsca_cal, #classificacao_fin_bsca_cal, #grupo_finaceiro_bsca_cal').on('change', function() {
+            if ($('#tabGraficos').hasClass('active') || $('#tab4').hasClass('active')) {
+                atualizarGrafico();
+            }
+        });
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            if ($(e.target).attr('href') === '#tab4') {
+                atualizarGrafico();
+            }
+        });
+
     });
+
+    let meuGrafico = null;
+    let meuGraficoCG = null;
+    let meuGraficoGF = null;
+    let chartDataOriginal = {};
+
+    function atualizarGrafico() {
+        const params = {
+            vencimento_de: $('#vencimento_de_chart').val(),
+            vencimento_ate: $('#vencimento_ate_chart').val(),
+            status: $('#status_chart').val(),
+            cliente: $('#cliente_busca_chart').val(),
+            tipo: $('#statusOsGet_chart').val(),
+            centro_de_gastos_bsca: $('#centro_de_gastos_bsca_chart').val(),
+            classificacao_fin_bsca: $('#classificacao_fin_bsca_chart').val(),
+            grupo_finaceiro_bsca: $('#grupo_finaceiro_bsca_chart').val(),
+            forma_pgto_bsca: $('#forma_pgto_bsca_chart').val()
+        };
+
+        const queryString = new URLSearchParams(params).toString();
+        
+        fetch('<?php echo base_url(); ?>index.php/financeiro/graficos_dinamicos_json?' + queryString)
+            .then(res => res.json())
+            .then(data => {
+                chartDataOriginal = data;
+                renderizarGrafico(data);
+            });
+    }
+
+    function renderizarGrafico(data) {
+        const ctx = document.getElementById('graficoFinanceiro').getContext('2d');
+        const tipo = $('#tipo_grafico_chart').val();
+
+        if (meuGrafico) meuGrafico.destroy();
+        if (meuGraficoCG) meuGraficoCG.destroy();
+        if (meuGraficoGF) meuGraficoGF.destroy();
+
+        let chartConfig = {};
+
+        if (tipo === 'doughnut') {
+            chartConfig = {
+                type: 'doughnut',
+                data: {
+                    labels: ['Receitas', 'Despesas'],
+                    datasets: [{
+                        label: 'Totais',
+                        data: [data.totalReceitas, data.totalDespesas],
+                        backgroundColor: ['#28a745', '#dc3545']
+                    }]
+                }
+            };
+        } else if (tipo === 'bubble') {
+            const bubbleData = data.labels.map((label, index) => ({
+                x: index, y: data.receitas[index], r: Math.max(5, data.receitas[index] / 100)
+            }));
+            const bubbleData2 = data.labels.map((label, index) => ({
+                x: index, y: data.despesas[index], r: Math.max(5, data.despesas[index] / 100)
+            }));
+
+            chartConfig = {
+                type: 'bubble',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        { label: 'Receitas', data: bubbleData, backgroundColor: '#28a745' },
+                        { label: 'Despesas', data: bubbleData2, backgroundColor: '#dc3545' }
+                    ]
+                }
+            };
+        } else if (tipo === 'point_style') {
+            chartConfig = {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        { label: 'Receitas', data: data.receitas, backgroundColor: '#28a745', borderColor: '#28a745', fill: false, pointStyle: 'rectRot', pointRadius: 8, pointHoverRadius: 10 },
+                        { label: 'Despesas', data: data.despesas, backgroundColor: '#dc3545', borderColor: '#dc3545', fill: false, pointStyle: 'triangle', pointRadius: 8, pointHoverRadius: 10 }
+                    ]
+                }
+            };
+        } else {
+            chartConfig = {
+                type: tipo,
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        { label: 'Receitas', data: data.receitas, backgroundColor: '#28a745', borderColor: '#28a745', fill: false },
+                        { label: 'Despesas', data: data.despesas, backgroundColor: '#dc3545', borderColor: '#dc3545', fill: false }
+                    ]
+                }
+            };
+        }
+
+        
+        chartConfig.options = {
+            plugins: {
+                tooltip: {
+                    usePointStyle: true,
+                    boxPadding: 4
+                }
+            }
+        };
+        meuGrafico = new Chart(ctx, chartConfig);
+
+        // Renderizar CG
+        const ctxCG = document.getElementById('graficoCentroGastos').getContext('2d');
+        const tipoSec = $('#tipo_grafico_secundario').val();
+        
+        let configCG = {};
+        if (tipoSec === 'doughnut') {
+            configCG = {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels_cg,
+                    datasets: [
+                        { label: 'Receitas', data: data.receitas_cg, backgroundColor: '#28a745' },
+                        { label: 'Despesas', data: data.despesas_cg, backgroundColor: '#dc3545' }
+                    ]
+                }
+            };
+        } else {
+            configCG = {
+                type: 'bar',
+                data: {
+                    labels: data.labels_cg,
+                    datasets: [
+                        { label: 'Receitas', data: data.receitas_cg, backgroundColor: '#28a745' },
+                        { label: 'Despesas', data: data.despesas_cg, backgroundColor: '#dc3545' }
+                    ]
+                }
+            };
+        }
+        configCG.options = { plugins: { tooltip: { usePointStyle: true, boxPadding: 4 } } };
+        meuGraficoCG = new Chart(ctxCG, configCG);
+
+        // Renderizar GF
+        const ctxGF = document.getElementById('graficoGrupoFinanceiro').getContext('2d');
+        let configGF = {};
+        if (tipoSec === 'doughnut') {
+            configGF = {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels_gf,
+                    datasets: [
+                        { label: 'Receitas', data: data.receitas_gf, backgroundColor: '#28a745' },
+                        { label: 'Despesas', data: data.despesas_gf, backgroundColor: '#dc3545' }
+                    ]
+                }
+            };
+        } else {
+            configGF = {
+                type: 'bar',
+                data: {
+                    labels: data.labels_gf,
+                    datasets: [
+                        { label: 'Receitas', data: data.receitas_gf, backgroundColor: '#28a745' },
+                        { label: 'Despesas', data: data.despesas_gf, backgroundColor: '#dc3545' }
+                    ]
+                }
+            };
+        }
+        configGF.options = { plugins: { tooltip: { usePointStyle: true, boxPadding: 4 } } };
+        meuGraficoGF = new Chart(ctxGF, configGF);
+
+
+    }
+
+    function exportarRelatorio(format) {
+        var vencimento_de = document.getElementById('vencimento_de') ? document.getElementById('vencimento_de').value : '';
+        var vencimento_ate = document.getElementById('vencimento_ate') ? document.getElementById('vencimento_ate').value : '';
+        var tipo = document.querySelector('select[name="tipo"]') ? document.querySelector('select[name="tipo"]').value : '';
+        var status = document.querySelector('select[name="status"]') ? document.querySelector('select[name="status"]').value : '';
+        var cliente = document.getElementById('cliente') ? document.getElementById('cliente').value : '';
+        var periodo = document.getElementById('periodo') ? document.getElementById('periodo').value : '';
+        var centro_de_gastos_bsca = document.getElementById('centro_de_gastos_bsca') ? document.getElementById('centro_de_gastos_bsca').value : '';
+        var classificacao_fin_bsca = document.getElementById('classificacao_fin_bsca') ? document.getElementById('classificacao_fin_bsca').value : '';
+        var grupo_finaceiro_bsca = document.getElementById('grupo_finaceiro_bsca') ? document.getElementById('grupo_finaceiro_bsca').value : '';
+        var forma_pgto_bsca = document.getElementById('forma_pgto_bsca') ? document.getElementById('forma_pgto_bsca').value : '';
+
+        var url = "<?php echo base_url(); ?>index.php/financeiro/imprimirLancamentos?";
+        url += "format=" + format;
+        url += "&vencimento_de=" + encodeURIComponent(vencimento_de);
+        url += "&vencimento_ate=" + encodeURIComponent(vencimento_ate);
+        url += "&tipo=" + encodeURIComponent(tipo);
+        url += "&status=" + encodeURIComponent(status);
+        url += "&cliente=" + encodeURIComponent(cliente);
+        url += "&periodo=" + encodeURIComponent(periodo);
+        url += "&centro_de_gastos_bsca=" + encodeURIComponent(centro_de_gastos_bsca);
+        url += "&classificacao_fin_bsca=" + encodeURIComponent(classificacao_fin_bsca);
+        url += "&grupo_finaceiro_bsca=" + encodeURIComponent(grupo_finaceiro_bsca);
+        url += "&forma_pgto_bsca=" + encodeURIComponent(forma_pgto_bsca);
+
+        window.open(url, '_blank');
+    }
 </script>

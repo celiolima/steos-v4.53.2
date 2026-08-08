@@ -171,7 +171,14 @@ class Financeiro extends MY_Controller
 
 
         $this->data['classificacao_financeira'] = $this->classificacao_financeira_model->getAll();
+        
+        $this->load->model('CentroGastos_model');
+        $this->load->model('GrupoFinanceiro_model');
+        $this->load->model('FormaPagamento_model');
 
+        $this->data['centros_gastos'] = $this->CentroGastos_model->get('centro_gastos', '*');
+        $this->data['grupos_financeiro'] = $this->GrupoFinanceiro_model->get('grupo_financeiro', '*');
+        $this->data['formas_pagamento'] = $this->FormaPagamento_model->get('forma_pagamento', '*');
         //Gasolina
         $this->data['configuration']['total_rows'] = $this->veiculos_model->count('veiculos');
         $this->pagination->initialize($this->data['configuration']);
@@ -183,6 +190,120 @@ class Financeiro extends MY_Controller
 
         $this->data['view'] = 'financeiro/apagarReceber';
         return $this->layout();
+    }
+
+
+    public function imprimirLancamentos()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar lançamentos.');
+            redirect(base_url());
+        }
+
+        $where = '';
+        $vencimento_de = $this->input->get('vencimento_de');
+        $vencimento_ate = $this->input->get('vencimento_ate');
+
+        $cliente = $this->input->get('cliente');
+        $tipo = $this->input->get('tipo');
+        $status = $this->input->get('status');
+        $centro_de_gastos_bsca = $this->input->get('centro_de_gastos_bsca');
+        $classificacao_fin_bsca = $this->input->get('classificacao_fin_bsca');
+        $grupo_finaceiro_bsca = $this->input->get('grupo_finaceiro_bsca');
+        $forma_pgto_bsca = $this->input->get('forma_pgto_bsca');
+
+        if (!empty($vencimento_de)) {
+            $date = DateTime::createFromFormat('d/m/Y', $vencimento_de);
+            if ($date) {
+                $dateString = $date->format('Y-m-d');
+                if (empty($where)) {
+                    $where = "data_vencimento >= '$dateString'";
+                } else {
+                    $where .= " AND data_vencimento >= '$dateString'";
+                }
+            }
+        }
+
+        if (!empty($vencimento_ate)) {
+            $date = DateTime::createFromFormat('d/m/Y', $vencimento_ate);
+            if ($date) {
+                $dateString = $date->format('Y-m-d');
+                if (empty($where)) {
+                    $where = "data_vencimento <= '$dateString'";
+                } else {
+                    $where .= " AND data_vencimento <= '$dateString'";
+                }
+            }
+        }
+
+        if (isset($status) && $status != '') {
+            if (empty($where)) {
+                $where = "baixado = '$status'";
+            } else {
+                $where .= " AND baixado = '$status'";
+            }
+        }
+
+        if (!empty($cliente)) {
+            if (empty($where)) {
+                $where = "cliente_fornecedor LIKE '%{$cliente}%'";
+            } else {
+                $where .= " AND cliente_fornecedor LIKE '%{$cliente}%'";
+            }
+        }
+
+        if (!empty($tipo)) {
+            if (empty($where)) {
+                $where = "tipo = '$tipo'";
+            } else {
+                $where .= " AND tipo = '$tipo'";
+            }
+        }
+
+        if (!empty($centro_de_gastos_bsca)) {
+            if (empty($where)) {
+                $where = "centro_de_gastos = '$centro_de_gastos_bsca'";
+            } else {
+                $where .= " AND centro_de_gastos = '$centro_de_gastos_bsca'";
+            }
+        }
+
+        if (!empty($classificacao_fin_bsca)) {
+            if (empty($where)) {
+                $where = "classificacao_fin = '$classificacao_fin_bsca'";
+            } else {
+                $where .= " AND classificacao_fin = '$classificacao_fin_bsca'";
+            }
+        }
+
+        if (!empty($grupo_finaceiro_bsca)) {
+            if (empty($where)) {
+                $where = "grupo_finaceiro = '$grupo_finaceiro_bsca'";
+            } else {
+                $where .= " AND grupo_finaceiro = '$grupo_finaceiro_bsca'";
+            }
+        }
+
+        if (!empty($forma_pgto_bsca)) {
+            if (empty($where)) {
+                $where = "forma_pgto = '$forma_pgto_bsca'";
+            } else {
+                $where .= " AND forma_pgto = '$forma_pgto_bsca'";
+            }
+        }
+
+        // We do not paginate for export, we want ALL filtered results
+        $this->data['results'] = $this->financeiro_model->get1('lancamentos', '*', $where);
+        $this->data['totals'] = $this->financeiro_model->getTotals($where);
+        $this->data['estatisticas_financeiro'] = $this->financeiro_model->getEstatisticasFinanceiro2();
+        
+        $this->load->model('steos_model');
+        $this->data['emitente'] = $this->steos_model->getEmitente();
+        
+        $this->data['format'] = $this->input->get('format') ?: 'print';
+
+        // Load isolated view (no layout)
+        $this->load->view('financeiro/imprimirLancamentos', $this->data);
     }
 
     public function calendario()
@@ -1344,6 +1465,152 @@ class Financeiro extends MY_Controller
         }
 
         print_r($data); */
+    }
+
+    public function excluir_gasolina()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para excluir gasolina.');
+            redirect(base_url());
+        }
+
+        $id = $this->input->post('id');
+        if ($id == null) {
+            $this->session->set_flashdata('error', 'Erro ao tentar excluir.');
+            redirect(base_url() . 'index.php/financeiro/lancamentos/');
+        }
+
+        $this->gasolina_model->delete('gasolina', 'id', $id);
+
+        $this->session->set_flashdata('success', 'Lançamento de gasolina excluído com sucesso!');
+        redirect(base_url() . 'index.php/financeiro/lancamentos/');
+    }
+
+    public function graficos_dinamicos_json()
+    {
+        $where = '';
+        $vencimento_de = $this->input->get('vencimento_de');
+        $vencimento_ate = $this->input->get('vencimento_ate');
+        $cliente = $this->input->get('cliente');
+        $tipo = $this->input->get('tipo');
+        $status = $this->input->get('status');
+        $centro_de_gastos_bsca = $this->input->get('centro_de_gastos_bsca');
+        $classificacao_fin_bsca = $this->input->get('classificacao_fin_bsca');
+        $grupo_finaceiro_bsca = $this->input->get('grupo_finaceiro_bsca');
+        $forma_pgto_bsca = $this->input->get('forma_pgto_bsca');
+
+        if (!empty($vencimento_de)) {
+            $date = DateTime::createFromFormat('d/m/Y', $vencimento_de);
+            if ($date) {
+                $dateString = $date->format('Y-m-d');
+                $where .= (empty($where) ? "" : " AND ") . "data_vencimento >= '$dateString'";
+            }
+        }
+        if (!empty($vencimento_ate)) {
+            $date = DateTime::createFromFormat('d/m/Y', $vencimento_ate);
+            if ($date) {
+                $dateString = $date->format('Y-m-d');
+                $where .= (empty($where) ? "" : " AND ") . "data_vencimento <= '$dateString'";
+            }
+        }
+        if (isset($status) && $status != '') {
+            $where .= (empty($where) ? "" : " AND ") . "baixado = '$status'";
+        }
+        if (!empty($cliente)) {
+            $where .= (empty($where) ? "" : " AND ") . "cliente_fornecedor LIKE '%{$cliente}%'";
+        }
+        if (!empty($tipo)) {
+            $where .= (empty($where) ? "" : " AND ") . "tipo = '$tipo'";
+        }
+        if (!empty($centro_de_gastos_bsca)) {
+            $where .= (empty($where) ? "" : " AND ") . "centro_de_gastos = '$centro_de_gastos_bsca'";
+        }
+        if (!empty($classificacao_fin_bsca)) {
+            $where .= (empty($where) ? "" : " AND ") . "classificacao_fin = '$classificacao_fin_bsca'";
+        }
+        if (!empty($grupo_finaceiro_bsca)) {
+            $where .= (empty($where) ? "" : " AND ") . "grupo_finaceiro = '$grupo_finaceiro_bsca'";
+        }
+        if (!empty($forma_pgto_bsca)) {
+            $where .= (empty($where) ? "" : " AND ") . "forma_pgto = '$forma_pgto_bsca'";
+        }
+
+        $lancamentos = $this->financeiro_model->get('lancamentos', '*', $where, 10000, 0);
+        
+        $dadosAgrupados = [];
+        $agrupadoCG = [];
+        $agrupadoGF = [];
+        $totalReceitas = 0;
+        $totalDespesas = 0;
+
+        foreach ($lancamentos as $l) {
+            $data = $l->data_vencimento;
+            $cg = $l->centro_de_gastos ? $l->centro_de_gastos : 'Não Informado';
+            $gf = $l->grupo_finaceiro ? $l->grupo_finaceiro : 'Não Informado';
+
+            if (!isset($dadosAgrupados[$data])) {
+                $dadosAgrupados[$data] = ['receita' => 0, 'despesa' => 0];
+            }
+            if (!isset($agrupadoCG[$cg])) {
+                $agrupadoCG[$cg] = ['receita' => 0, 'despesa' => 0];
+            }
+            if (!isset($agrupadoGF[$gf])) {
+                $agrupadoGF[$gf] = ['receita' => 0, 'despesa' => 0];
+            }
+
+            $valor = $l->valor_desconto != 0 ? $l->valor_desconto : $l->valor;
+            if ($l->tipo == 'receita') {
+                $dadosAgrupados[$data]['receita'] += $valor;
+                $agrupadoCG[$cg]['receita'] += $valor;
+                $agrupadoGF[$gf]['receita'] += $valor;
+                $totalReceitas += $valor;
+            } else {
+                $dadosAgrupados[$data]['despesa'] += $valor;
+                $agrupadoCG[$cg]['despesa'] += $valor;
+                $agrupadoGF[$gf]['despesa'] += $valor;
+                $totalDespesas += $valor;
+            }
+        }
+
+        ksort($dadosAgrupados);
+        ksort($agrupadoCG);
+        ksort($agrupadoGF);
+
+        $labels = []; $receitas = []; $despesas = [];
+        foreach ($dadosAgrupados as $data => $valores) {
+            $labels[] = date('d/m/Y', strtotime($data));
+            $receitas[] = $valores['receita'];
+            $despesas[] = $valores['despesa'];
+        }
+
+        $labels_cg = []; $receitas_cg = []; $despesas_cg = [];
+        foreach ($agrupadoCG as $label => $valores) {
+            $labels_cg[] = $label;
+            $receitas_cg[] = $valores['receita'];
+            $despesas_cg[] = $valores['despesa'];
+        }
+
+        $labels_gf = []; $receitas_gf = []; $despesas_gf = [];
+        foreach ($agrupadoGF as $label => $valores) {
+            $labels_gf[] = $label;
+            $receitas_gf[] = $valores['receita'];
+            $despesas_gf[] = $valores['despesa'];
+        }
+
+        echo json_encode([
+            'labels' => $labels,
+            'receitas' => $receitas,
+            'despesas' => $despesas,
+            'labels_cg' => $labels_cg,
+            'receitas_cg' => $receitas_cg,
+            'despesas_cg' => $despesas_cg,
+            'labels_gf' => $labels_gf,
+            'receitas_gf' => $receitas_gf,
+            'despesas_gf' => $despesas_gf,
+            'totalReceitas' => $totalReceitas,
+            'totalDespesas' => $totalDespesas
+        ]);
+        exit;
     }
 
     public function excluirLancamento()

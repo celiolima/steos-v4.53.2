@@ -711,6 +711,21 @@ class Migration_create_base extends CI_Migration
   KEY `fk_os_checklists_itens` (`checklist_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
 
+        $this->db->query('CREATE TABLE IF NOT EXISTS `centro_gastos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
+
+        $this->db->query('CREATE TABLE IF NOT EXISTS `grupo_financeiro` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
+
+        $this->db->query("INSERT IGNORE INTO `centro_gastos` (`nome`) VALUES ('SERVICOS'), ('VENDAS'), ('OPERACIONAIS'), ('RH'), ('ADMINISTRATIVO'), ('MARKETING'), ('GASTOS FINANCEIROS'), ('INVESTIMENTOS');");
+        $this->db->query("INSERT IGNORE INTO `grupo_financeiro` (`nome`) VALUES ('Receita'), ('Despesa');");
+
         $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
     }
 
@@ -763,6 +778,8 @@ class Migration_create_base extends CI_Migration
         $this->db->query('DROP TABLE IF EXISTS `anotacoes_os`');
         $this->db->query('DROP TABLE IF EXISTS `anexos`');
 
+        $this->db->query('DROP TABLE IF EXISTS `centro_gastos`');
+        $this->db->query('DROP TABLE IF EXISTS `grupo_financeiro`');
         $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
     }
 }
