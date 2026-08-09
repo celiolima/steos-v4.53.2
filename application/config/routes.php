@@ -45,6 +45,19 @@ if (! defined('BASEPATH')) {
 $route['default_controller'] = 'steos';
 $route['404_override'] = '';
 
+// Mapeamento para controllers CamelCase em servidores Linux (Case Sensitive)
+$route['classificacaofinanceira'] = 'ClassificacaoFinanceira';
+$route['classificacaofinanceira/(.*)'] = 'ClassificacaoFinanceira/$1';
+
+$route['grupofinanceiro'] = 'GrupoFinanceiro';
+$route['grupofinanceiro/(.*)'] = 'GrupoFinanceiro/$1';
+
+$route['centrogastos'] = 'CentroGastos';
+$route['centrogastos/(.*)'] = 'CentroGastos/$1';
+
+$route['formapagamento'] = 'FormaPagamento';
+$route['formapagamento/(.*)'] = 'FormaPagamento/$1';
+
 // Rotas da API
 if (filter_var($_ENV['API_ENABLED'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
     require APPPATH . 'config/routes_api.php';
