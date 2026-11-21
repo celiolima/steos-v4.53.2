@@ -32,7 +32,25 @@
                     <div class="control-group">
                         <label for="aliquota" class="control-label">Alíquota do ISS (%)<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="aliquota" class="money span4" data-affixes-stay="true" data-thousands="" data-decimal="," type="text" name="aliquota" value="<?php echo $result->aliquota ?>" required />
+                            <input id="aliquota" class="money span4" data-affixes-stay="true" data-thousands="" data-decimal="," type="text" name="aliquota" value="<?php echo number_format((float) $result->aliquota, 2, ',', '') ?>" required />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="cst_ibs_cbs" class="control-label">CST IBS/CBS (Reforma Tributária)</label>
+                        <div class="controls">
+                            <input id="cst_ibs_cbs" type="text" name="cst_ibs_cbs" class="span4" value="<?php echo isset($result->cst_ibs_cbs) && $result->cst_ibs_cbs !== '' ? $result->cst_ibs_cbs : '000'; ?>" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="class_trib_ibs_cbs" class="control-label">Classificação Tributária (cClassTrib)</label>
+                        <div class="controls">
+                            <input id="class_trib_ibs_cbs" type="text" name="class_trib_ibs_cbs" class="span4" value="<?php echo isset($result->class_trib_ibs_cbs) && $result->class_trib_ibs_cbs !== '' ? $result->class_trib_ibs_cbs : '000001'; ?>" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="ind_operacao" class="control-label">Código Indicador de Operação</label>
+                        <div class="controls">
+                            <input id="ind_operacao" type="text" name="ind_operacao" class="span6" placeholder="Ex: vazio para 14.01 ou 010106 para Locação 99.03" value="<?php echo isset($result->ind_operacao) ? $result->ind_operacao : ''; ?>" />
                         </div>
                     </div>
                     <div class="form-actions">

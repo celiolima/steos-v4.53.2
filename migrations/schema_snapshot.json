@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-11-21T00:46:04+00:00",
+    "generated_at": "2026-11-21T18:09:04+00:00",
     "database": "steos",
     "tables": {
         "anexos": {
@@ -2466,6 +2466,27 @@
                     "COLUMN_TYPE": "decimal(5,2)",
                     "IS_NULLABLE": "NO",
                     "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cst_ibs_cbs": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "000",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "class_trib_ibs_cbs": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "000001",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "ind_operacao": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "",
                     "EXTRA": "",
                     "COLUMN_KEY": ""
                 }

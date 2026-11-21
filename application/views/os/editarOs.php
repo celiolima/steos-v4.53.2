@@ -1928,7 +1928,22 @@ if (!empty($lancamentos)) {
                     </div>
                     <div class="span6">
                         <label for="aliquota_iss">Alíquota do ISS (%)*</label>
-                        <input type="text" name="aliquota_iss" id="aliquota_iss" class="span12 money" placeholder="Ex: 3,50 ou 2,00" value="" required />
+                        <input type="text" name="aliquota_iss" id="aliquota_iss" class="span12 money" placeholder="Ex: 3,50 ou 0,00" value="" required />
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span4">
+                        <label for="tax_situation_code">CST IBS/CBS*</label>
+                        <input type="text" name="tax_situation_code" id="tax_situation_code" class="span12" placeholder="Ex: 000" value="000" required />
+                    </div>
+                    <div class="span4">
+                        <label for="tax_classification_code">Class. Trib. IBS/CBS*</label>
+                        <input type="text" name="tax_classification_code" id="tax_classification_code" class="span12" placeholder="Ex: 000001" value="000001" required />
+                    </div>
+                    <div class="span4">
+                        <label for="operation_indicator_code">Indicador Operação</label>
+                        <input type="text" name="operation_indicator_code" id="operation_indicator_code" class="span12" placeholder="Ex: vazio ou 010106" value="" />
                     </div>
                 </div>
 
@@ -4015,8 +4030,11 @@ if (!empty($lancamentos)) {
                     var opt = $('<option></option>').val(srv.idServicosNfse).text(optText);
                     opt.data('cod-municipal', srv.codigo_servico_municipal);
                     opt.data('cod-nbs', srv.codigo_nbs || '');
-                    opt.data('aliquota', srv.aliquota || '0');
+                    opt.data('aliquota', srv.aliquota !== undefined && srv.aliquota !== null ? srv.aliquota : '0');
                     opt.data('asaas-id', srv.asaas_service_id || '');
+                    opt.data('cst', srv.cst_ibs_cbs || '000');
+                    opt.data('classtrib', srv.class_trib_ibs_cbs || '000001');
+                    opt.data('indop', srv.ind_operacao || '');
                     selectServico.append(opt);
                 });
                 // Por padrão, seleciona o primeiro serviço da lista
@@ -4029,6 +4047,9 @@ if (!empty($lancamentos)) {
                 if (config.aliquota_iss) {
                     $('#aliquota_iss').val(config.aliquota_iss);
                 }
+                $('#tax_situation_code').val(config.tax_situation_code || '000');
+                $('#tax_classification_code').val(config.tax_classification_code || '000001');
+                $('#operation_indicator_code').val(config.operation_indicator_code || '');
             }
 
             var boxLista = $('#lista-cobrancas-nfse');
@@ -4082,16 +4103,28 @@ if (!empty($lancamentos)) {
             var codNbs = selectedOpt.data('cod-nbs');
             var aliquota = selectedOpt.data('aliquota');
             var asaasId = selectedOpt.data('asaas-id');
+            var cst = selectedOpt.data('cst');
+            var classTrib = selectedOpt.data('classtrib');
+            var indOp = selectedOpt.data('indop');
             var nomeServico = selectedOpt.text();
 
             if (codMunicipal) $('#municipal_service_code').val(codMunicipal);
-            if (nomeServico) $('#municipal_service_name').val(nomeServico);
+            $('#municipal_service_name').val(codMunicipal || nomeServico || '');
             if (codNbs !== undefined) $('#codigo_nbs').val(codNbs);
-            if (asaasId !== undefined) $('#asaas_service_id').val(asaasId);
+            $('#asaas_service_id').val(asaasId || '');
             if (aliquota !== undefined) {
-                $('#aliquota_iss').val(aliquota);
+                var numAliq = parseFloat(String(aliquota).replace(',', '.'));
+                $('#aliquota_iss').val(!isNaN(numAliq) ? numAliq.toFixed(2).replace('.', ',') : aliquota);
             }
+            $('#tax_situation_code').val(cst || '000');
+            $('#tax_classification_code').val(classTrib || '000001');
+            $('#operation_indicator_code').val(indOp !== undefined ? indOp : '');
         }
+    });
+
+    // Limpa ID municipal legado se o usuario alterar o codigo manualmente
+    $(document).on('input', '#municipal_service_code', function() {
+        $('#asaas_service_id').val('');
     });
 
     $(document).on('change', 'input[name="tipo_emissao"]', function() {

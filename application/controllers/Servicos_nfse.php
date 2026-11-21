@@ -67,39 +67,23 @@ class Servicos_nfse extends MY_Controller
             if ($this->form_validation->run() == false) {
                 $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
             } else {
-                $aliquota = $this->input->post('aliquota');
-                $aliquota = str_replace('%', '', $aliquota);
-                $aliquota = str_replace('.', '', $aliquota);
-                $aliquota = str_replace(',', '.', $aliquota);
-                $aliquota = trim($aliquota);
+                $aliquota = $this->parseAliquota($this->input->post('aliquota'));
+                $cstIbsCbs = trim((string) $this->input->post('cst_ibs_cbs'));
+                $classTribIbsCbs = trim((string) $this->input->post('class_trib_ibs_cbs'));
+                $indOperacao = trim((string) $this->input->post('ind_operacao'));
 
                 $data = [
-                    'nome_servico' => $this->input->post('nome_servico'),
-                    'codigo_servico_municipal' => $this->input->post('codigo_servico_municipal'),
-                    'codigo_nbs' => $this->input->post('codigo_nbs'),
+                    'nome_servico' => trim((string) $this->input->post('nome_servico')),
+                    'codigo_servico_municipal' => trim((string) $this->input->post('codigo_servico_municipal')),
+                    'codigo_nbs' => trim((string) $this->input->post('codigo_nbs')),
                     'aliquota' => $aliquota,
+                    'cst_ibs_cbs' => $cstIbsCbs !== '' ? $cstIbsCbs : '000',
+                    'class_trib_ibs_cbs' => $classTribIbsCbs !== '' ? $classTribIbsCbs : '000001',
+                    'ind_operacao' => $indOperacao,
                 ];
 
-                // Busca o asaas_service_id na API do Asaas
-                $municipalServiceCodeRaw = $data['codigo_servico_municipal'];
-                $parts = explode(' - ', $municipalServiceCodeRaw);
-                $searchTerm = trim($parts[0]);
-                $asaas_service_id = null;
-                try {
-                    $this->load->library('Gateways/Asaas');
-                    $res = $this->asaas->obterServicosMunicipais($searchTerm);
-                    if (!empty($res) && is_object($res) && isset($res->data) && is_array($res->data)) {
-                        foreach ($res->data as $ms) {
-                            if (strpos($ms->description, $searchTerm) !== false || strpos($ms->description, $municipalServiceCodeRaw) !== false) {
-                                $asaas_service_id = $ms->id;
-                                break;
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    log_message('error', 'Erro ao buscar asaas_service_id no cadastro: ' . $e->getMessage());
-                }
-                $data['asaas_service_id'] = $asaas_service_id;
+                // Tenta localizar ID municipal apenas se a conta nao operar exclusivamente via Portal Nacional
+                $data['asaas_service_id'] = $this->resolverAsaasServiceId($data['codigo_servico_municipal']);
 
                 if ($this->servicos_nfse_model->add('servicos_nfse', $data) == true) {
                     $this->session->set_flashdata('success', 'Serviço NFS-e adicionado com sucesso!');
@@ -137,39 +121,22 @@ class Servicos_nfse extends MY_Controller
             if ($this->form_validation->run() == false) {
                 $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
             } else {
-                $aliquota = $this->input->post('aliquota');
-                $aliquota = str_replace('%', '', $aliquota);
-                $aliquota = str_replace('.', '', $aliquota);
-                $aliquota = str_replace(',', '.', $aliquota);
-                $aliquota = trim($aliquota);
+                $aliquota = $this->parseAliquota($this->input->post('aliquota'));
+                $cstIbsCbs = trim((string) $this->input->post('cst_ibs_cbs'));
+                $classTribIbsCbs = trim((string) $this->input->post('class_trib_ibs_cbs'));
+                $indOperacao = trim((string) $this->input->post('ind_operacao'));
 
                 $data = [
-                    'nome_servico' => $this->input->post('nome_servico'),
-                    'codigo_servico_municipal' => $this->input->post('codigo_servico_municipal'),
-                    'codigo_nbs' => $this->input->post('codigo_nbs'),
+                    'nome_servico' => trim((string) $this->input->post('nome_servico')),
+                    'codigo_servico_municipal' => trim((string) $this->input->post('codigo_servico_municipal')),
+                    'codigo_nbs' => trim((string) $this->input->post('codigo_nbs')),
                     'aliquota' => $aliquota,
+                    'cst_ibs_cbs' => $cstIbsCbs !== '' ? $cstIbsCbs : '000',
+                    'class_trib_ibs_cbs' => $classTribIbsCbs !== '' ? $classTribIbsCbs : '000001',
+                    'ind_operacao' => $indOperacao,
                 ];
 
-                // Busca o asaas_service_id na API do Asaas
-                $municipalServiceCodeRaw = $data['codigo_servico_municipal'];
-                $parts = explode(' - ', $municipalServiceCodeRaw);
-                $searchTerm = trim($parts[0]);
-                $asaas_service_id = null;
-                try {
-                    $this->load->library('Gateways/Asaas');
-                    $res = $this->asaas->obterServicosMunicipais($searchTerm);
-                    if (!empty($res) && is_object($res) && isset($res->data) && is_array($res->data)) {
-                        foreach ($res->data as $ms) {
-                            if (strpos($ms->description, $searchTerm) !== false || strpos($ms->description, $municipalServiceCodeRaw) !== false) {
-                                $asaas_service_id = $ms->id;
-                                break;
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    log_message('error', 'Erro ao buscar asaas_service_id na edição: ' . $e->getMessage());
-                }
-                $data['asaas_service_id'] = $asaas_service_id;
+                $data['asaas_service_id'] = $this->resolverAsaasServiceId($data['codigo_servico_municipal']);
 
                 if ($this->servicos_nfse_model->edit('servicos_nfse', $data, 'idServicosNfse', $this->input->post('idServicosNfse')) == true) {
                     $this->session->set_flashdata('success', 'Serviço NFS-e editado com sucesso!');
@@ -217,5 +184,48 @@ class Servicos_nfse extends MY_Controller
 
         $results = $this->servicos_nfse_model->get('servicos_nfse', '*');
         return $this->output->set_content_type('application/json')->set_output(json_encode($results));
+    }
+
+    /**
+     * Converte alíquota de texto (com ponto ou vírgula) para decimal sem multiplicar por 100
+     */
+    private function parseAliquota($raw)
+    {
+        $clean = str_replace('%', '', trim((string) $raw));
+        if (strpos($clean, ',') !== false) {
+            $clean = str_replace('.', '', $clean);
+            $clean = str_replace(',', '.', $clean);
+        }
+        $val = round(floatval($clean), 2);
+        return $val < 0 ? 0.00 : $val;
+    }
+
+    /**
+     * Resolve o ID municipal apenas para contas que utilizam lista municipal (não Portal Nacional)
+     */
+    private function resolverAsaasServiceId($municipalServiceCodeRaw)
+    {
+        try {
+            $this->load->library('Gateways/Asaas');
+            $fiscalInfo = $this->asaas->obterFiscalInfo();
+            if (!empty($fiscalInfo) && !empty($fiscalInfo->useNationalPortal)) {
+                return null;
+            }
+
+            $parts = explode(' - ', (string) $municipalServiceCodeRaw);
+            $searchTerm = trim($parts[0]);
+            $res = $this->asaas->obterServicosMunicipais($searchTerm);
+            if (!empty($res) && is_object($res) && isset($res->data) && is_array($res->data)) {
+                foreach ($res->data as $ms) {
+                    if (strpos($ms->description, $searchTerm) !== false || strpos($ms->description, $municipalServiceCodeRaw) !== false) {
+                        return $ms->id;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            log_message('info', 'Servicos_nfse::resolverAsaasServiceId fallback Portal Nacional: ' . $e->getMessage());
+        }
+
+        return null;
     }
 }

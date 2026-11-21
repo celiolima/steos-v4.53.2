@@ -675,14 +675,36 @@ class Asaas extends BasePaymentGateway
     }
 
     /**
-     * Fase 4: Busca os valores padrão (Cód. Serviço, NBS e Alíquota ISS) diretamente do Asaas ou Configurações
+     * Consulta informações fiscais da conta emitente no Asaas (GET /v3/fiscalInfo)
+     */
+    public function obterFiscalInfo()
+    {
+        $this->ci->load->helper('asaas');
+        return asaas_api_request('/v3/fiscalInfo', 'GET');
+    }
+
+    /**
+     * Lista NFS-e emitidas/agendadas no Asaas (GET /v3/invoices)
+     */
+    public function listarNfse(array $params = [])
+    {
+        $this->ci->load->helper('asaas');
+        $query = !empty($params) ? ('?' . http_build_query($params)) : '?limit=20';
+        return asaas_api_request('/v3/invoices' . $query, 'GET');
+    }
+
+    /**
+     * Fase 4: Busca os valores padrão (Cód. Serviço, NBS, Alíquota ISS e Reforma Tributária IBS/CBS)
      */
     public function obterConfiguracoesNfse()
     {
         $config = [
             'municipal_service_code' => '14.01',
-            'codigo_nbs' => '1.0101.10.00',
-            'aliquota_iss' => '2,00'
+            'codigo_nbs' => '1.2001.81.00',
+            'aliquota_iss' => '3,50',
+            'tax_situation_code' => '000',
+            'tax_classification_code' => '000001',
+            'operation_indicator_code' => ''
         ];
 
         $this->ci->load->database();
@@ -690,14 +712,10 @@ class Asaas extends BasePaymentGateway
         if ($queryConf && $queryConf->num_rows() > 0 && !empty($queryConf->row()->valor)) {
             $confLocal = json_decode($queryConf->row()->valor, true);
             if (is_array($confLocal)) {
-                if (!empty($confLocal['municipal_service_code'])) {
-                    $config['municipal_service_code'] = $confLocal['municipal_service_code'];
-                }
-                if (!empty($confLocal['codigo_nbs'])) {
-                    $config['codigo_nbs'] = $confLocal['codigo_nbs'];
-                }
-                if (!empty($confLocal['aliquota_iss'])) {
-                    $config['aliquota_iss'] = $confLocal['aliquota_iss'];
+                foreach (['municipal_service_code', 'codigo_nbs', 'aliquota_iss', 'tax_situation_code', 'tax_classification_code', 'operation_indicator_code'] as $key) {
+                    if (isset($confLocal[$key]) && $confLocal[$key] !== '') {
+                        $config[$key] = $confLocal[$key];
+                    }
                 }
             }
         }

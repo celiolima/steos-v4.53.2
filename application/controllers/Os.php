@@ -2014,73 +2014,55 @@ class Os extends MY_Controller
         }
 
         $idOs = $this->input->post('os_id');
-        $tipoEmissao = $this->input->post('tipo_emissao'); // 'avulsa' ou 'cobranca'
+        $tipoEmissao = $this->input->post('tipo_emissao'); // 'avulsa', 'cobranca' ou 'cobranca_todas'
         $chargeId = $this->input->post('charge_id');
         $valorNfseInput = $this->input->post('valor_nfse');
-        $municipalServiceCodeRaw = trim($this->input->post('municipal_service_code'));
-        $municipalServiceCode = $municipalServiceCodeRaw;
-        $municipalServiceId = $this->input->post('asaas_service_id') ? trim($this->input->post('asaas_service_id')) : null;
+        $municipalServiceCodeRaw = trim((string) $this->input->post('municipal_service_code'));
+        $municipalServiceNameInput = trim((string) $this->input->post('municipal_service_name'));
+        $municipalServiceIdInput = $this->input->post('asaas_service_id') ? trim((string) $this->input->post('asaas_service_id')) : null;
 
-        if (!empty($municipalServiceCodeRaw)) {
-            $partsM = explode(' - ', $municipalServiceCodeRaw);
-            $searchTerm = trim($partsM[0]); // ex: '952150001 | 14.01' ou '14.01'
-
-            if (empty($municipalServiceId)) {
-                try {
-                    $this->load->library('Gateways/Asaas');
-                    $res = $this->asaas->obterServicosMunicipais($searchTerm);
-                    
-                    // $res é um objeto stdClass retornado pelo json_decode
-                    if (!empty($res) && is_object($res) && isset($res->data) && is_array($res->data)) {
-                        foreach ($res->data as $ms) {
-                            if (strpos($ms->description, $searchTerm) !== false || strpos($ms->description, $municipalServiceCodeRaw) !== false) {
-                                $municipalServiceId = $ms->id;
-                                break;
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // Silenciosamente ignora o erro de busca para não interromper a emissão
-                    log_message('error', 'Erro ao buscar municipalServiceId no Asaas: ' . $e->getMessage());
-                }
-            }
-
-            // Se encontrou o ID, o Asaas só aceita o municipalServiceCode nulo, então não precisa tratar o código texto.
-            // Mas se NÃO encontrou o ID, usamos a lógica de extração do código para enviar como texto.
-            if (empty($municipalServiceId)) {
-                $partsM2 = explode(' | ', $searchTerm);
-                $municipalServiceCode = trim(end($partsM2));
-            }
-        }
-        
-        $municipalServiceName = trim($this->input->post('municipal_service_name'));
-        if (!empty($municipalServiceName) && !empty($municipalServiceCode) && strpos($municipalServiceName, $municipalServiceCode) === false) {
-            $municipalServiceName = $municipalServiceCode . ' - ' . $municipalServiceName;
-        }
-        
-        $codigoNbsRaw = trim($this->input->post('codigo_nbs'));
+        $codigoNbsRaw = trim((string) $this->input->post('codigo_nbs'));
         $codigoNbs = $codigoNbsRaw;
         if (!empty($codigoNbsRaw)) {
             $partsN = explode(' - ', $codigoNbsRaw);
             $codigoNbs = trim($partsN[0]);
         }
+
         $retainIssInput = $this->input->post('retain_iss');
-        $aliquotaIssInput = $this->input->post('aliquota_iss');
+        $aliquotaIssInput = (string) $this->input->post('aliquota_iss');
+        $taxSituationCode = trim((string) $this->input->post('tax_situation_code'));
+        $taxClassificationCode = trim((string) $this->input->post('tax_classification_code'));
+        $operationIndicatorCode = trim((string) $this->input->post('operation_indicator_code'));
         $serviceDescription = $this->input->post('service_description');
         $observations = $this->input->post('observations');
         $effectiveDate = $this->input->post('effective_date') ? $this->input->post('effective_date') : date('Y-m-d');
 
-        $valorClean = str_replace('.', '', $valorNfseInput);
+        if ($taxSituationCode === '') {
+            $taxSituationCode = '000';
+        }
+        if ($taxClassificationCode === '') {
+            $taxClassificationCode = '000001';
+        }
+        if ($operationIndicatorCode === '' && strpos($municipalServiceCodeRaw, '99.03') !== false) {
+            $operationIndicatorCode = '010106';
+        }
+
+        $valorClean = str_replace('.', '', (string) $valorNfseInput);
         $valorClean = str_replace(',', '.', $valorClean);
         $valorFloat = floatval($valorClean);
         if ($valorFloat <= 0) {
-            $valorFloat = floatval(str_replace(',', '.', $valorNfseInput));
+            $valorFloat = floatval(str_replace(',', '.', (string) $valorNfseInput));
         }
 
         $retainIss = ($retainIssInput === 'true' || $retainIssInput === '1');
-        $aliquotaIss = floatval(str_replace(',', '.', $aliquotaIssInput));
-        if ($aliquotaIss <= 0) {
-            $aliquotaIss = 2.0;
+        $aliquotaClean = str_replace('%', '', trim($aliquotaIssInput));
+        if (strpos($aliquotaClean, ',') !== false) {
+            $aliquotaClean = str_replace('.', '', $aliquotaClean);
+            $aliquotaClean = str_replace(',', '.', $aliquotaClean);
+        }
+        $aliquotaIss = max(0.0, round(floatval($aliquotaClean), 2));
+        if (strpos($municipalServiceCodeRaw, '99.03') !== false && $aliquotaIss <= 0.01) {
+            $aliquotaIss = 0.0;
         }
 
         $os = $this->os_model->getById($idOs);
@@ -2091,26 +2073,88 @@ class Os extends MY_Controller
 
         try {
             $this->load->library('Gateways/Asaas');
-            // Retorna ou cria o ID do cliente no Asaas
-            $asaasCustomerId = $this->asaas->criarOuRetornarClienteAsaasId($os->clientes_id);
+
+            // Detecta se a conta Asaas emite via Portal Nacional (ADN)
+            $useNationalPortal = true;
+            try {
+                $fiscalInfo = $this->asaas->obterFiscalInfo();
+                if (is_object($fiscalInfo) && property_exists($fiscalInfo, 'useNationalPortal')) {
+                    $useNationalPortal = (bool) $fiscalInfo->useNationalPortal;
+                }
+            } catch (\Exception $e) {
+                log_message('info', 'Nao foi possivel consultar fiscalInfo no Asaas, assumindo Portal Nacional: ' . $e->getMessage());
+            }
+
+            $municipalServiceId = null;
+            $municipalServiceCode = null;
+
+            if ($useNationalPortal) {
+                // No Portal Nacional do Asaas, municipalServiceId e municipalServiceCode devem ser null
+                // e municipalServiceName deve casar exatamente com o servico configurado na conta Asaas
+                if (!empty($municipalServiceCodeRaw) && strpos($municipalServiceCodeRaw, ' - ') !== false) {
+                    $municipalServiceName = $municipalServiceCodeRaw;
+                } elseif (!empty($municipalServiceCodeRaw) && !empty($municipalServiceNameInput)) {
+                    $municipalServiceName = (strpos($municipalServiceNameInput, $municipalServiceCodeRaw) === false)
+                        ? ($municipalServiceCodeRaw . ' - ' . $municipalServiceNameInput)
+                        : $municipalServiceNameInput;
+                } else {
+                    $municipalServiceName = !empty($municipalServiceNameInput)
+                        ? $municipalServiceNameInput
+                        : (!empty($municipalServiceCodeRaw) ? $municipalServiceCodeRaw : '952150001 | 14.01 - Reparação e manutenção de equipamentos eletroeletrônicos de uso pessoal e domestico.');
+                }
+            } else {
+                // Fluxo legado de prefeituras ABRASF com listagem municipal habilitada
+                $partsM = explode(' - ', $municipalServiceCodeRaw);
+                $searchTerm = trim($partsM[0]);
+                $municipalServiceId = $municipalServiceIdInput;
+
+                if (empty($municipalServiceId) && !empty($searchTerm)) {
+                    try {
+                        $resServ = $this->asaas->obterServicosMunicipais($searchTerm);
+                        if (!empty($resServ) && is_object($resServ) && isset($resServ->data) && is_array($resServ->data)) {
+                            foreach ($resServ->data as $ms) {
+                                if (strpos($ms->description, $searchTerm) !== false || strpos($ms->description, $municipalServiceCodeRaw) !== false) {
+                                    $municipalServiceId = $ms->id;
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        log_message('error', 'Erro ao buscar municipalServiceId no Asaas: ' . $e->getMessage());
+                    }
+                }
+
+                if (empty($municipalServiceId) && !empty($searchTerm)) {
+                    $partsM2 = explode(' | ', $searchTerm);
+                    $municipalServiceCode = trim(end($partsM2));
+                }
+
+                $municipalServiceName = !empty($municipalServiceCodeRaw) && strpos($municipalServiceCodeRaw, ' - ') !== false
+                    ? $municipalServiceCodeRaw
+                    : (!empty($municipalServiceNameInput) ? $municipalServiceNameInput : '14.01 - Serviços');
+            }
 
             $payload = [
-                'customer' => $asaasCustomerId,
                 'serviceDescription' => $serviceDescription,
                 'observations' => $observations,
                 'value' => $valorFloat,
                 'effectiveDate' => $effectiveDate,
                 'municipalServiceId' => $municipalServiceId,
-                'municipalServiceCode' => $municipalServiceId ? null : (!empty($municipalServiceCode) ? $municipalServiceCode : '14.01'),
-                'municipalServiceName' => !empty($municipalServiceName) ? $municipalServiceName : (!empty($municipalServiceCode) ? $municipalServiceCode . ' - Serviços' : '14.01 - Lubrificação, limpeza e revisão de máquinas'),
+                'municipalServiceCode' => $municipalServiceCode,
+                'municipalServiceName' => $municipalServiceName,
                 'taxes' => [
                     'retainIss' => $retainIss,
                     'iss' => $aliquotaIss,
+                    'pisCofinsRetentionType' => 'PIS_COFINS_CSLL_NOT_WITHHELD',
+                    'pisCofinsTaxStatus' => 'NONE',
                     'cofins' => 0.0,
                     'csll' => 0.0,
                     'inss' => 0.0,
                     'ir' => 0.0,
-                    'pis' => 0.0
+                    'pis' => 0.0,
+                    'taxSituationCode' => $taxSituationCode,
+                    'taxClassificationCode' => $taxClassificationCode,
+                    'operationIndicatorCode' => $operationIndicatorCode
                 ]
             ];
 
@@ -2122,15 +2166,20 @@ class Os extends MY_Controller
                 $installmentId = $this->input->post('installment_id');
                 $chargesList = $this->input->post('charges_list');
                 if (!empty($installmentId)) {
-                    $payload['installment'] = trim($installmentId);
+                    $payload['installment'] = trim((string) $installmentId);
                 } elseif (!empty($chargesList)) {
-                    $arr = explode(',', $chargesList);
+                    $arr = explode(',', (string) $chargesList);
                     if (!empty($arr[0])) {
                         $payload['payment'] = trim($arr[0]);
                     }
                 }
             } elseif ($tipoEmissao === 'cobranca' && !empty($chargeId)) {
-                $payload['payment'] = trim($chargeId);
+                $payload['payment'] = trim((string) $chargeId);
+            }
+
+            // Envia customer somente em emissao avulsa (quando nao ha payment nem installment)
+            if (empty($payload['payment']) && empty($payload['installment'])) {
+                $payload['customer'] = $this->asaas->criarOuRetornarClienteAsaasId($os->clientes_id);
             }
 
             $resp = $this->asaas->emitirNfse($payload);
@@ -2138,7 +2187,11 @@ class Os extends MY_Controller
             if (!empty($resp->id)) {
                 $dadosUpdateOs = [
                     'asaas_invoice_id' => $resp->id,
-                    'asaas_invoice_status' => $resp->status ?? 'SCHEDULED'
+                    'asaas_invoice_status' => $resp->status ?? 'SCHEDULED',
+                    'asaas_invoice_number' => $resp->number ?? null,
+                    'asaas_invoice_pdf' => $resp->pdfUrl ?? null,
+                    'asaas_invoice_xml' => $resp->xmlUrl ?? null,
+                    'asaas_invoice_error' => null
                 ];
                 if (empty($os->valorTotal) || $os->valorTotal <= 0) {
                     $dadosUpdateOs['valorTotal'] = $valorFloat;
@@ -2180,13 +2233,49 @@ class Os extends MY_Controller
             $this->load->library('Gateways/Asaas');
             $resp = $this->asaas->consultarNfse($os->asaas_invoice_id);
 
+            // Se a nota vinculada foi cancelada ou deu erro, verifica se existe uma nota valida para a mesma cobranca da O.S.
+            if (!empty($resp->status) && in_array($resp->status, ['CANCELED', 'ERROR'], true)) {
+                $osChargeIds = [];
+                if (!empty($os->asaas_payment_id)) {
+                    $osChargeIds[] = $os->asaas_payment_id;
+                }
+                if (!empty($resp->payment)) {
+                    $osChargeIds[] = $resp->payment;
+                }
+                $cobs = $this->db->select('charge_id')->from('cobrancas')->where('os_id', $idOs)->where('payment_gateway', 'Asaas')->get()->result();
+                foreach ($cobs as $cob) {
+                    if (!empty($cob->charge_id)) {
+                        $osChargeIds[] = $cob->charge_id;
+                    }
+                }
+                $osChargeIds = array_values(array_unique(array_filter($osChargeIds)));
+
+                $customerAsaasId = $resp->customer ?? null;
+                if (!empty($customerAsaasId) && !empty($osChargeIds)) {
+                    $lista = $this->asaas->listarNfse(['customer' => $customerAsaasId, 'limit' => 20]);
+                    if (!empty($lista->data) && is_array($lista->data)) {
+                        foreach ($lista->data as $cand) {
+                            if (
+                                !empty($cand->payment)
+                                && in_array($cand->payment, $osChargeIds, true)
+                                && in_array($cand->status ?? '', ['AUTHORIZED', 'SCHEDULED', 'SYNCHRONIZED'], true)
+                            ) {
+                                $resp = $cand;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             if (!empty($resp->id)) {
                 $dadosUpdate = [
+                    'asaas_invoice_id'     => $resp->id,
                     'asaas_invoice_status' => $resp->status ?? $os->asaas_invoice_status,
                     'asaas_invoice_number' => !empty($resp->number) ? $resp->number : (!empty($resp->rpsNumber) ? $resp->rpsNumber : (!empty($resp->invoiceNumber) ? $resp->invoiceNumber : $os->asaas_invoice_number)),
                     'asaas_invoice_pdf'    => $resp->pdfUrl ?? $os->asaas_invoice_pdf,
                     'asaas_invoice_xml'    => $resp->xmlUrl ?? $os->asaas_invoice_xml,
-                    'asaas_invoice_error'  => $resp->statusDescription ?? $os->asaas_invoice_error
+                    'asaas_invoice_error'  => ($resp->status ?? '') === 'AUTHORIZED' ? null : ($resp->statusDescription ?? $os->asaas_invoice_error)
                 ];
 
                 $this->db->where('idOs', $idOs);
@@ -2226,11 +2315,27 @@ class Os extends MY_Controller
 
         try {
             $this->load->library('Gateways/Asaas');
-            $resp = $this->asaas->cancelarNfse($os->asaas_invoice_id);
+            try {
+                $this->asaas->cancelarNfse($os->asaas_invoice_id);
+            } catch (\Exception $cancelEx) {
+                // Se ja estiver cancelada ou com erro no Asaas, permite resetar status local para nova emissao
+                $consulta = $this->asaas->consultarNfse($os->asaas_invoice_id);
+                if (!empty($consulta->status) && in_array($consulta->status, ['CANCELED', 'ERROR'], true)) {
+                    $this->db->where('idOs', $idOs);
+                    $this->db->update('os', [
+                        'asaas_invoice_status' => 'CANCELED',
+                        'asaas_invoice_error' => null
+                    ]);
+                    echo json_encode(['result' => true, 'message' => 'Nota já estava ' . $consulta->status . ' no Asaas; O.S. liberada para nova emissão.']);
+                    return;
+                }
+                throw $cancelEx;
+            }
 
             $this->db->where('idOs', $idOs);
             $this->db->update('os', [
-                'asaas_invoice_status' => 'CANCELED'
+                'asaas_invoice_status' => 'CANCELED',
+                'asaas_invoice_error' => null
             ]);
 
             echo json_encode(['result' => true, 'message' => 'NFS-e cancelada com sucesso no Asaas.']);
