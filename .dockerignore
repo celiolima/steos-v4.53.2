@@ -1,0 +1,15 @@
+.git
+.github
+.agents
+.specs
+.vscode
+.idea
+docker.old
+dados_banco_steos/*.sql
+dados_banco_steos/*.imported
+dados_banco_steos/old
+application/logs/*
+application/vendor
+vendor
+*.zip
+txt.txt

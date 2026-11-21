@@ -1,0 +1,3170 @@
+{
+    "generated_at": "2026-11-21T00:46:04+00:00",
+    "database": "steos",
+    "tables": {
+        "anexos": {
+            "columns": {
+                "idAnexos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "anexo": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "thumb": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "url": {
+                    "COLUMN_TYPE": "varchar(300)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "path": {
+                    "COLUMN_TYPE": "varchar(300)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "os_Lancamentos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "contrato_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "anotacoes_os": {
+            "columns": {
+                "idAnotacoes": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "anotacao": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_hora": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "asaas_webhooks_logs": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int unsigned",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "event": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_payment_id": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "status": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "SUCESSO",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "mensagem_erro": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_recebimento": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "assinatura": {
+            "columns": {
+                "idAssinatura": {
+                    "COLUMN_TYPE": "int unsigned",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nameAssinatura": {
+                    "COLUMN_TYPE": "varchar(85)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "assinatura": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "doc": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "bancos": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "categorias": {
+            "columns": {
+                "idCategorias": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "categoria": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cadastro": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "status": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo": {
+                    "COLUMN_TYPE": "varchar(15)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "centro_gastos": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "ci_sessions": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "varchar(128)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "ip_address": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "timestamp": {
+                    "COLUMN_TYPE": "int unsigned",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "data": {
+                    "COLUMN_TYPE": "blob",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "classificacao_financeira": {
+            "columns": {
+                "idClassFin": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nomeClassFin": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "grupoFinaceiro": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "created_at": {
+                    "COLUMN_TYPE": "timestamp",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "CURRENT_TIMESTAMP",
+                    "EXTRA": "DEFAULT_GENERATED",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "clientes": {
+            "columns": {
+                "idClientes": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "asaas_id": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "nomeCliente": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "sexo": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "pessoa_fisica": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "1",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "documento": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "telefone": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "celular": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "email": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "senha": {
+                    "COLUMN_TYPE": "varchar(200)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "dataCadastro": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "rua": {
+                    "COLUMN_TYPE": "varchar(70)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "numero": {
+                    "COLUMN_TYPE": "varchar(30)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "bairro": {
+                    "COLUMN_TYPE": "varchar(70)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cidade": {
+                    "COLUMN_TYPE": "varchar(70)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "estado": {
+                    "COLUMN_TYPE": "varchar(70)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cep": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "contato": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "complemento": {
+                    "COLUMN_TYPE": "varchar(150)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "fornecedor": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "cobrancas": {
+            "columns": {
+                "idCobranca": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "charge_id": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "installment_id": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "conditional_discount_date": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "created_at": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "custom_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "expire_at": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "message": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "payment_method": {
+                    "COLUMN_TYPE": "varchar(11)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "payment_url": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "request_delivery_address": {
+                    "COLUMN_TYPE": "varchar(64)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "status": {
+                    "COLUMN_TYPE": "varchar(36)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "total": {
+                    "COLUMN_TYPE": "varchar(15)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "barcode": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "link": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "payment_gateway": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "payment": {
+                    "COLUMN_TYPE": "varchar(64)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "pdf": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "vendas_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "clientes_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "configuracoes": {
+            "columns": {
+                "idConfig": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "config": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "UNI"
+                },
+                "valor": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "contas": {
+            "columns": {
+                "idContas": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "conta": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "banco": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "agencia": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "numero": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "saldo": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cadastro": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "vencimento_cartao": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "status": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "contratos": {
+            "columns": {
+                "idContratos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "clientes_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "tipoContrato": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "dataInicial": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "dataFinal": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "nomeContratos": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "descricaoContratos": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valorContrato": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valorDesconto": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valorTotal": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_subscription_id": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_ativacao_assinatura": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "status": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "NegociaÃ§Ã£o",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "faturado": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipoDesconto": {
+                    "COLUMN_TYPE": "varchar(5)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "R$",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipoAcrescimo": {
+                    "COLUMN_TYPE": "varchar(5)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "R$",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valorAcrescimo": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tecnico_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "documentos": {
+            "columns": {
+                "idDocumentos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "documento": {
+                    "COLUMN_TYPE": "varchar(70)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "file": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "path": {
+                    "COLUMN_TYPE": "varchar(300)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "url": {
+                    "COLUMN_TYPE": "varchar(300)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cadastro": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "categoria": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo": {
+                    "COLUMN_TYPE": "varchar(15)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tamanho": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "email_queue": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "to": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cc": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "bcc": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "message": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "status": {
+                    "COLUMN_TYPE": "enum('pending','sending','sent','failed')",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "date": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "headers": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "emitente": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cnpj": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "ie": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "rua": {
+                    "COLUMN_TYPE": "varchar(70)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "numero": {
+                    "COLUMN_TYPE": "varchar(15)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "bairro": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cidade": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "uf": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "telefone": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "email": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "url_logo": {
+                    "COLUMN_TYPE": "varchar(225)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cep": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "equipamentos": {
+            "columns": {
+                "idEquipamentos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "equipamento": {
+                    "COLUMN_TYPE": "varchar(150)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "num_serie": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "modelo": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cor": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "varchar(150)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "potencia": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "voltagem": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "marcas": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "equipamentos_os": {
+            "columns": {
+                "idEquipamentos_os": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "serie": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "modelo": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cor": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "varchar(150)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "potecia": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "voltagem": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "marca": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "local": {
+                    "COLUMN_TYPE": "varchar(150)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "defeito_declarado": {
+                    "COLUMN_TYPE": "varchar(200)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "defeito_encontrado": {
+                    "COLUMN_TYPE": "varchar(200)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "solucao": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "clientes_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "equipamento": {
+                    "COLUMN_TYPE": "varchar(150)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "forma_pagamento": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "garantias": {
+            "columns": {
+                "idGarantias": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "dataGarantia": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "refGarantia": {
+                    "COLUMN_TYPE": "varchar(15)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "textoGarantia": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "usuarios_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "gasolina": {
+            "columns": {
+                "idGasolina": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "dataLancamento": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "saldoAtual": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "kmRodadoDia": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "velocimetroEntrada": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "velocimetroSaida": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "veiculos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "grupo_financeiro": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "itens_de_vendas": {
+            "columns": {
+                "idItens": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "subTotal": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "quantidade": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "preco": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "vendas_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "produtos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "lancamentos": {
+            "columns": {
+                "idLancamentos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valor": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "desconto": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valor_desconto": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo_desconto": {
+                    "COLUMN_TYPE": "varchar(8)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_vencimento": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_pagamento": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "baixado": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cliente_fornecedor": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "centro_de_gastos": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "classificacao_fin": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "grupo_finaceiro": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "forma_pgto": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "anexo": {
+                    "COLUMN_TYPE": "varchar(250)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "observacoes": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "nu_receita": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "clientes_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "categorias_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "contas_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "vendas_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "usuarios_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "lancamentos_contas": {
+            "columns": {
+                "idlancamentos_contas": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "dataLancamento": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo_lacamento": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "lancamento": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "saldo": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "contas_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "logs": {
+            "columns": {
+                "idLogs": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "usuario": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tarefa": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "hora": {
+                    "COLUMN_TYPE": "time",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "ip": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "marcas": {
+            "columns": {
+                "idMarcas": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "marca": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cadastro": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "situacao": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "modelos": {
+            "columns": {
+                "idModelos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "dataModelo": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "refModelo": {
+                    "COLUMN_TYPE": "varchar(15)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "textoModelo": {
+                    "COLUMN_TYPE": "mediumtext",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "usuarios_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "os": {
+            "columns": {
+                "idOs": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "dataAbertura": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "dataInicial": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "dataFinal": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "garantia": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "status": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_invoice_id": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "asaas_invoice_status": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_invoice_number": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_invoice_pdf": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_invoice_xml": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_invoice_error": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "observacoes": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "laudoTecnico": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "vendedor": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valorTotal": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "desconto": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valor_desconto": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo_desconto": {
+                    "COLUMN_TYPE": "varchar(8)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "clientes_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "usuarios_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "lancamento": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "afaturar": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "faturado": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "garantias_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "signature": {
+                    "COLUMN_TYPE": "tinytext",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "equipamentos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "descricaoProduto": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "defeito": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "local": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "defeito_encontrado": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "contratos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "manutPreventiva": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_payment_id": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "prioridade": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "classificacao": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "os_checklists": {
+            "columns": {
+                "idChecklist": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "contratos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_criacao": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "usuarios_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "status": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "Aberto",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "observacoes": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "assinatura_cliente": {
+                    "COLUMN_TYPE": "longtext",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "assinatura_tecnico": {
+                    "COLUMN_TYPE": "longtext",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "nome_tecnico": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_checklist": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "obs_gerais": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "os_checklists_itens": {
+            "columns": {
+                "idItem": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "checklist_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "concluido": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "observacoes": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "sistema": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "local": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "check_desc": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "status": {
+                    "COLUMN_TYPE": "varchar(10)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "obs_local": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "os_local": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "permissoes": {
+            "columns": {
+                "idPermissao": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "permissoes": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "situacao": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "produtos": {
+            "columns": {
+                "idProdutos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "codDeBarra": {
+                    "COLUMN_TYPE": "varchar(70)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "unidade": {
+                    "COLUMN_TYPE": "varchar(10)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "precoCompra": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "precoVenda": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "estoque": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "estoqueMinimo": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "saida": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "entrada": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "produtos_os": {
+            "columns": {
+                "idProdutos_os": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "quantidade": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "preco": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "produtos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "subTotal": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "resets_de_senha": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "email": {
+                    "COLUMN_TYPE": "varchar(200)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "token": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_expiracao": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "token_utilizado": {
+                    "COLUMN_TYPE": "tinyint",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "servicos": {
+            "columns": {
+                "idServicos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "preco": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "servicos_nfse": {
+            "columns": {
+                "idServicosNfse": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome_servico": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "codigo_servico_municipal": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "asaas_service_id": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "codigo_nbs": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "aliquota": {
+                    "COLUMN_TYPE": "decimal(5,2)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "servicos_os": {
+            "columns": {
+                "idServicos_os": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "servico": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "quantidade": {
+                    "COLUMN_TYPE": "double",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "preco": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "servicos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "subTotal": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "sistemas": {
+            "columns": {
+                "idSistemas": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(100)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "preco": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "situacao": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "1",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "sistemas_checks": {
+            "columns": {
+                "idSistemas_checks": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "sistemas_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "sistemas_contratos": {
+            "columns": {
+                "idSistemas_contratos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "contratos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "local": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "sistemas_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "preco": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "quantidade": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "1",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "subTotal": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "sistemas_contratos_checks": {
+            "columns": {
+                "idSistemas_contratos_checks": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "sistemas_contratos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "descricao": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "concluido": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_conclusao": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "usuarios_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        },
+        "tecnicos": {
+            "columns": {
+                "idTecnicos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "comissao_servico": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "comissao_produto": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "dataCadastro": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "dataExpiracao": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "ativo": {
+                    "COLUMN_TYPE": "char(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "1",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "tecnicos_os": {
+            "columns": {
+                "idTecnicos_os": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "os_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "tecnico_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "tecnicoName": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "usuarios": {
+            "columns": {
+                "idUsuarios": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nome": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "rg": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cpf": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cep": {
+                    "COLUMN_TYPE": "varchar(9)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "rua": {
+                    "COLUMN_TYPE": "varchar(70)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "numero": {
+                    "COLUMN_TYPE": "varchar(15)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "bairro": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "cidade": {
+                    "COLUMN_TYPE": "varchar(45)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "estado": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "email": {
+                    "COLUMN_TYPE": "varchar(80)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "senha": {
+                    "COLUMN_TYPE": "varchar(200)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "telefone": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "celular": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "situacao": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "dataCadastro": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "permissoes_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "dataExpiracao": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "url_image_user": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tecnico": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "veiculos": {
+            "columns": {
+                "idVeiculos": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "nomeVeiculo": {
+                    "COLUMN_TYPE": "varchar(255)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "observacoes": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "autonomia": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "abastecimentoLitro": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valorGasolinAabastecimento": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "ultimoAbastecimentoData": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "abastecimentoKm": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "ultimaTrocaDeOleoData": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "ultimaTrocaOleoVeloc": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "oleoKmVeloc": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "saldoAtualVeic": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "abastecer": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "trocarOleo": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": "0",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "situacao": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "veiculos_logs": {
+            "columns": {
+                "id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "veiculo_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "usuario_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "tipo": {
+                    "COLUMN_TYPE": "varchar(50)",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "conteudo": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "data_hora": {
+                    "COLUMN_TYPE": "datetime",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                }
+            }
+        },
+        "vendas": {
+            "columns": {
+                "idVendas": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "auto_increment",
+                    "COLUMN_KEY": "PRI"
+                },
+                "dataVenda": {
+                    "COLUMN_TYPE": "date",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valorTotal": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "desconto": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "valor_desconto": {
+                    "COLUMN_TYPE": "decimal(10,2)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "0.00",
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "tipo_desconto": {
+                    "COLUMN_TYPE": "varchar(8)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "faturado": {
+                    "COLUMN_TYPE": "tinyint(1)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "observacoes": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "observacoes_cliente": {
+                    "COLUMN_TYPE": "text",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "clientes_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "NO",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "usuarios_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "lancamentos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                },
+                "contratos_id": {
+                    "COLUMN_TYPE": "int",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": "MUL"
+                }
+            }
+        }
+    }
+}

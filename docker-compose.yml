@@ -55,7 +55,16 @@ services:
       - steosMySql
     restart: always
     command: >
-      /bin/sh -c "while ! mysql -h steosMySql -u steos -psteos --skip-ssl -e 'SELECT 1;' >/dev/null 2>&1; do echo 'Aguardando MySQL inicializar...'; sleep 3; done && if [ ! -d application/vendor/fakerphp/faker ]; then echo 'Faker/Autoload nao encontrado. Executando composer update...'; git config --global --add safe.directory /var/www/html 2>/dev/null; composer update; fi && php index.php tools migrate && if [ -f dados_banco_steos/dados_steos.sql ]; then
+      /bin/sh -c "while ! mysql -h steosMySql -u steos -psteos --skip-ssl -e 'SELECT 1;' >/dev/null 2>&1; do echo 'Aguardando MySQL inicializar...'; sleep 3; done &&
+      if [ -d /usr/src/steos-assets ]; then
+        echo 'Sincronizando assets estaticos da imagem (preservando uploads, anexos, arquivos e userImage)...';
+        cp -af /usr/src/steos-assets/* /var/www/html/assets/ 2>/dev/null || true;
+      fi &&
+      mkdir -p /var/www/html/assets/uploads /var/www/html/assets/anexos /var/www/html/assets/arquivos /var/www/html/assets/userImage /var/www/html/assets/assinaturas &&
+      chown -R www-data:www-data /var/www/html/assets &&
+      if [ ! -d application/vendor/fakerphp/faker ]; then echo 'Faker/Autoload nao encontrado. Executando composer update...'; git config --global --add safe.directory /var/www/html 2>/dev/null; composer update; fi &&
+      php index.php tools migrate &&
+      if [ \"$${ALLOW_INITIAL_DB_IMPORT:-false}\" = \"true\" ] && [ -f dados_banco_steos/dados_steos.sql ]; then
         echo 'Iniciando importacao automatica dos dados...';
         mysql -h steosMySql -u root -psteos --skip-ssl steos -N -e \"SET FOREIGN_KEY_CHECKS=0; SELECT CONCAT('TRUNCATE TABLE ', table_name, ';') FROM information_schema.tables WHERE table_schema='steos' AND table_name != 'migrations';\" > /tmp/truncate.sql &&
         mysql -h steosMySql -u root -psteos --skip-ssl --default-character-set=utf8mb4 --init-command=\"SET NAMES utf8mb4; SET SESSION FOREIGN_KEY_CHECKS=0;\" steos < /tmp/truncate.sql &&

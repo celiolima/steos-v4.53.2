@@ -28,6 +28,9 @@ ci_sessions/
 
 uploads
 # application/.env
+.env.production
+application/.env.production
+dados_banco_steos/*.sql
 assets/userImage
 .agents/
 *.zip

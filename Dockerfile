@@ -40,6 +40,14 @@ WORKDIR /var/www/html
 # 6. Copiar os arquivos do projeto
 COPY . /var/www/html/
 
+# 6.1 Guardar copia dos assets estaticos do repositorio para sincronizacao no volume steos_data sem sobrescrever uploads
+RUN mkdir -p /usr/src/steos-assets && \
+    for d in css js img font-awesome datetimepicker trumbowyg relatorios json; do \
+        if [ -d "/var/www/html/assets/$d" ]; then \
+            cp -a "/var/www/html/assets/$d" /usr/src/steos-assets/; \
+        fi; \
+    done
+
 # 6.5 Instalar o Composer e as dependências do projeto (gera application/vendor)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN git config --global --add safe.directory /var/www/html && composer update --optimize-autoloader
