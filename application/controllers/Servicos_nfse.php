@@ -11,8 +11,10 @@ class Servicos_nfse extends MY_Controller
         parent::__construct();
 
         $this->load->helper('form');
+        $this->load->helper('asaas');
         $this->load->model('servicos_nfse_model');
         $this->data['menuServicosNfse'] = 'Serviços NFS-e';
+        $this->data['operation_indicator_codes'] = asaas_operation_indicator_codes();
     }
 
     public function index()
@@ -67,23 +69,7 @@ class Servicos_nfse extends MY_Controller
             if ($this->form_validation->run() == false) {
                 $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
             } else {
-                $aliquota = $this->parseAliquota($this->input->post('aliquota'));
-                $cstIbsCbs = trim((string) $this->input->post('cst_ibs_cbs'));
-                $classTribIbsCbs = trim((string) $this->input->post('class_trib_ibs_cbs'));
-                $indOperacao = trim((string) $this->input->post('ind_operacao'));
-
-                $data = [
-                    'nome_servico' => trim((string) $this->input->post('nome_servico')),
-                    'codigo_servico_municipal' => trim((string) $this->input->post('codigo_servico_municipal')),
-                    'codigo_nbs' => trim((string) $this->input->post('codigo_nbs')),
-                    'aliquota' => $aliquota,
-                    'cst_ibs_cbs' => $cstIbsCbs !== '' ? $cstIbsCbs : '000',
-                    'class_trib_ibs_cbs' => $classTribIbsCbs !== '' ? $classTribIbsCbs : '000001',
-                    'ind_operacao' => $indOperacao,
-                ];
-
-                // Tenta localizar ID municipal apenas se a conta nao operar exclusivamente via Portal Nacional
-                $data['asaas_service_id'] = $this->resolverAsaasServiceId($data['codigo_servico_municipal']);
+                $data = $this->buildServicoNfseDataFromPost();
 
                 if ($this->servicos_nfse_model->add('servicos_nfse', $data) == true) {
                     $this->session->set_flashdata('success', 'Serviço NFS-e adicionado com sucesso!');
@@ -121,22 +107,7 @@ class Servicos_nfse extends MY_Controller
             if ($this->form_validation->run() == false) {
                 $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
             } else {
-                $aliquota = $this->parseAliquota($this->input->post('aliquota'));
-                $cstIbsCbs = trim((string) $this->input->post('cst_ibs_cbs'));
-                $classTribIbsCbs = trim((string) $this->input->post('class_trib_ibs_cbs'));
-                $indOperacao = trim((string) $this->input->post('ind_operacao'));
-
-                $data = [
-                    'nome_servico' => trim((string) $this->input->post('nome_servico')),
-                    'codigo_servico_municipal' => trim((string) $this->input->post('codigo_servico_municipal')),
-                    'codigo_nbs' => trim((string) $this->input->post('codigo_nbs')),
-                    'aliquota' => $aliquota,
-                    'cst_ibs_cbs' => $cstIbsCbs !== '' ? $cstIbsCbs : '000',
-                    'class_trib_ibs_cbs' => $classTribIbsCbs !== '' ? $classTribIbsCbs : '000001',
-                    'ind_operacao' => $indOperacao,
-                ];
-
-                $data['asaas_service_id'] = $this->resolverAsaasServiceId($data['codigo_servico_municipal']);
+                $data = $this->buildServicoNfseDataFromPost();
 
                 if ($this->servicos_nfse_model->edit('servicos_nfse', $data, 'idServicosNfse', $this->input->post('idServicosNfse')) == true) {
                     $this->session->set_flashdata('success', 'Serviço NFS-e editado com sucesso!');
@@ -184,6 +155,33 @@ class Servicos_nfse extends MY_Controller
 
         $results = $this->servicos_nfse_model->get('servicos_nfse', '*');
         return $this->output->set_content_type('application/json')->set_output(json_encode($results));
+    }
+
+    /**
+     * Monta e higieniza os campos fiscais de servicos_nfse a partir do POST
+     */
+    private function buildServicoNfseDataFromPost()
+    {
+        $codMunicipal = trim((string) $this->input->post('codigo_servico_municipal'));
+        $cstIbsCbs = trim((string) $this->input->post('cst_ibs_cbs'));
+        $classTribIbsCbs = trim((string) $this->input->post('class_trib_ibs_cbs'));
+        $fiscalCodes = asaas_sanitize_fiscal_codes(
+            $codMunicipal,
+            $this->input->post('ind_operacao'),
+            $this->input->post('codigo_tributacao_nacional')
+        );
+
+        return [
+            'nome_servico' => trim((string) $this->input->post('nome_servico')),
+            'codigo_servico_municipal' => $codMunicipal,
+            'codigo_nbs' => trim((string) $this->input->post('codigo_nbs')),
+            'codigo_tributacao_nacional' => $fiscalCodes['federalServiceTaxCode'],
+            'aliquota' => $this->parseAliquota($this->input->post('aliquota')),
+            'cst_ibs_cbs' => $cstIbsCbs !== '' ? $cstIbsCbs : '000',
+            'class_trib_ibs_cbs' => $classTribIbsCbs !== '' ? $classTribIbsCbs : '000001',
+            'ind_operacao' => $fiscalCodes['operationIndicatorCode'],
+            'asaas_service_id' => $this->resolverAsaasServiceId($codMunicipal),
+        ];
     }
 
     /**

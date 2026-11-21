@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-11-21T18:09:04+00:00",
+    "generated_at": "2026-11-21T20:28:17+00:00",
     "database": "steos",
     "tables": {
         "anexos": {
@@ -2459,6 +2459,13 @@
                     "COLUMN_TYPE": "varchar(255)",
                     "IS_NULLABLE": "YES",
                     "COLUMN_DEFAULT": null,
+                    "EXTRA": "",
+                    "COLUMN_KEY": ""
+                },
+                "codigo_tributacao_nacional": {
+                    "COLUMN_TYPE": "varchar(20)",
+                    "IS_NULLABLE": "YES",
+                    "COLUMN_DEFAULT": "",
                     "EXTRA": "",
                     "COLUMN_KEY": ""
                 },

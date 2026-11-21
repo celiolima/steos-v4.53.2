@@ -1942,8 +1942,29 @@ if (!empty($lancamentos)) {
                         <input type="text" name="tax_classification_code" id="tax_classification_code" class="span12" placeholder="Ex: 000001" value="000001" required />
                     </div>
                     <div class="span4">
-                        <label for="operation_indicator_code">Indicador Operação</label>
-                        <input type="text" name="operation_indicator_code" id="operation_indicator_code" class="span12" placeholder="Ex: vazio ou 010106" value="" />
+                        <label for="federal_service_tax_code">Cód. Trib. Nacional (cTribNac)</label>
+                        <input type="text" name="federal_service_tax_code" id="federal_service_tax_code" class="span12" placeholder="Ex: 140101 ou 010101" value="" />
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12">
+                        <label for="operation_indicator_code">Indicador de Operação (cIndOp - Reforma Tributária)</label>
+                        <?php
+                        if (!function_exists('asaas_operation_indicator_codes')) {
+                            get_instance()->load->helper('asaas');
+                        }
+                        $opIndicatorCodes = asaas_operation_indicator_codes();
+                        ?>
+                        <select name="operation_indicator_code" id="operation_indicator_code" class="span12">
+                            <option value="">Não exigido / Automático (Serviços 14.01, 01.01, etc.)</option>
+                            <?php foreach ($opIndicatorCodes as $opCode => $opDesc) : ?>
+                                <?php $labelPrefix = ($opCode === '010106') ? '010106 - [Locação 99.03] ' : ($opCode . ' - '); ?>
+                                <option value="<?php echo htmlspecialchars($opCode, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php echo htmlspecialchars($labelPrefix . $opDesc, ENT_QUOTES, 'UTF-8'); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 
@@ -4030,6 +4051,7 @@ if (!empty($lancamentos)) {
                     var opt = $('<option></option>').val(srv.idServicosNfse).text(optText);
                     opt.data('cod-municipal', srv.codigo_servico_municipal);
                     opt.data('cod-nbs', srv.codigo_nbs || '');
+                    opt.data('ctribnac', srv.codigo_tributacao_nacional || '');
                     opt.data('aliquota', srv.aliquota !== undefined && srv.aliquota !== null ? srv.aliquota : '0');
                     opt.data('asaas-id', srv.asaas_service_id || '');
                     opt.data('cst', srv.cst_ibs_cbs || '000');
@@ -4044,6 +4066,7 @@ if (!empty($lancamentos)) {
             } else if (config.municipal_service_code) {
                 $('#municipal_service_code').val(config.municipal_service_code);
                 if (config.codigo_nbs) $('#codigo_nbs').val(config.codigo_nbs);
+                if (config.federal_service_tax_code) $('#federal_service_tax_code').val(config.federal_service_tax_code);
                 if (config.aliquota_iss) {
                     $('#aliquota_iss').val(config.aliquota_iss);
                 }
@@ -4101,6 +4124,7 @@ if (!empty($lancamentos)) {
         if (selectedOpt && selectedOpt.val()) {
             var codMunicipal = selectedOpt.data('cod-municipal');
             var codNbs = selectedOpt.data('cod-nbs');
+            var cTribNac = selectedOpt.data('ctribnac');
             var aliquota = selectedOpt.data('aliquota');
             var asaasId = selectedOpt.data('asaas-id');
             var cst = selectedOpt.data('cst');
@@ -4111,6 +4135,7 @@ if (!empty($lancamentos)) {
             if (codMunicipal) $('#municipal_service_code').val(codMunicipal);
             $('#municipal_service_name').val(codMunicipal || nomeServico || '');
             if (codNbs !== undefined) $('#codigo_nbs').val(codNbs);
+            $('#federal_service_tax_code').val(cTribNac !== undefined && cTribNac !== null ? cTribNac : '');
             $('#asaas_service_id').val(asaasId || '');
             if (aliquota !== undefined) {
                 var numAliq = parseFloat(String(aliquota).replace(',', '.'));
@@ -4118,7 +4143,11 @@ if (!empty($lancamentos)) {
             }
             $('#tax_situation_code').val(cst || '000');
             $('#tax_classification_code').val(classTrib || '000001');
-            $('#operation_indicator_code').val(indOp !== undefined ? indOp : '');
+            var indOpVal = (indOp !== undefined && indOp !== null) ? String(indOp) : '';
+            $('#operation_indicator_code').val(indOpVal);
+            if ($('#operation_indicator_code').val() !== indOpVal) {
+                $('#operation_indicator_code').val('');
+            }
         }
     });
 

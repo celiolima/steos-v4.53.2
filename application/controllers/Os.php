@@ -10,6 +10,7 @@ class Os extends MY_Controller
     {
         parent::__construct();
         $this->load->helper('form');
+        $this->load->helper('asaas');
         $this->load->model('os_model');
         $this->load->model('tecnicos_model');
         $this->data['menuOs'] = 'OS';
@@ -2032,7 +2033,13 @@ class Os extends MY_Controller
         $aliquotaIssInput = (string) $this->input->post('aliquota_iss');
         $taxSituationCode = trim((string) $this->input->post('tax_situation_code'));
         $taxClassificationCode = trim((string) $this->input->post('tax_classification_code'));
-        $operationIndicatorCode = trim((string) $this->input->post('operation_indicator_code'));
+        $fiscalCodes = asaas_sanitize_fiscal_codes(
+            $municipalServiceCodeRaw,
+            $this->input->post('operation_indicator_code'),
+            $this->input->post('federal_service_tax_code')
+        );
+        $operationIndicatorCode = $fiscalCodes['operationIndicatorCode'];
+        $federalServiceTaxCode = $fiscalCodes['federalServiceTaxCode'];
         $serviceDescription = $this->input->post('service_description');
         $observations = $this->input->post('observations');
         $effectiveDate = $this->input->post('effective_date') ? $this->input->post('effective_date') : date('Y-m-d');
@@ -2042,9 +2049,6 @@ class Os extends MY_Controller
         }
         if ($taxClassificationCode === '') {
             $taxClassificationCode = '000001';
-        }
-        if ($operationIndicatorCode === '' && strpos($municipalServiceCodeRaw, '99.03') !== false) {
-            $operationIndicatorCode = '010106';
         }
 
         $valorClean = str_replace('.', '', (string) $valorNfseInput);
@@ -2157,6 +2161,10 @@ class Os extends MY_Controller
                     'operationIndicatorCode' => $operationIndicatorCode
                 ]
             ];
+
+            if ($federalServiceTaxCode !== '') {
+                $payload['taxes']['federalServiceTaxCode'] = $federalServiceTaxCode;
+            }
 
             if (!empty($codigoNbs)) {
                 $payload['taxes']['nbsCode'] = $codigoNbs;

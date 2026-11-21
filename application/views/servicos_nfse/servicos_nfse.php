@@ -34,6 +34,7 @@
                         <th>Cód. Serviço Municipal (LC 116)</th>
                         <th>ID Asaas</th>
                         <th>Código NBS</th>
+                        <th>cTribNac</th>
                         <th>CST / Class. Trib. (IBS/CBS)</th>
                         <th>Ind. Operação</th>
                         <th>Alíquota ISS (%)</th>
@@ -44,19 +45,21 @@
                     <?php
                         if (!$results) {
                             echo '<tr>
-                                    <td colspan="9">Nenhum Serviço NFS-e Cadastrado</td>
+                                    <td colspan="10">Nenhum Serviço NFS-e Cadastrado</td>
                                 </tr>';
                         }
         foreach ($results as $r) {
             $cstDisplay = (isset($r->cst_ibs_cbs) && $r->cst_ibs_cbs !== '') ? $r->cst_ibs_cbs : '000';
             $classTribDisplay = (isset($r->class_trib_ibs_cbs) && $r->class_trib_ibs_cbs !== '') ? $r->class_trib_ibs_cbs : '000001';
-            $indOpDisplay = (isset($r->ind_operacao) && $r->ind_operacao !== '') ? $r->ind_operacao : '-';
+            $cTribNacDisplay = (isset($r->codigo_tributacao_nacional) && $r->codigo_tributacao_nacional !== '') ? $r->codigo_tributacao_nacional : '-';
+            $indOpDisplay = (isset($r->ind_operacao) && $r->ind_operacao !== '') ? $r->ind_operacao : 'Automático';
             echo '<tr>';
             echo '<td>' . $r->idServicosNfse . '</td>';
             echo '<td>' . $r->nome_servico . '</td>';
             echo '<td>' . $r->codigo_servico_municipal . '</td>';
             echo '<td>' . (isset($r->asaas_service_id) && $r->asaas_service_id ? $r->asaas_service_id : '<span class="label">Portal Nacional</span>') . '</td>';
             echo '<td>' . ($r->codigo_nbs ?: '-') . '</td>';
+            echo '<td>' . $cTribNacDisplay . '</td>';
             echo '<td>' . $cstDisplay . ' / ' . $classTribDisplay . '</td>';
             echo '<td>' . $indOpDisplay . '</td>';
             echo '<td>' . number_format((float) $r->aliquota, 2, ',', '') . '%</td>';
