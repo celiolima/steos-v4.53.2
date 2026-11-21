@@ -2242,7 +2242,7 @@ class Os extends MY_Controller
             $resp = $this->asaas->consultarNfse($os->asaas_invoice_id);
 
             // Se a nota vinculada foi cancelada ou deu erro, verifica se existe uma nota valida para a mesma cobranca da O.S.
-            if (!empty($resp->status) && in_array($resp->status, ['CANCELED', 'ERROR'], true)) {
+            if (!empty($resp->status) && in_array(strtoupper((string) $resp->status), ['CANCELED', 'CANCELLED', 'ERROR'], true)) {
                 $osChargeIds = [];
                 if (!empty($os->asaas_payment_id)) {
                     $osChargeIds[] = $os->asaas_payment_id;
@@ -2323,21 +2323,57 @@ class Os extends MY_Controller
 
         try {
             $this->load->library('Gateways/Asaas');
+            $resp = null;
             try {
-                $this->asaas->cancelarNfse($os->asaas_invoice_id);
+                $resp = $this->asaas->cancelarNfse($os->asaas_invoice_id);
             } catch (\Exception $cancelEx) {
-                // Se ja estiver cancelada ou com erro no Asaas, permite resetar status local para nova emissao
+                // Se ja estiver cancelada, em cancelamento ou com erro no Asaas, sincroniza o status local
                 $consulta = $this->asaas->consultarNfse($os->asaas_invoice_id);
-                if (!empty($consulta->status) && in_array($consulta->status, ['CANCELED', 'ERROR'], true)) {
+                $statusConsulta = strtoupper((string) ($consulta->status ?? ''));
+
+                if (in_array($statusConsulta, ['CANCELED', 'CANCELLED', 'ERROR'], true)) {
                     $this->db->where('idOs', $idOs);
                     $this->db->update('os', [
                         'asaas_invoice_status' => 'CANCELED',
                         'asaas_invoice_error' => null
                     ]);
-                    echo json_encode(['result' => true, 'message' => 'Nota já estava ' . $consulta->status . ' no Asaas; O.S. liberada para nova emissão.']);
+                    echo json_encode(['result' => true, 'message' => 'Nota já estava ' . $statusConsulta . ' no Asaas; O.S. liberada para nova emissão.']);
                     return;
                 }
+
+                if ($statusConsulta === 'PROCESSING_CANCELLATION') {
+                    $this->db->where('idOs', $idOs);
+                    $this->db->update('os', [
+                        'asaas_invoice_status' => 'PROCESSING_CANCELLATION',
+                        'asaas_invoice_error' => null
+                    ]);
+                    echo json_encode(['result' => true, 'message' => 'Cancelamento da NFS-e já está em processamento na prefeitura.']);
+                    return;
+                }
+
+                if ($statusConsulta === 'CANCELLATION_DENIED') {
+                    $msgNegado = $consulta->statusDescription ?? $cancelEx->getMessage();
+                    $this->db->where('idOs', $idOs);
+                    $this->db->update('os', [
+                        'asaas_invoice_status' => 'CANCELLATION_DENIED',
+                        'asaas_invoice_error' => $msgNegado
+                    ]);
+                    echo json_encode(['result' => false, 'message' => 'Cancelamento negado pela prefeitura: ' . $msgNegado]);
+                    return;
+                }
+
                 throw $cancelEx;
+            }
+
+            $statusRetorno = strtoupper((string) ($resp->status ?? 'CANCELED'));
+            if ($statusRetorno === 'PROCESSING_CANCELLATION') {
+                $this->db->where('idOs', $idOs);
+                $this->db->update('os', [
+                    'asaas_invoice_status' => 'PROCESSING_CANCELLATION',
+                    'asaas_invoice_error' => null
+                ]);
+                echo json_encode(['result' => true, 'message' => 'Cancelamento solicitado ao Asaas e em processamento na prefeitura. Clique em Atualizar Status em instantes.']);
+                return;
             }
 
             $this->db->where('idOs', $idOs);

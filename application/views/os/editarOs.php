@@ -83,18 +83,25 @@ if (!empty($lancamentos)) {
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Ordem de Serviço</span></a>
 
                     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
-                        <?php if (empty($result->asaas_invoice_status) || $result->asaas_invoice_status === 'CANCELED') { ?>
+                        <?php $nfseSt = $result->asaas_invoice_status ?? ''; ?>
+                        <?php if (empty($nfseSt) || in_array($nfseSt, ['CANCELED', 'CANCELLED'], true)) { ?>
                             <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-info" style="max-width: 140px; margin-left: 3px;">
                                 <span class="button__icon"><i class='bx bx-file'></i></span> <span class="button__text">NFS-e</span></a>
-                        <?php } elseif ($result->asaas_invoice_status === 'SCHEDULED' || $result->asaas_invoice_status === 'SYNCHRONIZED') { ?>
+                        <?php } elseif ($nfseSt === 'PROCESSING_CANCELLATION') { ?>
+                            <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-warning" style="max-width: 185px; margin-left: 3px;">
+                                <span class="button__icon"><i class='bx bx-loader-alt'></i></span> <span class="button__text">Cancelando NFS-e</span></a>
+                        <?php } elseif (in_array($nfseSt, ['SCHEDULED', 'SYNCHRONIZED', 'PROCESSING'], true)) { ?>
                             <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-warning" style="max-width: 160px; margin-left: 3px;">
                                 <span class="button__icon"><i class='bx bx-time'></i></span> <span class="button__text">NFS-e Agendada</span></a>
-                        <?php } elseif ($result->asaas_invoice_status === 'AUTHORIZED') { ?>
+                        <?php } elseif ($nfseSt === 'AUTHORIZED') { ?>
                             <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-success" style="max-width: 160px; margin-left: 3px;">
                                 <span class="button__icon"><i class='bx bx-check-double'></i></span> <span class="button__text">NFS-e #<?php echo $result->asaas_invoice_number; ?></span></a>
-                        <?php } elseif ($result->asaas_invoice_status === 'ERROR') { ?>
-                            <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-danger" style="max-width: 160px; margin-left: 3px;" title="<?php echo $result->asaas_invoice_error; ?>">
-                                <span class="button__icon"><i class='bx bx-error'></i></span> <span class="button__text">NFS-e Rejeitada</span></a>
+                        <?php } elseif (in_array($nfseSt, ['ERROR', 'CANCELLATION_DENIED'], true)) { ?>
+                            <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-danger" style="max-width: 175px; margin-left: 3px;" title="<?php echo htmlspecialchars((string) $result->asaas_invoice_error, ENT_QUOTES, 'UTF-8'); ?>">
+                                <span class="button__icon"><i class='bx bx-error'></i></span> <span class="button__text"><?php echo $nfseSt === 'CANCELLATION_DENIED' ? 'Cancel. Negado' : 'NFS-e Rejeitada'; ?></span></a>
+                        <?php } else { ?>
+                            <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-info" style="max-width: 170px; margin-left: 3px;">
+                                <span class="button__icon"><i class='bx bx-file'></i></span> <span class="button__text">NFS-e (<?php echo htmlspecialchars($nfseSt, ENT_QUOTES, 'UTF-8'); ?>)</span></a>
                         <?php } ?>
                     <?php } ?>
 
@@ -1048,8 +1055,10 @@ if (!empty($lancamentos)) {
                                                         $statusTxt = $statusNota;
                                                         if ($statusNota === 'SCHEDULED') { $badgeColor = 'warning'; $statusTxt = 'Agendada (SCHEDULED)'; }
                                                         elseif ($statusNota === 'AUTHORIZED') { $badgeColor = 'success'; $statusTxt = 'Autorizada (AUTHORIZED)'; }
-                                                        elseif ($statusNota === 'PROCESSING') { $badgeColor = 'info'; $statusTxt = 'Processando (PROCESSING)'; }
+                                                        elseif ($statusNota === 'PROCESSING' || $statusNota === 'SYNCHRONIZED') { $badgeColor = 'info'; $statusTxt = 'Processando (' . $statusNota . ')'; }
+                                                        elseif ($statusNota === 'PROCESSING_CANCELLATION') { $badgeColor = 'warning'; $statusTxt = 'Em Cancelamento (PROCESSING_CANCELLATION)'; }
                                                         elseif ($statusNota === 'CANCELED' || $statusNota === 'CANCELLED') { $badgeColor = 'important'; $statusTxt = 'Cancelada'; }
+                                                        elseif ($statusNota === 'CANCELLATION_DENIED') { $badgeColor = 'important'; $statusTxt = 'Cancelamento Negado'; }
                                                         elseif ($statusNota === 'ERROR') { $badgeColor = 'important'; $statusTxt = 'Erro na Emissão'; }
                                                         echo '<span class="label label-' . $badgeColor . '">' . $statusTxt . '</span>';
                                                         ?>
@@ -1069,7 +1078,7 @@ if (!empty($lancamentos)) {
                                                     </td>
                                                     <td>
                                                         <button type="button" class="btn btn-mini btn-warning btn-consultar-nfse-tab" data-id="<?php echo $result->idOs; ?>" title="Atualizar Status"><i class="bx bx-refresh"></i> Atualizar</button>
-                                                        <?php if ($result->asaas_invoice_status !== 'CANCELED' && $result->asaas_invoice_status !== 'CANCELLED') { ?>
+                                                        <?php if (!in_array($result->asaas_invoice_status, ['CANCELED', 'CANCELLED', 'PROCESSING_CANCELLATION'], true)) { ?>
                                                             <button type="button" class="btn btn-mini btn-danger btn-cancelar-nfse-tab" data-id="<?php echo $result->idOs; ?>" title="Cancelar NFS-e"><i class="bx bx-trash"></i> Cancelar</button>
                                                         <?php } ?>
                                                         <?php if (!empty($result->asaas_invoice_error)) { ?>
@@ -1839,9 +1848,17 @@ if (!empty($lancamentos)) {
         <?php 
         $valorHerdado = $result->valorTotal > 0 ? $result->valorTotal : (($totalProdutos ?? 0) + ($totalServico ?? 0) - ($result->desconto ?? 0));
         ?>
-        <?php if (!empty($result->asaas_invoice_status) && $result->asaas_invoice_status !== 'CANCELED') { ?>
+        <?php if (!empty($result->asaas_invoice_status) && !in_array($result->asaas_invoice_status, ['CANCELED', 'CANCELLED'], true)) { ?>
             <!-- Tela de Gerenciamento da Nota já gerada -->
-            <div class="alert alert-success" style="margin-top: 10px;">
+            <?php
+            $alertClassModal = 'alert-success';
+            if (in_array($result->asaas_invoice_status, ['ERROR', 'CANCELLATION_DENIED'], true)) {
+                $alertClassModal = 'alert-error';
+            } elseif (in_array($result->asaas_invoice_status, ['SCHEDULED', 'SYNCHRONIZED', 'PROCESSING', 'PROCESSING_CANCELLATION'], true)) {
+                $alertClassModal = 'alert-warning';
+            }
+            ?>
+            <div class="alert <?php echo $alertClassModal; ?>" style="margin-top: 10px;">
                 <h4><i class="bx bx-check-double"></i> Nota Fiscal Eletrônica (NFS-e)</h4>
                 <p><strong>Status Asaas:</strong> <?php echo $result->asaas_invoice_status; ?></p>
                 <?php if (!empty($result->asaas_invoice_number)) { ?>
@@ -1859,7 +1876,9 @@ if (!empty($lancamentos)) {
                     <a href="<?php echo $result->asaas_invoice_xml; ?>" target="_blank" class="btn btn-info"><i class="bx bx-code"></i> Baixar XML</a>
                 <?php } ?>
                 <button type="button" class="btn btn-warning" id="btn-consultar-nfse" data-id="<?php echo $result->idOs; ?>"><i class="bx bx-refresh"></i> Atualizar Status</button>
-                <button type="button" class="btn btn-danger" id="btn-cancelar-nfse" data-id="<?php echo $result->idOs; ?>"><i class="bx bx-trash"></i> Cancelar na Prefeitura</button>
+                <?php if ($result->asaas_invoice_status !== 'PROCESSING_CANCELLATION') { ?>
+                    <button type="button" class="btn btn-danger" id="btn-cancelar-nfse" data-id="<?php echo $result->idOs; ?>"><i class="bx bx-trash"></i> Cancelar na Prefeitura</button>
+                <?php } ?>
             </div>
         <?php } else { ?>
             <!-- Formulário para agendar ou emitir nova NFS-e -->
@@ -4285,6 +4304,7 @@ if (!empty($lancamentos)) {
                 $.ajax({
                     url: '<?php echo base_url(); ?>index.php/os/cancelar_nfse/' + idOs,
                     type: 'POST',
+                    data: { idOs: idOs },
                     dataType: 'json',
                     success: function(res) {
                         if (res.result) {
@@ -4295,8 +4315,14 @@ if (!empty($lancamentos)) {
                             Swal.fire('Erro!', res.message, 'error');
                         }
                     },
-                    error: function() {
-                        Swal.fire('Erro!', 'Falha de comunicação ao cancelar.', 'error');
+                    error: function(xhr) {
+                        var msg = 'Falha de comunicação ao cancelar.';
+                        if (xhr && xhr.status === 403) {
+                            msg = 'Sessão/token de segurança expirado (403). Recarregue a página (Ctrl+F5) e tente novamente.';
+                        } else if (xhr && xhr.status) {
+                            msg += ' (HTTP ' + xhr.status + ')';
+                        }
+                        Swal.fire('Erro!', msg, 'error');
                     }
                 });
             }

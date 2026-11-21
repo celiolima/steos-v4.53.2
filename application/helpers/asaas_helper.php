@@ -51,8 +51,8 @@ if (! function_exists('asaas_api_request')) {
             'User-Agent: Steos-Sistema/4.53.2'
         ];
 
-        if ($data !== null && in_array(strtoupper($method), ['POST', 'PUT'])) {
-            $payload = is_string($data) ? $data : json_encode($data);
+        if (in_array(strtoupper($method), ['POST', 'PUT'])) {
+            $payload = ($data === null) ? '{}' : (is_string($data) ? $data : json_encode($data));
             curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
             $headers[] = 'Content-Length: ' . strlen($payload);
         }

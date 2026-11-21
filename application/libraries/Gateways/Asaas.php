@@ -651,10 +651,11 @@ class Asaas extends BasePaymentGateway
     /**
      * Fase 4: Cancelamento de NFS-e (POST /v3/invoices/{id}/cancel)
      */
-    public function cancelarNfse($invoiceId)
+    public function cancelarNfse($invoiceId, $cancelOnlyOnAsaas = false)
     {
         $this->ci->load->helper('asaas');
-        $response = asaas_api_request('/v3/invoices/' . $invoiceId . '/cancel', 'POST');
+        $payload = $cancelOnlyOnAsaas ? ['cancelOnlyOnAsaas' => true] : new \stdClass();
+        $response = asaas_api_request('/v3/invoices/' . $invoiceId . '/cancel', 'POST', $payload);
         return $response;
     }
 

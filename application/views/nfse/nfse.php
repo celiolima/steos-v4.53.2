@@ -76,8 +76,10 @@
                             $statusTxt = $statusNota;
                             if ($statusNota === 'SCHEDULED') { $badgeColor = 'warning'; $statusTxt = 'Agendada (SCHEDULED)'; }
                             elseif ($statusNota === 'AUTHORIZED') { $badgeColor = 'success'; $statusTxt = 'Autorizada (AUTHORIZED)'; }
-                            elseif ($statusNota === 'PROCESSING') { $badgeColor = 'info'; $statusTxt = 'Processando (PROCESSING)'; }
+                            elseif ($statusNota === 'PROCESSING' || $statusNota === 'SYNCHRONIZED') { $badgeColor = 'info'; $statusTxt = 'Processando (' . $statusNota . ')'; }
+                            elseif ($statusNota === 'PROCESSING_CANCELLATION') { $badgeColor = 'warning'; $statusTxt = 'Em Cancelamento'; }
                             elseif ($statusNota === 'CANCELED' || $statusNota === 'CANCELLED') { $badgeColor = 'important'; $statusTxt = 'Cancelada'; }
+                            elseif ($statusNota === 'CANCELLATION_DENIED') { $badgeColor = 'important'; $statusTxt = 'Cancelamento Negado'; }
                             elseif ($statusNota === 'ERROR') { $badgeColor = 'important'; $statusTxt = 'Erro na Emissão'; }
 
                             echo '<tr>';
@@ -122,7 +124,7 @@
                             echo '<td>';
                             echo '<a href="' . base_url() . 'index.php/os/editar/' . $r->idOs . '#tabNotas" class="btn-nwe2" style="margin-right: 1%" title="Ver Ordem de Serviço / Nota"><i class="bx bx-show"></i></a>';
                             echo '<a href="javascript:void(0);" class="btn-nwe btn-consultar-nfse-list" data-id="' . $r->idOs . '" style="margin-right: 1%" title="Atualizar Status na Prefeitura"><i class="bx bx-refresh"></i></a>';
-                            if ($r->asaas_invoice_status !== 'CANCELED' && $r->asaas_invoice_status !== 'CANCELLED') {
+                            if (!in_array($r->asaas_invoice_status, ['CANCELED', 'CANCELLED', 'PROCESSING_CANCELLATION'], true)) {
                                 echo '<a href="javascript:void(0);" class="btn-nwe4 btn-cancelar-nfse-list" data-id="' . $r->idOs . '" title="Cancelar NFS-e na Prefeitura"><i class="bx bx-trash"></i></a>';
                             }
                             echo '</td>';
@@ -196,6 +198,7 @@ $(document).ready(function() {
                 $.ajax({
                     url: '<?php echo base_url(); ?>index.php/os/cancelar_nfse/' + idOs,
                     type: 'POST',
+                    data: { idOs: idOs },
                     dataType: 'json',
                     success: function(res) {
                         if (res.result) {
@@ -206,8 +209,14 @@ $(document).ready(function() {
                             Swal.fire('Erro!', res.message, 'error');
                         }
                     },
-                    error: function() {
-                        Swal.fire('Erro!', 'Falha de comunicação ao cancelar.', 'error');
+                    error: function(xhr) {
+                        var msg = 'Falha de comunicação ao cancelar.';
+                        if (xhr && xhr.status === 403) {
+                            msg = 'Sessão/token de segurança expirado (403). Recarregue a página (Ctrl+F5) e tente novamente.';
+                        } else if (xhr && xhr.status) {
+                            msg += ' (HTTP ' + xhr.status + ')';
+                        }
+                        Swal.fire('Erro!', msg, 'error');
                     }
                 });
             }

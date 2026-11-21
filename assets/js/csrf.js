@@ -24,19 +24,42 @@ $(document).ready(function () {
 
     setCsrfTokenInAllForms(csrfTokenName, csrfCookieName);
 
+    $.ajaxPrefilter(function (options) {
+        var method = (options.type || options.method || 'GET').toUpperCase();
+        if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+            return;
+        }
+
+        var token = getCookie(csrfCookieName);
+        if (!token || !csrfTokenName) {
+            return;
+        }
+
+        if (typeof FormData !== 'undefined' && options.data instanceof FormData) {
+            if (typeof options.data.has !== 'function' || !options.data.has(csrfTokenName)) {
+                options.data.append(csrfTokenName, token);
+            }
+            return;
+        }
+
+        var encodedToken = $.param({ [csrfTokenName]: token });
+
+        if (options.data === undefined || options.data === null || options.data === '') {
+            options.data = encodedToken;
+            if (options.contentType === undefined) {
+                options.contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+            }
+        } else if (typeof options.data === 'string') {
+            if (options.data.indexOf(csrfTokenName + '=') === -1) {
+                options.data += '&' + encodedToken;
+            }
+        } else if (typeof options.data === 'object') {
+            options.data[csrfTokenName] = token;
+        }
+    });
+
     $.ajaxSetup({
         credentials: "include",
-        beforeSend: function (jqXHR, settings) {
-            if (typeof settings.data === 'object') {
-                settings.data[csrfTokenName] = getCookie(csrfCookieName);
-            } else {
-                settings.data += '&' + $.param({
-                    [csrfTokenName]: getCookie(csrfCookieName)
-                });
-            }
-
-            return true;
-        },
         complete: function () {
             setCsrfTokenInAllForms(csrfTokenName, csrfCookieName);
         }
