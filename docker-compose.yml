@@ -56,12 +56,12 @@ services:
     restart: always
     command: >
       /bin/sh -c "while ! mysql -h steosMySql -u steos -psteos --skip-ssl -e 'SELECT 1;' >/dev/null 2>&1; do echo 'Aguardando MySQL inicializar...'; sleep 3; done &&
-      if [ -d /usr/src/steos-assets ]; then
+      if [ \"$${SKIP_ASSETS_SYNC:-false}\" != \"true\" ] && [ -d /usr/src/steos-assets ]; then
         echo 'Sincronizando assets estaticos da imagem (preservando uploads, anexos, arquivos e userImage)...';
         cp -af /usr/src/steos-assets/* /var/www/html/assets/ 2>/dev/null || true;
       fi &&
       mkdir -p /var/www/html/assets/uploads /var/www/html/assets/anexos /var/www/html/assets/arquivos /var/www/html/assets/userImage /var/www/html/assets/assinaturas &&
-      chown -R www-data:www-data /var/www/html/assets &&
+      (chown -R www-data:www-data /var/www/html/assets 2>/dev/null || true) &&
       if [ ! -d application/vendor/fakerphp/faker ]; then echo 'Faker/Autoload nao encontrado. Executando composer update...'; git config --global --add safe.directory /var/www/html 2>/dev/null; composer update; fi &&
       php index.php tools migrate &&
       if [ \"$${ALLOW_INITIAL_DB_IMPORT:-false}\" = \"true\" ] && [ -f dados_banco_steos/dados_steos.sql ]; then

@@ -44,7 +44,17 @@ date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'America/Sao_Paulo');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = $_ENV['APP_URL'] ?? 'http://localhost:8080/';
+$steosHost = $_SERVER['HTTP_HOST'] ?? '';
+$steosEnv = $_ENV['APP_ENVIRONMENT'] ?? (defined('ENVIRONMENT') ? ENVIRONMENT : 'development');
+if ($steosEnv !== 'production' && $steosHost !== '' && $steosHost !== 'steos.stesistemas.com') {
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https')
+        || ((int) ($_SERVER['SERVER_PORT'] ?? 80) === 443);
+    $scheme = $isHttps ? 'https' : 'http';
+    $config['base_url'] = $scheme . '://' . $steosHost . '/';
+} else {
+    $config['base_url'] = rtrim($_ENV['APP_URL'] ?? 'https://steos.stesistemas.com/', '/') . '/';
+}
 
 /*
 |--------------------------------------------------------------------------

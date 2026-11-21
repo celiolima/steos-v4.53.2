@@ -1,0 +1,16 @@
+# Template de desenvolvimento local com Live-Reload e Asaas Sandbox.
+# Copie este arquivo para docker-compose.override.yml (ou use .\steos-env.ps1 start)
+# para que o Docker Compose local ative automaticamente o modo Desenvolvimento.
+services:
+  steos:
+    volumes:
+      - .:/var/www/html:cached
+      - steos_data:/var/www/html/assets:cached
+      - ./assets/css:/var/www/html/assets/css:cached
+      - ./assets/js:/var/www/html/assets/js:cached
+      - ./application/.env_dev:/var/www/html/application/.env
+    environment:
+      - APP_ENVIRONMENT=development
+      - CI_ENVIRONMENT=development
+      - PAYMENT_GATEWAYS_ASAAS_PRODUCTION=false
+      - SKIP_ASSETS_SYNC=true

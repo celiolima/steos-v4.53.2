@@ -5,6 +5,11 @@
 .vscode
 .idea
 docker.old
+docker-compose.dev.yml
+docker-compose.override.yml
+application/.env_dev
+application/.env_dev_pro
+application/.env_desenvolvimento
 dados_banco_steos/*.sql
 dados_banco_steos/*.imported
 dados_banco_steos/old

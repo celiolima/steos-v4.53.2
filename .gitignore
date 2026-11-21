@@ -30,6 +30,9 @@ uploads
 # application/.env
 .env.production
 application/.env.production
+application/.env_dev
+application/.env_dev_pro
+docker-compose.override.yml
 dados_banco_steos/*.sql
 assets/userImage
 .agents/
