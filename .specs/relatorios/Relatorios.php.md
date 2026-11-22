@@ -168,5 +168,5 @@ Recebe a requisição HTTP (GET/POST), valida via `form_validation`, delega a le
 Mapeamento automático via CodeIgniter: `site_url('relatorios/metodo')`.
 
 ## 7. Observações e Regras de Negócio
-- Documentação autogerada para reconstrução.
-- Certifique-se de manter os padrões do CodeIgniter 3.
+- `produtosEtiquetas()` exige permissão `rProduto`; `sku()`, `skuRapid()`, `skuCustom()` exigem `rVenda && rOs`; `receitasBrutasMei()` exige `rFinanceiro`.
+- Os 4 métodos de comissões (`comissaoOs`, `comissaoServicosImprimir`, `comissaoVendas`, `comissaoVendasImprimir`) utilizam a permissão granular **`rComissao`**.

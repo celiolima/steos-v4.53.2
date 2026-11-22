@@ -24,5 +24,4 @@ Recebe o array `$data` do Controller e renderiza variáveis em HTML iterando sob
 N/A
 
 ## 7. Observações e Regras de Negócio
-- Documentação autogerada para reconstrução.
-- Certifique-se de manter os padrões do CodeIgniter 3.
+- Todos os dropdowns superiores (`Relatórios`, `Cadastros`, `Configurações` e `Operacional`) e seus subitens verificam as chaves granulares correspondentes (`rCliente`, `rProduto`, `rServico`, `rOs`, `rComissao`, `rVenda`, `rFinanceiro`, `vProduto`, `vServico`, `vNfse`, `vSistema`, `vEquipamento`, `vModelo`, `vGarantia`, `vArquivo`, `cSistema`, `cUsuario`, `cEmitente`, `cPermissao`, `cAuditoria`, `cEmail`, `cBackup`, `vTecnico`, `vVeiculo`), ocultando o dropdown inteiro caso o perfil não tenha permissão em nenhum subitem.

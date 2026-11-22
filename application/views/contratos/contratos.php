@@ -8,8 +8,10 @@
     <div class="span12" style="margin-left: 0">
         <form method="get" action="<?php echo base_url(); ?>index.php/contratos/gerenciar">
             <div class="span2">
-                <a href="<?php echo base_url(); ?>index.php/contratos/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
-                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Novo Contrato</span></a>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aContrato')) { ?>
+                    <a href="<?php echo base_url(); ?>index.php/contratos/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
+                        <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Novo Contrato</span></a>
+                <?php } ?>
             </div>
             
             <div class="span3">
@@ -95,10 +97,14 @@
                             echo '<td>' . $dataFinal . '</td>';
                             echo '<td>R$ ' . number_format($r->valorTotal, 2, ',', '.') . '</td>';
                             echo '<td><span class="badge" style="background-color: ' . $cor . '; border-color: ' . $cor . '">' . $statusStr . '</span> </td>';
-                            echo '<td>
-                                    <a style="margin-right: 1%" href="' . base_url() . 'index.php/contratos/editar/' . $r->idContratos . '" class="btn-nwe3" title="Editar Contrato"><i class="bx bx-edit bx-xs"></i></a>
-                                    <a href="#modal-excluir" role="button" data-toggle="modal" contrato="' . $r->idContratos . '" class="btn-nwe4" title="Excluir Contrato"><i class="bx bx-trash-alt bx-xs"></i></a>
-                                  </td>';
+                            echo '<td>';
+                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eContrato')) {
+                                echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/contratos/editar/' . $r->idContratos . '" class="btn-nwe3" title="Editar Contrato"><i class="bx bx-edit bx-xs"></i></a>';
+                            }
+                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dContrato')) {
+                                echo '<a href="#modal-excluir" role="button" data-toggle="modal" contrato="' . $r->idContratos . '" class="btn-nwe4" title="Excluir Contrato"><i class="bx bx-trash-alt bx-xs"></i></a>';
+                            }
+                            echo '</td>';
                             echo '</tr>';
                         } ?>
                     </tbody>

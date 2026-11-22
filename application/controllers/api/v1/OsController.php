@@ -481,6 +481,9 @@ class OsController extends REST_Controller
 
     public function desconto_post($id)
     {
+        $this->logged_user();
+        $this->requireEditOsPermission();
+
         if (empty($this->post('desconto', true)) || empty($this->post('valor_desconto', true))) {
             $this->response([
                 'status' => false,
@@ -520,6 +523,7 @@ class OsController extends REST_Controller
     public function produtos_post($id)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
 
         $_POST = (array) json_decode(trim(file_get_contents('php://input')));
         $_POST['idOsProduto'] = $id;
@@ -584,6 +588,8 @@ class OsController extends REST_Controller
     public function produtos_put($id, $idProdutos_os)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
+
         if (! $id || ! $idProdutos_os) {
             $this->response([
                 'status' => false,
@@ -629,6 +635,8 @@ class OsController extends REST_Controller
     public function produtos_delete($id, $idProdutos_os)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
+
         $os = $this->os_model->getById($id);
         if ($os == null) {
             $this->response([
@@ -672,6 +680,8 @@ class OsController extends REST_Controller
     public function servicos_post($id)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
+
         $_POST = (array) json_decode(trim(file_get_contents('php://input')));
         $_POST['idOsServico'] = $id;
 
@@ -725,6 +735,8 @@ class OsController extends REST_Controller
     public function servicos_put($id, $idServicos_os)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
+
         if (! $id || ! $idServicos_os) {
             $this->response([
                 'status' => false,
@@ -763,6 +775,8 @@ class OsController extends REST_Controller
     public function servicos_delete($id, $idServicos_os)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
+
         if ($this->os_model->delete('servicos_os', 'idServicos_os', $idServicos_os)) {
             $this->log_app('Removeu Serviço de uma OS. ID (OS): ' . $id);
             $this->CI = &get_instance();
@@ -788,6 +802,7 @@ class OsController extends REST_Controller
     public function anotacoes_post($id)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
 
         $_POST = (array) json_decode(trim(file_get_contents('php://input')));
         $_POST['os_id'] = $id;
@@ -832,6 +847,8 @@ class OsController extends REST_Controller
     public function anotacoes_delete($id, $idAnotacao)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
+
         if ($this->os_model->delete('anotacoes_os', 'idAnotacoes', $idAnotacao)) {
             $this->log_app('Removeu anotação de uma OS. ID (OS): ' . $id);
 
@@ -850,6 +867,8 @@ class OsController extends REST_Controller
     public function anexos_post($id)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
+
         $this->load->library('upload');
         $this->load->library('image_lib');
 
@@ -950,6 +969,8 @@ class OsController extends REST_Controller
     public function anexos_delete($id, $idAnexo)
     {
         $this->logged_user();
+        $this->requireEditOsPermission();
+
         if ($idAnexo != null && is_numeric($idAnexo)) {
             $this->db->where('idAnexos', $idAnexo);
             $file = $this->db->get('anexos', 1)->row();
@@ -976,6 +997,16 @@ class OsController extends REST_Controller
             'status' => false,
             'message' => 'Erro ao tentar excluir anexo.',
         ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    private function requireEditOsPermission()
+    {
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'eOs')) {
+            $this->response([
+                'status' => false,
+                'message' => 'Você não está autorizado a Editar Ordens de Serviços',
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+        }
     }
 
     private function calcTotal($id)

@@ -5,7 +5,7 @@
             <h5>Monitor de Integração - Webhooks Asaas</h5>
         </div>
         <div>
-            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) { ?>
+            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'cAsaas')) { ?>
                 <a href="<?= site_url('financeiro/sincronizar_assinaturas_orfans') ?>" class="btn btn-warning"><i class="fas fa-sync-alt"></i> Sincronizar Assinaturas Órfãs</a>
             <?php } ?>
         </div>

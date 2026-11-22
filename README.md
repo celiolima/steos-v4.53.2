@@ -46,6 +46,9 @@ O deploy em produção realiza backup `mysqldump` pré-deploy, protege `.env.pro
 
 ---
 
+## Segurança & ACL Granular
+- Controle de acesso baseado em **92 chaves granulares** (migration `20261122153000_add_granular_permissions.php` / `026`), aplicadas de forma consistente nos controllers Web (`MY_Controller`), views/menus (`menu.php`, `topo.php`) e endpoints JWT da API RESTful v1.
+
 ## Documentação Complementar
 - **[DOCUMENTACAO_STEOS.md](./DOCUMENTACAO_STEOS.md)** — Documentação técnica consolidada do sistema.
 - **[.specs/](./.specs/)** — Especificações detalhadas por módulo, controller, model, view, API v1 e configurações.

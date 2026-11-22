@@ -24,8 +24,8 @@ class Servicos_nfse extends MY_Controller
 
     public function gerenciar()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar serviços.');
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vNfse')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar serviços NFS-e.');
             redirect(base_url());
         }
 
@@ -51,8 +51,8 @@ class Servicos_nfse extends MY_Controller
 
     public function adicionar()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'aServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para adicionar serviços.');
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'aNfse')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para adicionar serviços NFS-e.');
             redirect(base_url());
         }
 
@@ -87,14 +87,14 @@ class Servicos_nfse extends MY_Controller
 
     public function editar()
     {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eNfse')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para editar serviços NFS-e.');
+            redirect(base_url());
+        }
+
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3)) || ! $this->servicos_nfse_model->getById($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Serviço não encontrado ou parâmetro inválido.');
             redirect('servicos_nfse/gerenciar');
-        }
-
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para editar serviços.');
-            redirect(base_url());
         }
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
@@ -128,8 +128,8 @@ class Servicos_nfse extends MY_Controller
 
     public function excluir()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'dServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para excluir serviços.');
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'dNfse')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para excluir serviços NFS-e.');
             redirect(base_url());
         }
 
@@ -149,7 +149,12 @@ class Servicos_nfse extends MY_Controller
 
     public function getAllJson()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vServico')) {
+        $perm = $this->session->userdata('permissao');
+        if (
+            ! $this->permission->checkPermission($perm, 'vNfse')
+            && ! $this->permission->checkPermission($perm, 'aNfse')
+            && ! $this->permission->checkPermission($perm, 'eNfse')
+        ) {
             return $this->output->set_content_type('application/json')->set_output(json_encode([]));
         }
 

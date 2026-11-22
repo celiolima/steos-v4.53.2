@@ -13,5 +13,11 @@ Responsável por gerenciar todo o ciclo de vida dos contratos de prestação de 
 - **Models Utilizados**: `Contratos_model`, `Clientes_model`, `Tecnicos_model`.
 - **Views Carregadas**: `contratos/contratos`, `contratos/adicionarContrato`, `contratos/editarContrato`.
 
-## Permissões e Segurança
-- Usa a checagem padrão de sessão para autenticação do lado administrador.
+## Permissões e Segurança (ACL Granular)
+- Controle granular com 4 chaves próprias via `requireWebPermission()` e `requireJsonPermission()`:
+  - `vContrato`: `gerenciar`, `downloadanexo`, `checklist`
+  - `aContrato`: `adicionar`
+  - `eContrato`: `editar`, `adicionarSistema`, `excluirSistema`, `adicionarCheckManual`, `atualizarCheck`, `anexar`, `excluirAnexo`, `gerarOsPreventivas`, `ativarAssinaturaAsaas`
+  - `dContrato`: `excluir`
+  - Endpoints AJAX de suporte (`auto_complete_cliente`, `get_contratos_por_cliente`, `autoCompleteSistema`) aceitam qualquer permissão de leitura/escrita de Contrato, O.S. ou Venda.
+- Views `contratos.php` e `editarContrato.php` condicionam botões, formulários de upload/sistemas e modais às chaves `a/e/dContrato`.

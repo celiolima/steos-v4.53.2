@@ -62,6 +62,7 @@ Documento de referência da arquitetura, módulos de negócio, integração Asaa
 
 ---
 
-## 5. Segurança & Governança Multi-Agente
+## 5. Segurança, ACL Granular (92 Chaves) & Governança Multi-Agente
+- **Controle de Acesso Granular (ACL):** Tabela `permissoes` com **92 chaves** (57 originais + 35 novas adicionadas pela migration `20261122153000_add_granular_permissions.php` / `026_add_granular_permissions.sql`), cobrindo `Contratos`, `NFS-e`, `Equipamentos`, `Sistemas`, `Modelos`, `Técnicos`, `Contas`, `Cadastros Financeiros`, `Comissões`, `Logs Asaas` e `Admin Asaas`, aplicadas em Controllers Web, Views/Menus (`menu.php`, `topo.php`) e API RESTful v1.
 - **CSRF Web:** `assets/js/csrf.js?v=20261121` utiliza `$.ajaxPrefilter` garantindo envio válido de `STEOS_TOKEN` e `Content-Type` inclusive em requisições POST sem corpo.
-- **Agentes Especialistas (`.agents/`):** Memória global `.agents/memoria.md`, regra obrigatória `.agents/rules/memoria-e-agentes.md` e 6 agentes isolados (`ste_dev`, `especialista-steos`, `especialista-asaas`, `especialista-deploy`, `gerenciando-codeigniter`, `gerenciando-frontend-jjb`).
+- **Agentes Especialistas (`.agents/`):** Memória global `.agents/memoria.md`, regra obrigatória `.agents/rules/memoria-e-agentes.md` (incluindo obrigatoriedade de granulação ACL em novos módulos/recursos) e 6 agentes isolados (`ste_dev`, `especialista-steos`, `especialista-asaas`, `especialista-deploy`, `gerenciando-codeigniter`, `gerenciando-frontend-jjb`).

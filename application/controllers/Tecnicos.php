@@ -12,11 +12,6 @@ class Tecnicos extends MY_Controller
     {
         parent::__construct();
 
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuario')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para configurar os Tecnicos.');
-            redirect(base_url());
-        }
-
         $this->load->helper('form');
         $this->load->model('tecnicos_model');
         $this->data['menuTecnicos'] = 'Tecnicos';
@@ -31,6 +26,10 @@ class Tecnicos extends MY_Controller
 
     public function gerenciar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vTecnico')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar técnicos.');
+            redirect(base_url());
+        }
         $this->data['configuration']['base_url'] = base_url() . 'index.php/tecnicos/gerenciar/';
         $this->data['configuration']['total_rows'] = $this->tecnicos_model->count('tecnicos');
 
@@ -44,6 +43,11 @@ class Tecnicos extends MY_Controller
 
     public function adicionar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aTecnico')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para adicionar técnicos.');
+            redirect(base_url());
+        }
+
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
 
@@ -76,6 +80,11 @@ class Tecnicos extends MY_Controller
 
     public function editar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eTecnico')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para editar técnicos.');
+            redirect(base_url());
+        }
+
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
             redirect('steos');

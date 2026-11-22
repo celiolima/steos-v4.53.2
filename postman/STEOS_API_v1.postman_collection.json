@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "c7fe9c74-5ba0-4b4e-a20f-453200000001",
         "name": "STEOS v4.53.2 \u2014 API RESTful v1",
-        "description": "# STEOS v4.53.2 \u2014 API RESTful v1\n\nCollection oficial do **STEOS** no formato **Postman Collection v2.1.0**, alinhada integralmente a `application/config/routes_api.php` (54 rotas / 72 requisi\u00e7\u00f5es HTTP).\n\n## Pr\u00e9-requisitos no Servidor STEOS\n- Vari\u00e1veis habilitadas em `application/.env` (ou `.env_dev`):\n  - `API_ENABLED=true`\n  - `API_JWT_KEY` (chave secreta HMAC-SHA256)\n  - `API_TOKEN_EXPIRE_TIME` (tempo em segundos; utilize `GET /index.php/api/v1/reGenToken` quando expirar)\n- Header `Authorization` liberado pelo `.htaccess` raiz (`RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`).\n\n## Fluxo R\u00e1pido de Autentica\u00e7\u00e3o\n1. Selecione o Environment desejado (`STEOS - Desenvolvimento Local (Docker)` ou `STEOS - Produ\u00e7\u00e3o (Hostinger)`).\n2. Para rotas administrativas (pastas `01` a `13`), execute **`01. Autentica\u00e7\u00e3o & Conta > Login Administrativo (JWT)`** \u2014 o script de resposta salvar\u00e1 automaticamente `{{access_token}}`.\n3. Para rotas do Portal do Cliente (pasta `14`), execute **`14. Portal do Cliente > Login do Cliente (Portal Conecte)`** \u2014 o script salvar\u00e1 automaticamente `{{client_access_token}}`.\n\n## Observa\u00e7\u00e3o de Datas nas Rotas\n- **`OsController` (`POST /os`, `PUT /os/{id}`):** espera `dataInicial` e `dataFinal` no formato **`DD/MM/YYYY`**.\n- **Filtros de listagem (`calendario`, `nfse`, `cobrancas`, `financeiro`, `vendas`):** utilizam preferencialmente **`YYYY-MM-DD`** (em `GET /os`, `from`/`to`/`data_fech_de`/`data_fech_ate` aceitam ambos os formatos).",
+        "description": "# STEOS v4.53.2 \u2014 API RESTful v1\n\nCollection oficial do **STEOS** no formato **Postman Collection v2.1.0**, alinhada integralmente a `application/config/routes_api.php` (54 rotas / 72 requisi\u00e7\u00f5es HTTP).\n\n## Pr\u00e9-requisitos no Servidor STEOS\n- Vari\u00e1veis habilitadas em `application/.env` (ou `.env_dev`):\n  - `API_ENABLED=true`\n  - `API_JWT_KEY` (chave secreta HMAC-SHA256)\n  - `API_TOKEN_EXPIRE_TIME` (tempo em segundos; utilize `GET /index.php/api/v1/reGenToken` quando expirar)\n- Header `Authorization` liberado pelo `.htaccess` raiz (`RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`).\n\n## Fluxo R\u00e1pido de Autentica\u00e7\u00e3o\n1. Selecione o Environment desejado (`STEOS - Desenvolvimento Local (Docker)` ou `STEOS - Produ\u00e7\u00e3o (Hostinger)`).\n2. Para rotas administrativas (pastas `01` a `13`), execute **`01. Autentica\u00e7\u00e3o & Conta > Login Administrativo (JWT)`** \u2014 o script de resposta salvar\u00e1 automaticamente `{{access_token}}`.\n3. Para rotas do Portal do Cliente (pasta `14`), execute **`14. Portal do Cliente > Login do Cliente (Portal Conecte)`** \u2014 o script salvar\u00e1 automaticamente `{{client_access_token}}`.\n\n## Controle de Acesso (ACL Granular \u2014 92 Chaves)\n- As rotas administrativas validam o perfil de permiss\u00f5es do usu\u00e1rio autenticado via `$this->permission->checkPermission($this->logged_user()->level, '<chave>')` (retornando `HTTP 401` quando n\u00e3o autorizado).\n- Destaques das permiss\u00f5es granulares v4.53.2+:\n  - **Contratos:** `vContrato`\n  - **Ordens de Servi\u00e7o e sub-recursos (`/os/{id}/desconto`, `produtos`, `servicos`, `anotacoes`, `anexos`):** `vOs`, `aOs`, `eOs`, `dOs`\n  - **NFS-e e Servi\u00e7os Fiscais:** `vNfse` (listar/consultar/servi\u00e7os), `aNfse` (emitir), `dNfse` (cancelar)\n\n## Observa\u00e7\u00e3o de Datas nas Rotas\n- **`OsController` (`POST /os`, `PUT /os/{id}`):** espera `dataInicial` e `dataFinal` no formato **`DD/MM/YYYY`**.\n- **Filtros de listagem (`calendario`, `nfse`, `cobrancas`, `financeiro`, `vendas`):** utilizam preferencialmente **`YYYY-MM-DD`** (em `GET /os`, `from`/`to`/`data_fech_de`/`data_fech_ate` aceitam ambos os formatos).",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "auth": {
@@ -1492,7 +1492,7 @@
                                 "produtos"
                             ]
                         },
-                        "description": "Adiciona item em `produtos_os`, atualiza estoque (se `control_estoque` ativo) e zera desconto anterior.",
+                        "description": "Adiciona item em `produtos_os`, atualiza estoque (se `control_estoque` ativo) e zera desconto anterior. Exige permiss\u00e3o `eOs`.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"idProduto\": 1,\n    \"quantidade\": 2,\n    \"preco\": 75\n}",
@@ -1536,7 +1536,7 @@
                                 "{{produto_os_id}}"
                             ]
                         },
-                        "description": "Atualiza quantidade/pre\u00e7o de um item em `produtos_os` ajustando diferen\u00e7a de estoque.",
+                        "description": "Atualiza quantidade/pre\u00e7o de um item em `produtos_os` ajustando diferen\u00e7a de estoque. Exige permiss\u00e3o `eOs`.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"quantidade\": 3,\n    \"preco\": 75\n}",
@@ -1575,7 +1575,7 @@
                                 "{{produto_os_id}}"
                             ]
                         },
-                        "description": "Remove item de `produtos_os`, devolve ao estoque e zera desconto."
+                        "description": "Remove item de `produtos_os`, devolve ao estoque e zera desconto. Exige permiss\u00e3o `eOs`."
                     },
                     "response": []
                 },
@@ -1609,7 +1609,7 @@
                                 "servicos"
                             ]
                         },
-                        "description": "Adiciona servi\u00e7o em `servicos_os` e zera desconto anterior.",
+                        "description": "Adiciona servi\u00e7o em `servicos_os` e zera desconto anterior. Exige permiss\u00e3o `eOs`.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"idServico\": 1,\n    \"quantidade\": 1,\n    \"preco\": 250\n}",
@@ -1653,7 +1653,7 @@
                                 "{{servico_os_id}}"
                             ]
                         },
-                        "description": "Atualiza quantidade/pre\u00e7o do servi\u00e7o em `servicos_os`.",
+                        "description": "Atualiza quantidade/pre\u00e7o do servi\u00e7o em `servicos_os`. Exige permiss\u00e3o `eOs`.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"quantidade\": 2,\n    \"preco\": 240\n}",
@@ -1692,7 +1692,7 @@
                                 "{{servico_os_id}}"
                             ]
                         },
-                        "description": "Remove servi\u00e7o de `servicos_os` e zera desconto."
+                        "description": "Remove servi\u00e7o de `servicos_os` e zera desconto. Exige permiss\u00e3o `eOs`."
                     },
                     "response": []
                 },
@@ -1726,7 +1726,7 @@
                                 "anotacoes"
                             ]
                         },
-                        "description": "Grava anota\u00e7\u00e3o vinculada \u00e0 O.S. prefixada com o nome do usu\u00e1rio autenticado.",
+                        "description": "Grava anota\u00e7\u00e3o vinculada \u00e0 O.S. prefixada com o nome do usu\u00e1rio autenticado. Exige permiss\u00e3o `eOs`.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"anotacao\": \"Equipamento encaminhado para bancada de testes.\"\n}",
@@ -1765,7 +1765,7 @@
                                 "{{anotacao_os_id}}"
                             ]
                         },
-                        "description": "Exclui registro espec\u00edfico de `anotacoes_os`."
+                        "description": "Exclui registro espec\u00edfico de `anotacoes_os`. Exige permiss\u00e3o `eOs`."
                     },
                     "response": []
                 },
@@ -1794,7 +1794,7 @@
                                 "anexos"
                             ]
                         },
-                        "description": "Faz upload `multipart/form-data` para `assets/anexos/m-Y/OS-{id}` com gera\u00e7\u00e3o autom\u00e1tica de miniatura para imagens.",
+                        "description": "Faz upload `multipart/form-data` para `assets/anexos/m-Y/OS-{id}` com gera\u00e7\u00e3o autom\u00e1tica de miniatura para imagens. Exige permiss\u00e3o `eOs`.",
                         "body": {
                             "mode": "formdata",
                             "formdata": [
@@ -1835,7 +1835,7 @@
                                 "{{anexo_os_id}}"
                             ]
                         },
-                        "description": "Apaga arquivo f\u00edsico, miniatura e registro da tabela `anexos`."
+                        "description": "Apaga arquivo f\u00edsico, miniatura e registro da tabela `anexos`. Exige permiss\u00e3o `eOs`."
                     },
                     "response": []
                 }
@@ -1843,7 +1843,7 @@
         },
         {
             "name": "08. Contratos",
-            "description": "Consulta do m\u00f3dulo guarda-chuva de Contratos (`ContratosController`).",
+            "description": "Consulta do m\u00f3dulo guarda-chuva de Contratos (`ContratosController`). Exige permiss\u00e3o `vContrato`.",
             "item": [
                 {
                     "name": "Listar Contratos",
@@ -1912,7 +1912,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista contratos paginados via `Contratos_model::getContratos()` com filtros opcionais."
+                        "description": "Lista contratos paginados via `Contratos_model::getContratos()` com filtros opcionais. Exige permiss\u00e3o `vContrato`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -1943,7 +1943,7 @@
                                 "{{contrato_id}}"
                             ]
                         },
-                        "description": "Retorna contrato completo com `sistemas` (incluindo `checks`), `os`, `vendas`, `cobrancas` e `anexos`."
+                        "description": "Retorna contrato completo com `sistemas` (incluindo `checks`), `os`, `vendas`, `cobrancas` e `anexos`. Exige permiss\u00e3o `vContrato`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2109,7 +2109,7 @@
         },
         {
             "name": "10. NFS-e Asaas v3 (Portal Nacional & IBS/CBS)",
-            "description": "Ciclo completo de Notas Fiscais de Servi\u00e7o Eletr\u00f4nicas via Asaas v3 (`NfseController`), aderente ao Portal Nacional (`useNationalPortal`) e \u00e0 Reforma Tribut\u00e1ria (IBS/CBS + `operationIndicatorCode` + `federalServiceTaxCode`).",
+            "description": "Ciclo completo de Notas Fiscais de Servi\u00e7o Eletr\u00f4nicas via Asaas v3 (`NfseController`), aderente ao Portal Nacional (`useNationalPortal`) e \u00e0 Reforma Tribut\u00e1ria (IBS/CBS + `operationIndicatorCode` + `federalServiceTaxCode`). Controle ACL granular com chaves pr\u00f3prias `vNfse`, `aNfse` e `dNfse`.",
             "item": [
                 {
                     "name": "Listar NFS-e Emitidas / Agendadas",
@@ -2172,7 +2172,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista O.S. com `asaas_invoice_status` preenchido (`vLancamento` ou `vOs`)."
+                        "description": "Lista O.S. com `asaas_invoice_status` preenchido (`vNfse`)."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2203,7 +2203,7 @@
                                 "{{os_id}}"
                             ]
                         },
-                        "description": "Retorna campos locais da NFS-e gravados na tabela `os`. Exige `vLancamento` ou `vOs`."
+                        "description": "Retorna campos locais da NFS-e gravados na tabela `os`. Exige `vNfse`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2234,7 +2234,7 @@
                                 "servicos"
                             ]
                         },
-                        "description": "Retorna cat\u00e1logo `servicos_nfse` e os 33 c\u00f3digos oficiais de `asaas_operation_indicator_codes()` (`vServico`)."
+                        "description": "Retorna cat\u00e1logo `servicos_nfse` e os 33 c\u00f3digos oficiais de `asaas_operation_indicator_codes()` (`vNfse`)."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2271,7 +2271,7 @@
                                 "{{os_id}}"
                             ]
                         },
-                        "description": "Emite ou agenda NFS-e no Asaas v3 usando `asaas_sanitize_fiscal_codes()`, separando `federalServiceTaxCode` (6 d\u00edgitos) de `operationIndicatorCode`, al\u00e9m de `nbsCode`, `taxSituationCode` e `taxClassificationCode` (`eOs`).",
+                        "description": "Emite ou agenda NFS-e no Asaas v3 usando `asaas_sanitize_fiscal_codes()`, separando `federalServiceTaxCode` (6 d\u00edgitos) de `operationIndicatorCode`, al\u00e9m de `nbsCode`, `taxSituationCode` e `taxClassificationCode` (`aNfse`).",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"servico_nfse_id\": \"{{servico_nfse_id}}\",\n    \"value\": 250,\n    \"aliquota_iss\": 3.5,\n    \"retain_iss\": false,\n    \"effective_date\": \"2026-11-21\",\n    \"municipal_service_code\": \"952150001 | 14.01 - Repara\u00e7\u00e3o e manuten\u00e7\u00e3o de equipamentos eletroeletr\u00f4nicos de uso pessoal e domestico.\",\n    \"codigo_nbs\": \"1.2001.30.00\",\n    \"federal_service_tax_code\": \"140101\",\n    \"operation_indicator_code\": \"\",\n    \"tax_situation_code\": \"000\",\n    \"tax_classification_code\": \"000001\",\n    \"service_description\": \"Presta\u00e7\u00e3o de Servi\u00e7os t\u00e9cnicos conforme Ordem de Servi\u00e7o.\",\n    \"observations\": \"Emiss\u00e3o via API REST STEOS v4.53.2.\"\n}",
@@ -2309,7 +2309,7 @@
                                 "{{os_id}}"
                             ]
                         },
-                        "description": "Consulta o Asaas em tempo real e atualiza `asaas_invoice_status`, `number`, `pdfUrl` e `xmlUrl` na O.S. (`vLancamento` ou `vOs`)."
+                        "description": "Consulta o Asaas em tempo real e atualiza `asaas_invoice_status`, `number`, `pdfUrl` e `xmlUrl` na O.S. (`vNfse`)."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2346,7 +2346,7 @@
                                 "{{os_id}}"
                             ]
                         },
-                        "description": "Solicita cancelamento da NFS-e (`POST /v3/invoices/{id}/cancel`), tratando retornos `PROCESSING_CANCELLATION`, `CANCELED` e `CANCELLATION_DENIED` (`eOs`).",
+                        "description": "Solicita cancelamento da NFS-e (`POST /v3/invoices/{id}/cancel`), tratando retornos `PROCESSING_CANCELLATION`, `CANCELED` e `CANCELLATION_DENIED` (`dNfse`).",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"cancelOnlyOnAsaas\": false\n}",

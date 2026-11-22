@@ -16,6 +16,12 @@ class ContratosController extends REST_Controller
     public function index_get($id = '')
     {
         $this->logged_user();
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'vContrato')) {
+            $this->response([
+                'status' => false,
+                'message' => 'Você não está autorizado a Visualizar Contratos.',
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+        }
 
         if (! $id) {
             $where = [];

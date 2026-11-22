@@ -27,9 +27,10 @@ if (!empty($reload)) {
                 <h5>Contas</h5>
                 <!-- Botões -->
                 <div class="buttons">
-
-                    <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-plus'></i></span> <span class="button__text">Contas</span></a>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aConta')) { ?>
+                        <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-success">
+                            <span class="button__icon"><i class='bx bx-plus'></i></span> <span class="button__text">Contas</span></a>
+                    <?php } ?>
                 </div>
             </div>
             <div class="widget-content nopadding tab-content">
@@ -91,16 +92,16 @@ if (!empty($reload)) {
                                                             /*  if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
                                                                 echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/veiculos/visualizar/' . $r->idVeiculos . '" class="btn-nwe" title="Visualizar veiculo"><i class="bx bx-show bx-xs"></i></a>  ';
                                                             } */
-                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
+                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vConta')) {
                                                                 echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/contas/conta/' . $r->idContas . '" class="btn-nwe3" title="Ir para Conta"><i class="bx bxs-dollar-circle" style="color:#2945bb" ></i></a>';
                                                             }
                                                             /*  if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eServico')) {
                                                                 echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/contas/editar/' . $r->idContas . '" class="btn-nwe3" title="Editar Conta"><i class="bx bx-edit bx-xs"></i></a>';
                                                             } */
-                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dServico')) {
+                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dConta')) {
                                                                 echo '<a href="#modal-excluir" role="button" data-toggle="modal" Conta="' . $r->idContas . '" class="btn-nwe4" title="Excluir Conta"><i class="bx bx-trash-alt bx-xs"></i></a>  ';
                                                             }
-                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
+                                                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eConta')) {
                                                                 echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/contas/conta/' . $r->idContas . '" class="btn-nwe3" title="lançamento na Conta"><i class="bx bx-transfer" style="color:#4a9e58"  ></i></a>';
                                                             }
                                                             /*  if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dProduto')) {
@@ -167,18 +168,20 @@ if (!empty($reload)) {
                                             <div class="widget-title" style="margin:-15px -10px 0">
                                                 <h5>Lançamentos</h5>
                                             </div>
-                                            <!-- botão entrada-->
-                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter1">
-                                                Entrada
-                                            </button>
-                                            <!-- botão saida-->
-                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter2">
-                                                Saida
-                                            </button>
-                                            <!-- botão transferecia-->
-                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter3">
-                                                Trasferência
-                                            </button>
+                                            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eConta')) { ?>
+                                                <!-- botão entrada-->
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter1">
+                                                    Entrada
+                                                </button>
+                                                <!-- botão saida-->
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter2">
+                                                    Saida
+                                                </button>
+                                                <!-- botão transferecia-->
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter3">
+                                                    Trasferência
+                                                </button>
+                                            <?php } ?>
                                             <div class="widget-box">
                                                 <div class="widget-title" style="margin: -20px 0 0">
                                                     <span class="icon">

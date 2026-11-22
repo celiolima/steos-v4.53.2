@@ -8,4 +8,4 @@
 ## 2. Propósito
 Ferramenta interna de homologação em ambiente local/Sandbox para disparar eventos simulados (`PAYMENT_CREATED` e `INVOICE_AUTHORIZED`) via `POST` para `asaas_webhook/receber` enviando o header `asaas-access-token` configurado.
 
-> Uso exclusivo em desenvolvimento/homologação (`MY_Controller` exige login autenticado).
+> Exige login autenticado (`MY_Controller`) e permissão ACL `cAsaas`.

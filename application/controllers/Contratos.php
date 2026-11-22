@@ -27,6 +27,37 @@ class Contratos extends MY_Controller
         }
     }
 
+    private function hasAnyPermission(array $permissions): bool
+    {
+        $roleId = $this->session->userdata('permissao');
+        foreach ($permissions as $permission) {
+            if ($this->permission->checkPermission($roleId, $permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function requireWebPermission($permissions, string $message): bool
+    {
+        if ($this->hasAnyPermission((array) $permissions)) {
+            return true;
+        }
+        $this->session->set_flashdata('error', $message);
+        redirect(base_url());
+        return false;
+    }
+
+    private function requireJsonPermission($permissions, string $message = 'Você não tem permissão para executar esta ação.'): bool
+    {
+        if ($this->hasAnyPermission((array) $permissions)) {
+            return true;
+        }
+        echo json_encode(['result' => false, 'mensagem' => $message, 'message' => $message]);
+        return false;
+    }
+
     public function index()
     {
         $this->gerenciar();
@@ -34,6 +65,10 @@ class Contratos extends MY_Controller
 
     public function gerenciar()
     {
+        if (! $this->requireWebPermission('vContrato', 'Você não tem permissão para visualizar contratos.')) {
+            return;
+        }
+
         $this->load->library('pagination');
 
         $where_array = [];
@@ -74,6 +109,10 @@ class Contratos extends MY_Controller
 
     public function adicionar()
     {
+        if (! $this->requireWebPermission('aContrato', 'Você não tem permissão para adicionar contratos.')) {
+            return;
+        }
+
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
 
@@ -129,6 +168,10 @@ class Contratos extends MY_Controller
 
     public function editar()
     {
+        if (! $this->requireWebPermission('eContrato', 'Você não tem permissão para editar contratos.')) {
+            return;
+        }
+
         if (! $this->uri->segment(3)) {
             $this->session->set_flashdata('error', 'Item não selecionado.');
             redirect(site_url('contratos/gerenciar/'));
@@ -218,6 +261,10 @@ class Contratos extends MY_Controller
 
     public function excluir()
     {
+        if (! $this->requireWebPermission('dContrato', 'Você não tem permissão para excluir contratos.')) {
+            return;
+        }
+
         $id =  $this->input->post('id');
         if ($id == null) {
             $this->session->set_flashdata('error', 'Erro ao tentar excluir contrato.');
@@ -255,6 +302,11 @@ class Contratos extends MY_Controller
 
     public function auto_complete_cliente()
     {
+        if (! $this->hasAnyPermission(['vContrato', 'aContrato', 'eContrato', 'vOs', 'aOs', 'eOs', 'vVenda', 'aVenda', 'eVenda'])) {
+            echo json_encode([]);
+            return;
+        }
+
         $term = $this->input->get('term');
         $this->db->like('nomeCliente', $term);
         $this->db->limit(10);
@@ -269,6 +321,11 @@ class Contratos extends MY_Controller
     // Novo metodo AJAX para buscar os contratos de um cliente
     public function get_contratos_por_cliente()
     {
+        if (! $this->hasAnyPermission(['vContrato', 'aContrato', 'eContrato', 'vOs', 'aOs', 'eOs', 'vVenda', 'aVenda', 'eVenda'])) {
+            echo json_encode([]);
+            return;
+        }
+
         $clientes_id = $this->input->get('clientes_id');
         $this->db->where('clientes_id', $clientes_id);
         $this->db->where_in('status', ['Ativo', '1', 'Negociação']); // Permite vincular contratos Ativos e em Negociação
@@ -286,6 +343,11 @@ class Contratos extends MY_Controller
 
     public function autoCompleteSistema()
     {
+        if (! $this->hasAnyPermission(['vContrato', 'aContrato', 'eContrato', 'vOs', 'aOs', 'eOs', 'vVenda', 'aVenda', 'eVenda'])) {
+            echo json_encode([]);
+            return;
+        }
+
         if (isset($_GET['term'])) {
             $q = strtolower($_GET['term']);
             $this->contratos_model->autoCompleteSistema($q);
@@ -294,6 +356,10 @@ class Contratos extends MY_Controller
 
     public function adicionarSistema()
     {
+        if (! $this->requireJsonPermission('eContrato', 'Você não tem permissão para editar contratos.')) {
+            return;
+        }
+
         $preco = $this->input->post('preco');
         $preco = str_replace(',', '', $preco);
 
@@ -333,6 +399,10 @@ class Contratos extends MY_Controller
 
     public function excluirSistema()
     {
+        if (! $this->requireJsonPermission('eContrato', 'Você não tem permissão para editar contratos.')) {
+            return;
+        }
+
         $id = $this->input->post('idSistemas_contratos');
 
         // Pega o id do contrato antes de deletar para poder recalcular
@@ -396,6 +466,10 @@ class Contratos extends MY_Controller
 
     public function adicionarCheckManual()
     {
+        if (! $this->requireJsonPermission('eContrato', 'Você não tem permissão para editar contratos.')) {
+            return;
+        }
+
         $idSistemaContrato = $this->input->post('sistemas_contratos_id');
         $descricao = $this->input->post('descricao');
 
@@ -414,6 +488,10 @@ class Contratos extends MY_Controller
 
     public function atualizarCheck()
     {
+        if (! $this->requireJsonPermission('eContrato', 'Você não tem permissão para editar contratos.')) {
+            return;
+        }
+
         $idCheck = $this->input->post('idCheck');
         $status = $this->input->post('status'); // 1 ou 0
 
@@ -428,6 +506,10 @@ class Contratos extends MY_Controller
 
     public function anexar()
     {
+        if (! $this->requireJsonPermission('eContrato', 'Você não tem permissão para anexar arquivos ao contrato.')) {
+            return;
+        }
+
         $this->load->library('upload');
         $this->load->library('image_lib');
 
@@ -524,6 +606,10 @@ class Contratos extends MY_Controller
 
     public function excluirAnexo($id = null)
     {
+        if (! $this->requireJsonPermission('eContrato', 'Você não tem permissão para excluir anexos do contrato.')) {
+            return;
+        }
+
         if ($id == null || ! is_numeric($id)) {
             echo json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']);
         } else {
@@ -548,6 +634,10 @@ class Contratos extends MY_Controller
 
     public function downloadanexo($id = null)
     {
+        if (! $this->requireWebPermission('vContrato', 'Você não tem permissão para baixar anexos de contratos.')) {
+            return;
+        }
+
         if ($id != null && is_numeric($id)) {
             $this->db->where('idAnexos', $id);
             $file = $this->db->get('anexos', 1)->row();
@@ -561,6 +651,10 @@ class Contratos extends MY_Controller
 
     public function checklist($id = null)
     {
+        if (! $this->requireWebPermission('vContrato', 'Você não tem permissão para visualizar checklists de contratos.')) {
+            return;
+        }
+
         if (! $id) {
             redirect(site_url('contratos/gerenciar/'));
         }
@@ -605,6 +699,10 @@ class Contratos extends MY_Controller
 
     public function gerarOsPreventivas()
     {
+        if (! $this->requireWebPermission('eContrato', 'Você não tem permissão para gerar O.S. preventivas em contratos.')) {
+            return;
+        }
+
         $idContratos = $this->input->post('idContratos');
         $dataPrimeiraVisita = $this->input->post('dataPrimeiraVisita');
 
@@ -704,6 +802,10 @@ class Contratos extends MY_Controller
 
     public function ativarAssinaturaAsaas()
     {
+        if (! $this->requireWebPermission('eContrato', 'Você não tem permissão para ativar assinaturas Asaas em contratos.')) {
+            return;
+        }
+
         $idContratos = $this->input->post('idContratos');
         $dataAtivacao = $this->input->post('dataAtivacao');
 

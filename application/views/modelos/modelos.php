@@ -10,13 +10,10 @@
         </span>
         <h5>Modelos</h5>
     </div>
-    <a href="<?php echo base_url(); ?>index.php/modelos/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
-        <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Modelo</span></a>
-
-    <?php /* if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aModelo')) { ?>
+    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aModelo')) { ?>
         <a href="<?php echo base_url(); ?>index.php/modelos/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
-            <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Termo Modelo</span></a>
-    <?php }*/ ?>
+            <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Modelo</span></a>
+    <?php } ?>
 
     <div class="widget-box">
         <div class="widget-content nopadding tab-content">
@@ -54,17 +51,7 @@
                         echo '<td>' . $textoModeloShort . '</td>';
                         echo '<td><a href="' . base_url() . 'index.php/usuarios/editar/' . $r->idUsuarios . '">' . $r->nome . '</a></td>';
                         echo '<td>';
-
-                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/modelos/visualizar/' . $r->idModelos . '" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show bx-xs"></i></a>';
-                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/modelos/imprimir/' . $r->idModelos . '" target="_blank" class="btn-nwe6" title="Imprimir"><i class="bx bx-printer bx-xs"></i></a>';
-
-
-                        echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/modelos/editar/' . $r->idModelos . '" class="btn-nwe3" title="Editar"><i class="bx bx-edit bx-xs"></i></a>';
-
-
-                        echo '<a href="#modal-excluir" role="button" data-toggle="modal" modelo="' . $r->idModelos . '" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt bx-xs"></a>';
-
-                        /*    if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vModelo')) {
+                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vModelo')) {
                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/modelos/visualizar/' . $r->idModelos . '" class="btn-nwe" title="Ver mais detalhes"><i class="bx bx-show bx-xs"></i></a>';
                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/modelos/imprimir/' . $r->idModelos . '" target="_blank" class="btn-nwe6" title="Imprimir"><i class="bx bx-printer bx-xs"></i></a>';
                         }
@@ -72,8 +59,8 @@
                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/modelos/editar/' . $r->idModelos . '" class="btn-nwe3" title="Editar"><i class="bx bx-edit bx-xs"></i></a>';
                         }
                         if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dModelo')) {
-                            echo '<a href="#modal-excluir" role="button" data-toggle="modal" modelo="' . $r->idModelos . '" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt bx-xs"></a>';
-                        } */
+                            echo '<a href="#modal-excluir" role="button" data-toggle="modal" modelo="' . $r->idModelos . '" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt bx-xs"></i></a>';
+                        }
                         echo '</td>';
                         echo '</tr>';
                     } ?>

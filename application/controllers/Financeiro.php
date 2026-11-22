@@ -1488,6 +1488,11 @@ class Financeiro extends MY_Controller
 
     public function graficos_dinamicos_json()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+            echo json_encode([]);
+            return;
+        }
+
         $where = '';
         $vencimento_de = $this->input->get('vencimento_de');
         $vencimento_ate = $this->input->get('vencimento_ate');
@@ -1704,6 +1709,12 @@ class Financeiro extends MY_Controller
 
     public function anexar()
     {
+        $perm = $this->session->userdata('permissao');
+        if (!$this->permission->checkPermission($perm, 'aLancamento') && !$this->permission->checkPermission($perm, 'eLancamento')) {
+            echo json_encode(['result' => false, 'mensagem' => 'Você não tem permissão para anexar arquivos neste lançamento.']);
+            return;
+        }
+
         $this->load->library('upload');
         $this->load->library('image_lib');
 
@@ -1800,6 +1811,11 @@ class Financeiro extends MY_Controller
 
     public function listarAnexos($idLancamento = null)
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+            echo '';
+            return;
+        }
+
         if ($idLancamento == null || !is_numeric($idLancamento)) {
             echo '';
             return;
@@ -1832,6 +1848,12 @@ class Financeiro extends MY_Controller
 
     public function excluirAnexo($id = null)
     {
+        $perm = $this->session->userdata('permissao');
+        if (!$this->permission->checkPermission($perm, 'dLancamento') && !$this->permission->checkPermission($perm, 'eLancamento')) {
+            echo json_encode(['result' => false, 'mensagem' => 'Você não tem permissão para excluir anexos de lançamentos.']);
+            return;
+        }
+
         if ($id == null || !is_numeric($id)) {
             echo json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']);
         } else {
@@ -1857,6 +1879,11 @@ class Financeiro extends MY_Controller
 
     public function downloadanexo($id = null)
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para baixar anexos financeiros.');
+            redirect(base_url());
+        }
+
         if ($id != null && is_numeric($id)) {
             $this->db->where('idAnexos', $id);
             $file = $this->db->get('anexos', 1)->row();
@@ -1869,8 +1896,8 @@ class Financeiro extends MY_Controller
     }
     public function logsAsaas()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar essa página.');
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLogsAsaas')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar os logs do Asaas.');
             redirect(base_url());
         }
 
@@ -1884,7 +1911,7 @@ class Financeiro extends MY_Controller
 
     public function sincronizar_assinaturas_orfans()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cPermissao')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cAsaas')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para usar esta função.');
             redirect(base_url('index.php/financeiro/logsAsaas'));
         }

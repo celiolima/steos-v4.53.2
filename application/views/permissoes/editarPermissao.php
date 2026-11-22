@@ -144,7 +144,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <label......>
+                                        <label>
                                             <input <?php if (isset($permissoes['vCliente'])) {
                                                 if ($permissoes['vCliente'] == '1') {
                                                     echo 'checked';
@@ -712,6 +712,32 @@
                             <tr>
                                 <td>
                                     <label>
+                                        <input <?php echo (isset($permissoes['vPagamento']) && $permissoes['vPagamento'] == '1') ? 'checked' : ''; ?> name="vPagamento" class="marcar" type="checkbox" value="1" />
+                                        <span class="lbl"> Visualizar Pagamento</span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <input <?php echo (isset($permissoes['aPagamento']) && $permissoes['aPagamento'] == '1') ? 'checked' : ''; ?> name="aPagamento" class="marcar" type="checkbox" value="1" />
+                                        <span class="lbl"> Adicionar Pagamento</span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <input <?php echo (isset($permissoes['ePagamento']) && $permissoes['ePagamento'] == '1') ? 'checked' : ''; ?> name="ePagamento" class="marcar" type="checkbox" value="1" />
+                                        <span class="lbl"> Editar Pagamento</span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <input <?php echo (isset($permissoes['dPagamento']) && $permissoes['dPagamento'] == '1') ? 'checked' : ''; ?> name="dPagamento" class="marcar" type="checkbox" value="1" />
+                                        <span class="lbl"> Excluir Pagamento</span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>
                                             <input <?php if (isset($permissoes['vLancamento'])) {
                                                 if ($permissoes['vLancamento'] == '1') {
                                                     echo 'checked';
@@ -751,10 +777,115 @@
                                         </label>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['vConta']) && $permissoes['vConta'] == '1') ? 'checked' : ''; ?> name="vConta" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Visualizar Contas Bancárias</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['aConta']) && $permissoes['aConta'] == '1') ? 'checked' : ''; ?> name="aConta" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Adicionar Contas Bancárias</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['eConta']) && $permissoes['eConta'] == '1') ? 'checked' : ''; ?> name="eConta" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Editar Contas Bancárias</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['dConta']) && $permissoes['dConta'] == '1') ? 'checked' : ''; ?> name="dConta" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Excluir Contas Bancárias</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['vCadFinanceiro']) && $permissoes['vCadFinanceiro'] == '1') ? 'checked' : ''; ?> name="vCadFinanceiro" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Visualizar Cad. Financeiro</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['aCadFinanceiro']) && $permissoes['aCadFinanceiro'] == '1') ? 'checked' : ''; ?> name="aCadFinanceiro" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Adicionar Cad. Financeiro</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['eCadFinanceiro']) && $permissoes['eCadFinanceiro'] == '1') ? 'checked' : ''; ?> name="eCadFinanceiro" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Editar Cad. Financeiro</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['dCadFinanceiro']) && $permissoes['dCadFinanceiro'] == '1') ? 'checked' : ''; ?> name="dCadFinanceiro" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Excluir Cad. Financeiro</span>
+                                        </label>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </div>
                 </div>
+
+                <?php
+                $extraGroups = [
+                    ['id' => 'collapseGContratos', 'icon' => 'bx-file', 'title' => 'Contratos', 'items' => [
+                        ['vContrato', 'Visualizar Contrato'], ['aContrato', 'Adicionar Contrato'], ['eContrato', 'Editar Contrato'], ['dContrato', 'Excluir Contrato'],
+                    ]],
+                    ['id' => 'collapseGNfse', 'icon' => 'bx-receipt', 'title' => 'NFS-e & Serviços Fiscais', 'items' => [
+                        ['vNfse', 'Visualizar NFS-e'], ['aNfse', 'Emitir / Cad. NFS-e'], ['eNfse', 'Editar Serv. NFS-e'], ['dNfse', 'Cancelar / Excluir NFS-e'],
+                    ]],
+                    ['id' => 'collapseGEquipamentos', 'icon' => 'bx-hdd', 'title' => 'Equipamentos', 'items' => [
+                        ['vEquipamento', 'Visualizar Equipamento'], ['aEquipamento', 'Adicionar Equipamento'], ['eEquipamento', 'Editar Equipamento'], ['dEquipamento', 'Excluir Equipamento'],
+                    ]],
+                    ['id' => 'collapseGSistemas', 'icon' => 'bx-cube', 'title' => 'Sistemas & Checklists', 'items' => [
+                        ['vSistema', 'Visualizar Sistema'], ['aSistema', 'Adicionar Sistema'], ['eSistema', 'Editar Sistema'], ['dSistema', 'Excluir Sistema'],
+                    ]],
+                    ['id' => 'collapseGModelos', 'icon' => 'bx-book', 'title' => 'Modelos de Documentos', 'items' => [
+                        ['vModelo', 'Visualizar Modelo'], ['aModelo', 'Adicionar Modelo'], ['eModelo', 'Editar Modelo'], ['dModelo', 'Excluir Modelo'],
+                    ]],
+                    ['id' => 'collapseGTecnicos', 'icon' => 'bxs-group', 'title' => 'Técnicos', 'items' => [
+                        ['vTecnico', 'Visualizar Técnico'], ['aTecnico', 'Adicionar Técnico'], ['eTecnico', 'Editar Técnico'], ['dTecnico', 'Excluir Técnico'],
+                    ]],
+                ];
+                foreach ($extraGroups as $grp):
+                ?>
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title">
+                            <a data-parent="#collapse-group" href="#<?= $grp['id'] ?>" data-toggle="collapse">
+                                <span><i class='bx <?= $grp['icon'] ?> icon-cli'></i></span>
+                                <h5 style="padding-left: 28px"><?= $grp['title'] ?></h5>
+                                <span><i class='bx bx-chevron-right icon-clic'></i></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="collapse accordion-body" id="<?= $grp['id'] ?>">
+                        <div class="widget-content">
+                            <table class="table table-bordered">
+                                <tr><td colspan="4"></td></tr>
+                                <tr>
+                                    <?php foreach ($grp['items'] as [$permKey, $permLabel]): ?>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes[$permKey]) && $permissoes[$permKey] == '1') ? 'checked' : ''; ?> name="<?= $permKey ?>" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> <?= $permLabel ?></span>
+                                        </label>
+                                    </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
 
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
@@ -835,7 +966,13 @@
                                             <span class="lbl"> Relatório Financeiro</span>
                                         </label>
                                     </td>
-                                    <td colspan="2"></td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['rComissao']) && $permissoes['rComissao'] == '1') ? 'checked' : ''; ?> name="rComissao" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Relatório Comissões</span>
+                                        </label>
+                                    </td>
+                                    <td></td>
                                 </tr>
                             </table>
                         </div>
@@ -919,7 +1056,21 @@
                                             <span class="lbl"> Sistema</span>
                                         </label>
                                     </td>
-                                    <td></td>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['vLogsAsaas']) && $permissoes['vLogsAsaas'] == 1) ? 'checked' : ''; ?> name="vLogsAsaas" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Logs Webhooks Asaas</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label>
+                                            <input <?php echo (isset($permissoes['cAsaas']) && $permissoes['cAsaas'] == 1) ? 'checked' : ''; ?> name="cAsaas" class="marcar" type="checkbox" value="1" />
+                                            <span class="lbl"> Integração / Sync Asaas</span>
+                                        </label>
+                                    </td>
+                                    <td colspan="3"></td>
                                 </tr>
                             </table>
                         </div>

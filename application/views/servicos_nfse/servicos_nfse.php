@@ -6,7 +6,7 @@
         <h5>Serviços NFS-e (Cadastros)</h5>
     </div>
     <div class="span12" style="margin-left: 0">
-        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aServico')) : ?>
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aNfse')) : ?>
             <div class="span3 flexxn" style="display: flex;">
                 <a href="<?= base_url() ?>index.php/servicos_nfse/adicionar" class="button btn btn-mini btn-success" style="max-width: 180px">
                     <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2"> Adicionar Serviço</span>
@@ -64,10 +64,10 @@
             echo '<td>' . $indOpDisplay . '</td>';
             echo '<td>' . number_format((float) $r->aliquota, 2, ',', '') . '%</td>';
             echo '<td>';
-            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eServico')) {
+            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eNfse')) {
                 echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/servicos_nfse/editar/' . $r->idServicosNfse . '" class="btn-nwe3" title="Editar Serviço"><i class="bx bx-edit bx-xs"></i></a>';
             }
-            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dServico')) {
+            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dNfse')) {
                 echo '<a href="#modal-excluir" role="button" data-toggle="modal" servico="' . $r->idServicosNfse . '" class="btn-nwe4" title="Excluir Serviço"><i class="bx bx-trash-alt bx-xs"></i></a>  ';
             }
             echo '</td>';

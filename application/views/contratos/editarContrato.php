@@ -84,13 +84,16 @@
                                         <label for="descricaoContratos">Descrição / Termos</label>
                                         <textarea class="span12 editor" name="descricaoContratos" id="descricaoContratos" cols="30" rows="5"><?php echo $result->descricaoContratos; ?></textarea>
                                     </div>
+                                    <?php $podeEditarContrato = $this->permission->checkPermission($this->session->userdata('permissao'), 'eContrato'); ?>
                                     <div class="span12" style="padding: 1%; margin-left: 0; display: flex; justify-content: center; align-items: center;">
+                                        <?php if ($podeEditarContrato): ?>
                                         <button class="button btn btn-primary" id="btnContinuar" style="min-width: 150px; margin: 0 5px"><span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
                                         <a href="#modal-gerar-os" role="button" data-toggle="modal" class="button btn btn-info" id="btnGerarOs" style="min-width: 150px; margin: 0 5px"><span class="button__icon"><i class="bx bx-calendar-event"></i></span><span class="button__text2">Gerar OS Preventivas</span></a>
                                         <?php if(empty($result->asaas_subscription_id)): ?>
                                         <a href="#modal-ativar-assinatura" role="button" data-toggle="modal" class="button btn btn-success" id="btnAtivarAssinatura" style="min-width: 150px; margin: 0 5px"><span class="button__icon"><i class="bx bx-credit-card"></i></span><span class="button__text2">Ativar Assinatura Asaas</span></a>
                                         <?php else: ?>
                                         <button type="button" disabled class="button btn btn-default" style="min-width: 150px; margin: 0 5px" title="Assinatura Ativa: <?php echo $result->asaas_subscription_id; ?>"><span class="button__icon"><i class="bx bx-check-shield"></i></span><span class="button__text2">Assinatura Ativa</span></button>
+                                        <?php endif; ?>
                                         <?php endif; ?>
                                         <a href="<?php echo base_url() ?>index.php/contratos" class="button btn btn-warning" style="min-width: 150px; margin: 0 5px"><span class="button__icon"><i class="bx bx-undo"></i></span><span class="button__text2">Voltar</span></a>
                                     </div>
@@ -241,6 +244,7 @@
                         <!-- ABA ANEXOS -->
                         <div class="tab-pane" id="tab5">
                             <div class="span12" style="padding: 1%; margin-left: 0">
+                                <?php if ($podeEditarContrato) { ?>
                                 <div class="span12 well" style="padding: 1%; margin-left: 0" id="form-anexos">
                                     <div id="wrapperAnexos">
                                         <div class="span6">
@@ -267,6 +271,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <?php } ?>
                                 <div class="span12 pull-left" id="divAnexos" style="margin-left: 0">
                                     <?php
                                     foreach ($anexos as $a) {
@@ -298,6 +303,7 @@
 
                         <!-- ABA SISTEMAS -->
                         <div class="tab-pane" id="tab6">
+                            <?php if ($podeEditarContrato) { ?>
                             <div class="span12 well" style="padding: 1%; margin-left: 0">
                                 <div id="formSistemas" style="display:flex; align-items:flex-end; gap:8px; flex-wrap:nowrap;">
                                     <input type="hidden" name="idSistema" id="idSistema" />
@@ -322,6 +328,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <?php } ?>
                             <div class="span12" id="divSistemas" style="margin-left: 0">
                                 <table class="table table-bordered" id="tblSistemas" style="table-layout:fixed; width:100%;">
                                     <colgroup>
@@ -350,7 +357,11 @@
                                                 echo '<td>' . $s->nome . '</td>';
                                                 echo '<td>' . $s->local . '</td>';
                                                 echo '<td>R$ ' . number_format($s->subTotal, 2, ',', '.') . '</td>';
-                                                echo '<td style="text-align:center;"><a href="" idAcao="' . $s->idSistemas_contratos . '" preco="' . $s->subTotal . '" title="Excluir Sistema" class="btn-nwe4 btnExcluirSistema"><i class="bx bx-trash-alt"></i></a></td>';
+                                                echo '<td style="text-align:center;">';
+                                                if ($podeEditarContrato) {
+                                                    echo '<a href="" idAcao="' . $s->idSistemas_contratos . '" preco="' . $s->subTotal . '" title="Excluir Sistema" class="btn-nwe4 btnExcluirSistema"><i class="bx bx-trash-alt"></i></a>';
+                                                }
+                                                echo '</td>';
                                                 echo '</tr>';
                                             }
                                         }
@@ -470,7 +481,9 @@
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
         <a href="" id-imagem="" class="btn btn-inverse" id="download">Download</a>
-        <a href="" link="" class="btn btn-danger" id="excluir-anexo">Excluir Anexo</a>
+        <?php if ($podeEditarContrato) { ?>
+            <a href="" link="" class="btn btn-danger" id="excluir-anexo">Excluir Anexo</a>
+        <?php } ?>
     </div>
 </div>
 

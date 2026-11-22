@@ -25,5 +25,4 @@ Recebe o array `$data` do Controller e renderiza variáveis em HTML iterando sob
 N/A
 
 ## 7. Observações e Regras de Negócio
-- Documentação autogerada para reconstrução.
-- Certifique-se de manter os padrões do CodeIgniter 3.
+- Controller `Contas.php` e view `contas.php` utilizam as chaves granulares `vConta` (`gerenciar`, `conta`), `aConta` (`adicionar`), `eConta` (`conta` POST Entrada/Saída/Transferência) e `dConta` (`excluir`).

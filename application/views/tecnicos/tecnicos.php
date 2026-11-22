@@ -8,8 +8,10 @@
   <div class="widget-title" style="margin:-15px -10px 0">
     <h5>Técnicos</h5>
   </div>
-  <a href="<?php echo base_url() ?>index.php/tecnicos/adicionar" class="button btn btn-success" style="max-width: 160px">
-    <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar Técnicos</span></a>
+  <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aTecnico')) { ?>
+    <a href="<?php echo base_url() ?>index.php/tecnicos/adicionar" class="button btn btn-success" style="max-width: 160px">
+      <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar Técnicos</span></a>
+  <?php } ?>
 
   <div class="widget-box">
     <div class="widget-title" style="margin: -20px 0 0">
@@ -51,9 +53,11 @@
               echo '<td>NÃO</td>';
             }
             echo '<td>' . $r->dataExpiracao . '</td>';
-            echo '<td>
-                  <a href="' . base_url() . 'index.php/tecnicos/editar/' . $r->idTecnicos . '" class="btn-nwe3" title="Editar OS"><i class="bx bx-edit"></i></a>
-                  </td>';
+            echo '<td>';
+            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eTecnico')) {
+              echo '<a href="' . base_url() . 'index.php/tecnicos/editar/' . $r->idTecnicos . '" class="btn-nwe3" title="Editar Técnico"><i class="bx bx-edit"></i></a>';
+            }
+            echo '</td>';
             echo '</tr>';
           } ?>
         </tbody>

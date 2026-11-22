@@ -16,6 +16,45 @@ class Os extends MY_Controller
         $this->data['menuOs'] = 'OS';
     }
 
+    private function hasAnyPermission(array $permissions): bool
+    {
+        $roleId = $this->session->userdata('permissao');
+        foreach ($permissions as $permission) {
+            if ($this->permission->checkPermission($roleId, $permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function requireWebPermission($permissions, string $message): bool
+    {
+        if ($this->hasAnyPermission((array) $permissions)) {
+            return true;
+        }
+        $this->session->set_flashdata('error', $message);
+        redirect(base_url());
+        return false;
+    }
+
+    private function requireJsonPermission($permissions, string $message = 'Você não tem permissão para executar esta ação.'): bool
+    {
+        if ($this->hasAnyPermission((array) $permissions)) {
+            return true;
+        }
+        $this->output
+            ->set_content_type('application/json')
+            ->set_status_header(200)
+            ->set_output(json_encode([
+                'result' => false,
+                'message' => $message,
+                'mensagem' => $message,
+                'messages' => $message,
+            ]));
+        return false;
+    }
+
     public function index()
     {
         $this->gerenciar();
@@ -23,6 +62,10 @@ class Os extends MY_Controller
 
     public function gerenciar()
     {
+        if (! $this->requireWebPermission('vOs', 'Você não tem permissão para visualizar O.S.')) {
+            return;
+        }
+
         $this->load->library('pagination');
         $this->load->model('steos_model');
         $this->load->model('contas_model');
@@ -265,6 +308,10 @@ class Os extends MY_Controller
 
     public function duplicarOs()
     {
+        if (! $this->requireJsonPermission('aOs', 'Você não tem permissão para adicionar O.S.')) {
+            return;
+        }
+
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
         $this->load->model('tecnicos_os_model');
@@ -1162,6 +1209,10 @@ class Os extends MY_Controller
 
     public function adicionarEquipamentoAjax()
     {
+        if (! $this->requireJsonPermission(['aEquipamento', 'aOs', 'eOs'], 'Você não tem permissão para adicionar equipamentos.')) {
+            return;
+        }
+
         $data = [
             'equipamento'   => $this->input->post('tipoEquipamento'),
             'descricao'     => $this->input->post('descricao'),
@@ -1205,6 +1256,10 @@ class Os extends MY_Controller
 
     public function adicionarClienteAjax()
     {
+        if (! $this->requireJsonPermission(['aCliente', 'aOs', 'eOs'], 'Você não tem permissão para adicionar clientes.')) {
+            return;
+        }
+
         $this->load->model('clientes_model');
 
         $nomeCliente = $this->input->post('nomeCliente');
@@ -1267,6 +1322,10 @@ class Os extends MY_Controller
 
     public function adicionarProduto()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         $this->load->library('form_validation');
 
         if ($this->form_validation->run('adicionar_produto_os') === false) {
@@ -1322,6 +1381,10 @@ class Os extends MY_Controller
 
     public function excluirProduto()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         $id = $this->input->post('idProduto');
         $idOs = $this->input->post('idOs');
 
@@ -1353,6 +1416,10 @@ class Os extends MY_Controller
 
     public function adicionarServico()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         $this->load->library('form_validation');
 
         if ($this->form_validation->run('adicionar_servico_os') === false) {
@@ -1391,6 +1458,10 @@ class Os extends MY_Controller
 
     public function excluirServico()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         $ID = $this->input->post('idServico');
         $idOs = $this->input->post('idOs');
 
@@ -1405,6 +1476,10 @@ class Os extends MY_Controller
 
     public function anexar()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         $this->load->library('upload');
         $this->load->library('image_lib');
 
@@ -1501,6 +1576,10 @@ class Os extends MY_Controller
 
     public function excluirAnexo($id = null)
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         if ($id == null || ! is_numeric($id)) {
             echo json_encode(['result' => false, 'mensagem' => 'Erro ao tentar excluir anexo.']);
         } else {
@@ -1525,6 +1604,10 @@ class Os extends MY_Controller
 
     public function downloadanexo($id = null)
     {
+        if (! $this->requireWebPermission('vOs', 'Você não tem permissão para baixar anexos de O.S.')) {
+            return;
+        }
+
         if ($id != null && is_numeric($id)) {
             $this->db->where('idAnexos', $id);
             $file = $this->db->get('anexos', 1)->row();
@@ -1538,6 +1621,10 @@ class Os extends MY_Controller
 
     public function adicionarDesconto()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         if ($this->input->post('desconto') == '') {
             return $this->output
                 ->set_content_type('application/json')
@@ -1582,6 +1669,10 @@ class Os extends MY_Controller
 
     public function faturar()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para faturar O.S.')) {
+            return;
+        }
+
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
 
@@ -1753,6 +1844,10 @@ class Os extends MY_Controller
 
     public function adicionarAnotacao()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         $this->load->library('form_validation');
         if ($this->form_validation->run('anotacoes_os') == false) {
             echo json_encode(validation_errors());
@@ -1774,6 +1869,10 @@ class Os extends MY_Controller
 
     public function excluirAnotacao()
     {
+        if (! $this->requireJsonPermission('eOs', 'Você não tem permissão para editar O.S.')) {
+            return;
+        }
+
         $id = $this->input->post('idAnotacao');
         $idOs = $this->input->post('idOs');
 
@@ -1787,6 +1886,10 @@ class Os extends MY_Controller
 
     public function adicionarChecklist($idOs = null)
     {
+        if (! $this->requireWebPermission(['eOs', 'aOs'], 'Você não tem permissão para gerenciar checklists de O.S.')) {
+            return;
+        }
+
         if (!$idOs) {
             redirect(site_url('os'));
         }
@@ -1845,6 +1948,10 @@ class Os extends MY_Controller
 
     public function salvarChecklist()
     {
+        if (! $this->requireJsonPermission(['eOs', 'aOs'], 'Você não tem permissão para salvar checklists de O.S.')) {
+            return;
+        }
+
         $idOs = $this->input->post('idOs');
         $idContrato = $this->input->post('idContrato');
         
@@ -1906,6 +2013,10 @@ class Os extends MY_Controller
 
     public function visualizarChecklist($idOs = null)
     {
+        if (! $this->requireWebPermission('vOs', 'Você não tem permissão para visualizar checklists de O.S.')) {
+            return;
+        }
+
         if (!$idOs) {
             redirect(site_url('os'));
         }
@@ -1960,6 +2071,10 @@ class Os extends MY_Controller
     
     public function editarChecklist($idOs = null)
     {
+        if (! $this->requireWebPermission('vOs', 'Você não tem permissão para visualizar checklists de O.S.')) {
+            return;
+        }
+
         // Por simplicidade, caso queira editar o mesmo checklist (sobreescrevendo)
         // Redirecionando para visualizar por enquanto, ou podemos implementar edição real
         $this->visualizarChecklist($idOs);
@@ -1967,6 +2082,10 @@ class Os extends MY_Controller
 
     public function imprimirChecklist($idOs = null)
     {
+        if (! $this->requireWebPermission('vOs', 'Você não tem permissão para imprimir checklists de O.S.')) {
+            return;
+        }
+
         $this->data['autoPrint'] = true;
         $this->visualizarChecklist($idOs);
     }
@@ -1976,6 +2095,11 @@ class Os extends MY_Controller
      */
     public function get_cobrancas_nfse($idOs = null)
     {
+        if (! $this->hasAnyPermission(['vNfse', 'aNfse', 'eNfse', 'dNfse'])) {
+            echo json_encode(['result' => false, 'message' => 'Você não tem permissão para consultar NFS-e.', 'cobrancas' => [], 'config' => []]);
+            return;
+        }
+
         if (!$idOs) {
             echo json_encode(['cobrancas' => [], 'config' => []]);
             return;
@@ -2009,7 +2133,7 @@ class Os extends MY_Controller
      */
     public function emitir_nfse()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aNfse')) {
             echo json_encode(['result' => false, 'message' => 'Você não tem permissão para emitir NFS-e.']);
             return;
         }
@@ -2226,6 +2350,10 @@ class Os extends MY_Controller
      */
     public function consultar_nfse($idOs = null)
     {
+        if (! $this->requireJsonPermission(['vNfse', 'aNfse', 'eNfse', 'dNfse'], 'Você não tem permissão para consultar NFS-e.')) {
+            return;
+        }
+
         if (!$idOs) {
             echo json_encode(['result' => false, 'message' => 'ID de O.S. não informado.']);
             return;
@@ -2310,7 +2438,7 @@ class Os extends MY_Controller
      */
     public function cancelar_nfse($idOs = null)
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dNfse')) {
             echo json_encode(['result' => false, 'message' => 'Sem permissão para cancelar NFS-e.']);
             return;
         }

@@ -122,9 +122,22 @@
                             echo '</td>';
 
                             echo '<td>';
-                            echo '<a href="' . base_url() . 'index.php/os/editar/' . $r->idOs . '#tabNotas" class="btn-nwe2" style="margin-right: 1%" title="Ver Ordem de Serviço / Nota"><i class="bx bx-show"></i></a>';
-                            echo '<a href="javascript:void(0);" class="btn-nwe btn-consultar-nfse-list" data-id="' . $r->idOs . '" style="margin-right: 1%" title="Atualizar Status na Prefeitura"><i class="bx bx-refresh"></i></a>';
-                            if (!in_array($r->asaas_invoice_status, ['CANCELED', 'CANCELLED', 'PROCESSING_CANCELLATION'], true)) {
+                            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs') || $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+                                echo '<a href="' . base_url() . 'index.php/os/editar/' . $r->idOs . '#tabNotas" class="btn-nwe2" style="margin-right: 1%" title="Ver Ordem de Serviço / Nota"><i class="bx bx-show"></i></a>';
+                            }
+                            $permNfse = $this->session->userdata('permissao');
+                            if (
+                                $this->permission->checkPermission($permNfse, 'vNfse')
+                                || $this->permission->checkPermission($permNfse, 'aNfse')
+                                || $this->permission->checkPermission($permNfse, 'eNfse')
+                                || $this->permission->checkPermission($permNfse, 'dNfse')
+                            ) {
+                                echo '<a href="javascript:void(0);" class="btn-nwe btn-consultar-nfse-list" data-id="' . $r->idOs . '" style="margin-right: 1%" title="Atualizar Status na Prefeitura"><i class="bx bx-refresh"></i></a>';
+                            }
+                            if (
+                                $this->permission->checkPermission($permNfse, 'dNfse')
+                                && !in_array($r->asaas_invoice_status, ['CANCELED', 'CANCELLED', 'PROCESSING_CANCELLATION'], true)
+                            ) {
                                 echo '<a href="javascript:void(0);" class="btn-nwe4 btn-cancelar-nfse-list" data-id="' . $r->idOs . '" title="Cancelar NFS-e na Prefeitura"><i class="bx bx-trash"></i></a>';
                             }
                             echo '</td>';

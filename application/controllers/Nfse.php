@@ -21,7 +21,7 @@ class Nfse extends MY_Controller
 
     public function listar()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vNfse')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para visualizar as NFS-e.');
             redirect(base_url());
         }

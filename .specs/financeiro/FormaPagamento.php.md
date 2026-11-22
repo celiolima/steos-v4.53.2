@@ -7,4 +7,4 @@
 - **Rota Linux Case-Sensitive:** `formapagamento` -> `FormaPagamento` em `application/config/routes.php`.
 
 ## 2. Propósito
-CRUD de formas de pagamento (`forma_pagamento`) criadas via migration dedicada `20260808200000_create_forma_pagamento.php` / `023_create_forma_pagamento.sql`. Controlado por permissões `*Lancamento`.
+CRUD de formas de pagamento (`forma_pagamento`) criadas via migration dedicada `20260808200000_create_forma_pagamento.php` / `023_create_forma_pagamento.sql`. Controlado por permissões `*CadFinanceiro`.

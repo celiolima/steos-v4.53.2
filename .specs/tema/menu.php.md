@@ -21,5 +21,5 @@ Recebe o array `$data` do Controller e renderiza variáveis em HTML iterando sob
 N/A
 
 ## 7. Observações e Regras de Negócio
-- Documentação autogerada para reconstrução.
-- Certifique-se de manter os padrões do CodeIgniter 3.
+- Renderiza os itens do menu lateral condicionados às chaves granulares de `Permission::checkPermission()`, incluindo `vOs`, `vContrato`, `vCobranca`, `vNfse` e `vLogsAsaas`.
+- Sempre adicionar a respectiva verificação de permissão em novos itens de menu.

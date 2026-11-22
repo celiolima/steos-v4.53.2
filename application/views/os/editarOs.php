@@ -82,7 +82,13 @@ if (!empty($lancamentos)) {
                     <a href="<?php echo base_url(); ?>index.php/os/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Ordem de Serviço</span></a>
 
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eOs')) { ?>
+                    <?php
+                    $permNfseOs = $this->session->userdata('permissao');
+                    $hasNfseAccess = $this->permission->checkPermission($permNfseOs, 'vNfse')
+                        || $this->permission->checkPermission($permNfseOs, 'aNfse')
+                        || $this->permission->checkPermission($permNfseOs, 'eNfse')
+                        || $this->permission->checkPermission($permNfseOs, 'dNfse');
+                    if ($hasNfseAccess) { ?>
                         <?php $nfseSt = $result->asaas_invoice_status ?? ''; ?>
                         <?php if (empty($nfseSt) || in_array($nfseSt, ['CANCELED', 'CANCELLED'], true)) { ?>
                             <a href="javascript:void(0)" data-target="#modal-nfse" id="btn-nfse" role="button" data-toggle="modal" class="button btn btn-mini btn-info" style="max-width: 140px; margin-left: 3px;">
@@ -136,7 +142,7 @@ if (!empty($lancamentos)) {
                         <?php if ($exibir_aba_faturas) { ?>
                             <li id="tabFaturas"><a href="#tab8" data-toggle="tab">Faturas</a></li>
                         <?php } ?>
-                        <?php if ($exibir_aba_notas) { ?>
+                        <?php if ($exibir_aba_notas && $hasNfseAccess) { ?>
                             <li id="tabNotas"><a href="#tab9" data-toggle="tab">Notas</a></li>
                         <?php } ?>
                     </ul>
@@ -1077,8 +1083,10 @@ if (!empty($lancamentos)) {
                                                         <?php } else { echo '-'; } ?>
                                                     </td>
                                                     <td>
-                                                        <button type="button" class="btn btn-mini btn-warning btn-consultar-nfse-tab" data-id="<?php echo $result->idOs; ?>" title="Atualizar Status"><i class="bx bx-refresh"></i> Atualizar</button>
-                                                        <?php if (!in_array($result->asaas_invoice_status, ['CANCELED', 'CANCELLED', 'PROCESSING_CANCELLATION'], true)) { ?>
+                                                        <?php if ($hasNfseAccess) { ?>
+                                                            <button type="button" class="btn btn-mini btn-warning btn-consultar-nfse-tab" data-id="<?php echo $result->idOs; ?>" title="Atualizar Status"><i class="bx bx-refresh"></i> Atualizar</button>
+                                                        <?php } ?>
+                                                        <?php if ($this->permission->checkPermission($permNfseOs, 'dNfse') && !in_array($result->asaas_invoice_status, ['CANCELED', 'CANCELLED', 'PROCESSING_CANCELLATION'], true)) { ?>
                                                             <button type="button" class="btn btn-mini btn-danger btn-cancelar-nfse-tab" data-id="<?php echo $result->idOs; ?>" title="Cancelar NFS-e"><i class="bx bx-trash"></i> Cancelar</button>
                                                         <?php } ?>
                                                         <?php if (!empty($result->asaas_invoice_error)) { ?>
@@ -1875,8 +1883,10 @@ if (!empty($lancamentos)) {
                 <?php if (!empty($result->asaas_invoice_xml)) { ?>
                     <a href="<?php echo $result->asaas_invoice_xml; ?>" target="_blank" class="btn btn-info"><i class="bx bx-code"></i> Baixar XML</a>
                 <?php } ?>
-                <button type="button" class="btn btn-warning" id="btn-consultar-nfse" data-id="<?php echo $result->idOs; ?>"><i class="bx bx-refresh"></i> Atualizar Status</button>
-                <?php if ($result->asaas_invoice_status !== 'PROCESSING_CANCELLATION') { ?>
+                <?php if ($hasNfseAccess) { ?>
+                    <button type="button" class="btn btn-warning" id="btn-consultar-nfse" data-id="<?php echo $result->idOs; ?>"><i class="bx bx-refresh"></i> Atualizar Status</button>
+                <?php } ?>
+                <?php if ($this->permission->checkPermission($permNfseOs, 'dNfse') && $result->asaas_invoice_status !== 'PROCESSING_CANCELLATION') { ?>
                     <button type="button" class="btn btn-danger" id="btn-cancelar-nfse" data-id="<?php echo $result->idOs; ?>"><i class="bx bx-trash"></i> Cancelar na Prefeitura</button>
                 <?php } ?>
             </div>
@@ -2019,7 +2029,7 @@ if (!empty($lancamentos)) {
     </div>
     <div class="modal-footer" style="display:flex; justify-content: flex-end; gap: 8px;">
         <button class="button btn btn-warning" data-dismiss="modal" aria-hidden="true"><span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Fechar</span></button>
-        <?php if (empty($result->asaas_invoice_status) || $result->asaas_invoice_status === 'CANCELED') { ?>
+        <?php if ($this->permission->checkPermission($permNfseOs, 'aNfse') && (empty($result->asaas_invoice_status) || $result->asaas_invoice_status === 'CANCELED')) { ?>
             <button class="button btn btn-primary" id="btn-submit-nfse"><span class="button__icon"><i class='bx bx-check'></i></span><span class="button__text2">Agendar / Emitir NFS-e</span></button>
         <?php } ?>
     </div>

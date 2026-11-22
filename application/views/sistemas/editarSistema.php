@@ -103,7 +103,9 @@
                             <div class="form-actions">
                                 <div class="span12">
                                     <div class="span6 offset3" style="display:flex; justify-content: center; gap: 10px;">
-                                        <button type="submit" class="button btn btn-primary"><span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
+                                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eSistema')) { ?>
+                                            <button type="submit" class="button btn btn-primary"><span class="button__icon"><i class="bx bx-sync"></i></span><span class="button__text2">Atualizar</span></button>
+                                        <?php } ?>
                                         <a href="<?php echo base_url() ?>index.php/sistemas" class="button btn btn-mini btn-warning"><span class="button__icon"><i class="bx bx-undo"></i></span> <span class="button__text2">Voltar</span></a>
                                     </div>
                                 </div>
@@ -112,6 +114,7 @@
                     </div>
 
                     <div class="tab-pane" id="tab2" style="padding-top: 15px;">
+                        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eSistema')) { ?>
                         <div class="span12 well" style="padding: 15px; margin-left: 0; box-sizing: border-box;">
                             <form id="formChecklist" method="post" style="margin: 0;">
                                 <input type="hidden" name="sistemas_id" id="sistemas_id" value="<?php echo $result->idSistemas; ?>" />
@@ -128,6 +131,7 @@
                                 </div>
                             </form>
                         </div>
+                        <?php } ?>
                         <div class="span12" id="divChecklist" style="margin-left: 0; margin-top: 15px;">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped" style="width: 100%;">
@@ -142,10 +146,15 @@
                                         if (!$checks) {
                                             echo '<tr><td colspan="2" style="text-align: center; padding: 15px;">Nenhum check cadastrado para este sistema.</td></tr>';
                                         } else {
+                                            $podeEditarSistema = $this->permission->checkPermission($this->session->userdata('permissao'), 'eSistema');
                                             foreach ($checks as $c) {
                                                 echo '<tr>';
                                                 echo '<td style="vertical-align: middle;">' . htmlspecialchars($c->descricao) . '</td>';
-                                                echo '<td style="text-align: center; vertical-align: middle;"><a href="" idAcao="' . $c->idSistemas_checks . '" title="Excluir" class="btn-nwe4 btnExcluirCheck"><i class="bx bx-trash-alt"></i></a></td>';
+                                                echo '<td style="text-align: center; vertical-align: middle;">';
+                                                if ($podeEditarSistema) {
+                                                    echo '<a href="" idAcao="' . $c->idSistemas_checks . '" title="Excluir" class="btn-nwe4 btnExcluirCheck"><i class="bx bx-trash-alt"></i></a>';
+                                                }
+                                                echo '</td>';
                                                 echo '</tr>';
                                             }
                                         }

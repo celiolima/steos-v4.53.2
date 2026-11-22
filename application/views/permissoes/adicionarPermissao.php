@@ -483,6 +483,202 @@
                                                 </label>
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="vConta" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Visualizar Contas Bancárias</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="aConta" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Adicionar Contas Bancárias</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eConta" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Editar Contas Bancárias</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="dConta" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Excluir Contas Bancárias</span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="vCadFinanceiro" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Visualizar Cad. Financeiro</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="aCadFinanceiro" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Adicionar Cad. Financeiro</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="eCadFinanceiro" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Editar Cad. Financeiro</span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label>
+                                                    <input name="dCadFinanceiro" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Excluir Cad. Financeiro</span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group widget-box">
+                            <div class="accordion-heading">
+                                <div class="widget-title">
+                                    <a data-parent="#collapse-group" href="#collapseGContratos" data-toggle="collapse">
+                                      <span><i class='bx bx-file icon-cli'></i></span>
+                                      <h5 style="padding-left: 28px">Contratos</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="collapseGContratos">
+                                <div class="widget-content">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td><label><input name="vContrato" class="marcar" type="checkbox" value="1" /><span class="lbl"> Visualizar Contrato</span></label></td>
+                                            <td><label><input name="aContrato" class="marcar" type="checkbox" value="1" /><span class="lbl"> Adicionar Contrato</span></label></td>
+                                            <td><label><input name="eContrato" class="marcar" type="checkbox" value="1" /><span class="lbl"> Editar Contrato</span></label></td>
+                                            <td><label><input name="dContrato" class="marcar" type="checkbox" value="1" /><span class="lbl"> Excluir Contrato</span></label></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group widget-box">
+                            <div class="accordion-heading">
+                                <div class="widget-title">
+                                    <a data-parent="#collapse-group" href="#collapseGNfse" data-toggle="collapse">
+                                      <span><i class='bx bx-receipt icon-cli'></i></span>
+                                      <h5 style="padding-left: 28px">NFS-e & Serviços Fiscais</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="collapseGNfse">
+                                <div class="widget-content">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td><label><input name="vNfse" class="marcar" type="checkbox" value="1" /><span class="lbl"> Visualizar NFS-e</span></label></td>
+                                            <td><label><input name="aNfse" class="marcar" type="checkbox" value="1" /><span class="lbl"> Emitir / Cad. NFS-e</span></label></td>
+                                            <td><label><input name="eNfse" class="marcar" type="checkbox" value="1" /><span class="lbl"> Editar Serv. NFS-e</span></label></td>
+                                            <td><label><input name="dNfse" class="marcar" type="checkbox" value="1" /><span class="lbl"> Cancelar / Excluir NFS-e</span></label></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group widget-box">
+                            <div class="accordion-heading">
+                                <div class="widget-title">
+                                    <a data-parent="#collapse-group" href="#collapseGEquipamentos" data-toggle="collapse">
+                                      <span><i class='bx bx-hdd icon-cli'></i></span>
+                                      <h5 style="padding-left: 28px">Equipamentos</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="collapseGEquipamentos">
+                                <div class="widget-content">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td><label><input name="vEquipamento" class="marcar" type="checkbox" value="1" /><span class="lbl"> Visualizar Equipamento</span></label></td>
+                                            <td><label><input name="aEquipamento" class="marcar" type="checkbox" value="1" /><span class="lbl"> Adicionar Equipamento</span></label></td>
+                                            <td><label><input name="eEquipamento" class="marcar" type="checkbox" value="1" /><span class="lbl"> Editar Equipamento</span></label></td>
+                                            <td><label><input name="dEquipamento" class="marcar" type="checkbox" value="1" /><span class="lbl"> Excluir Equipamento</span></label></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group widget-box">
+                            <div class="accordion-heading">
+                                <div class="widget-title">
+                                    <a data-parent="#collapse-group" href="#collapseGSistemas" data-toggle="collapse">
+                                      <span><i class='bx bx-cube icon-cli'></i></span>
+                                      <h5 style="padding-left: 28px">Sistemas & Checklists</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="collapseGSistemas">
+                                <div class="widget-content">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td><label><input name="vSistema" class="marcar" type="checkbox" value="1" /><span class="lbl"> Visualizar Sistema</span></label></td>
+                                            <td><label><input name="aSistema" class="marcar" type="checkbox" value="1" /><span class="lbl"> Adicionar Sistema</span></label></td>
+                                            <td><label><input name="eSistema" class="marcar" type="checkbox" value="1" /><span class="lbl"> Editar Sistema</span></label></td>
+                                            <td><label><input name="dSistema" class="marcar" type="checkbox" value="1" /><span class="lbl"> Excluir Sistema</span></label></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group widget-box">
+                            <div class="accordion-heading">
+                                <div class="widget-title">
+                                    <a data-parent="#collapse-group" href="#collapseGModelos" data-toggle="collapse">
+                                      <span><i class='bx bx-book icon-cli'></i></span>
+                                      <h5 style="padding-left: 28px">Modelos de Documentos</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="collapseGModelos">
+                                <div class="widget-content">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td><label><input name="vModelo" class="marcar" type="checkbox" value="1" /><span class="lbl"> Visualizar Modelo</span></label></td>
+                                            <td><label><input name="aModelo" class="marcar" type="checkbox" value="1" /><span class="lbl"> Adicionar Modelo</span></label></td>
+                                            <td><label><input name="eModelo" class="marcar" type="checkbox" value="1" /><span class="lbl"> Editar Modelo</span></label></td>
+                                            <td><label><input name="dModelo" class="marcar" type="checkbox" value="1" /><span class="lbl"> Excluir Modelo</span></label></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-group widget-box">
+                            <div class="accordion-heading">
+                                <div class="widget-title">
+                                    <a data-parent="#collapse-group" href="#collapseGTecnicos" data-toggle="collapse">
+                                      <span><i class='bx bxs-group icon-cli'></i></span>
+                                      <h5 style="padding-left: 28px">Técnicos</h5>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="collapse accordion-body" id="collapseGTecnicos">
+                                <div class="widget-content">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td><label><input name="vTecnico" class="marcar" type="checkbox" value="1" /><span class="lbl"> Visualizar Técnico</span></label></td>
+                                            <td><label><input name="aTecnico" class="marcar" type="checkbox" value="1" /><span class="lbl"> Adicionar Técnico</span></label></td>
+                                            <td><label><input name="eTecnico" class="marcar" type="checkbox" value="1" /><span class="lbl"> Editar Técnico</span></label></td>
+                                            <td><label><input name="dTecnico" class="marcar" type="checkbox" value="1" /><span class="lbl"> Excluir Técnico</span></label></td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -540,6 +736,13 @@
                                                     <span class="lbl"> Relatório Financeiro</span>
                                                 </label>
                                             </td>
+                                            <td>
+                                                <label>
+                                                    <input name="rComissao" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Relatório Comissões</span>
+                                                </label>
+                                            </td>
+                                            <td></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -604,6 +807,21 @@
                                                     <span class="lbl"> Sistema</span>
                                                 </label>
                                             </td>
+                                            <td>
+                                                <label>
+                                                    <input name="vLogsAsaas" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Logs Webhooks Asaas</span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input name="cAsaas" class="marcar" type="checkbox" value="1" />
+                                                    <span class="lbl"> Integração / Sync Asaas</span>
+                                                </label>
+                                            </td>
+                                            <td colspan="3"></td>
                                         </tr>
                                         </tbody>
                                     </table>

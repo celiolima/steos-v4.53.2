@@ -12,8 +12,8 @@ Responsável pelo processamento e lógica pertinente à camada de View do módul
 N/A
 
 ## 4. Estrutura Interna
-- Renderiza a interface para o usuário.
-- **Contém blocos de scripts JavaScript integrados.**
+- Carrega o mapa JSON salvo na tabela `permissoes` e preenche checkboxes para todas as **92 chaves granulares**.
+- Restaura a renderização dos 4 checkboxes de `Pagamentos` (`vPagamento`, `aPagamento`, `ePagamento`, `dPagamento`) que haviam sido omitidos anteriormente, corrige erro de tag HTML `<label......>` e adiciona os novos blocos granulares (`Contas`, `CadFinanceiro`, `Comissões`, `Logs Asaas`, `Asaas Admin` e os 6 acordeões gerados em loop limpo).
 
 ## 5. Fluxo de Dados
 Recebe o array `$data` do Controller e renderiza variáveis em HTML iterando sobre elas (ex: `foreach`). Envia dados de volta através de submissão de Forms ou chamadas AJAX.

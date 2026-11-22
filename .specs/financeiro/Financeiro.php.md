@@ -103,5 +103,5 @@ Recebe a requisição HTTP (GET/POST), valida via `form_validation`, delega a le
 Mapeamento automático via CodeIgniter: `site_url('financeiro/metodo')`.
 
 ## 7. Observações e Regras de Negócio
-- Documentação autogerada para reconstrução.
-- Certifique-se de manter os padrões do CodeIgniter 3.
+- Permissões granulares aplicadas: `graficos_dinamicos_json`, `listarAnexos` e `downloadanexo` exigem `vLancamento`; `anexar` exige `aLancamento || eLancamento`; `excluirAnexo` exige `dLancamento || eLancamento`; `logsAsaas()` exige `vLogsAsaas`; e `sincronizar_assinaturas_orfans()` exige `cAsaas`.
+- Os cadastros financeiros auxiliares (`Bancos`, `CentroGastos`, `ClassificacaoFinanceira`, `FormaPagamento`, `GrupoFinanceiro`) utilizam `v/a/e/dCadFinanceiro`, enquanto `Contas` utiliza `v/a/e/dConta`.

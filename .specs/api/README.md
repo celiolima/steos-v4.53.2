@@ -23,10 +23,10 @@ A API RESTful do STEOS opera sobre `REST_Controller` (CodeIgniter 3) com autenti
 | **Clientes** | `/api/v1/clientes(/id)` | `GET`, `POST`, `PUT`, `DELETE` | `ClientesController` | `v/a/e/dCliente` |
 | **Produtos** | `/api/v1/produtos(/id)` | `GET`, `POST`, `PUT`, `DELETE` | `ProdutosController` | `v/a/e/dProduto` |
 | **Serviços** | `/api/v1/servicos(/id)` | `GET`, `POST`, `PUT`, `DELETE` | `ServicosController` | `v/a/e/dServico` |
-| **O.S.** | `/api/v1/os(/id)`, `/produtos`, `/servicos`, `/anotacoes`, `/anexos`, `/desconto`, `/checklists` | `GET`, `POST`, `PUT`, `DELETE` | `OsController` | `v/a/e/dOs` |
-| **Contratos** | `/api/v1/contratos(/id)` | `GET` | `ContratosController` | Logado |
+| **O.S.** | `/api/v1/os(/id)`, `/produtos`, `/servicos`, `/anotacoes`, `/anexos`, `/desconto`, `/checklists` | `GET`, `POST`, `PUT`, `DELETE` | `OsController` | `v/a/e/dOs` (sub-recursos exigem `eOs`) |
+| **Contratos** | `/api/v1/contratos(/id)` | `GET` | `ContratosController` | `vContrato` |
 | **Cobranças** | `/api/v1/cobrancas(/id)`, `/api/v1/cobrancas/{id}/pix` | `GET` | `CobrancasController` | `vCobranca` |
-| **NFS-e (Asaas)** | `/api/v1/nfse(/id)`, `/servicos`, `/emitir/{osId}`, `/consultar/{osId}`, `/cancelar/{osId}` | `GET`, `POST` | `NfseController` | `vLancamento`/`vOs`/`vServico`/`eOs` |
+| **NFS-e (Asaas)** | `/api/v1/nfse(/id)`, `/servicos`, `/emitir/{osId}`, `/consultar/{osId}`, `/cancelar/{osId}` | `GET`, `POST` | `NfseController` | `vNfse` / `aNfse` / `dNfse` |
 | **Financeiro** | `/api/v1/financeiro(/id)`, `/api/v1/financeiro/resumo` | `GET` | `FinanceiroController` | `vLancamento` |
 | **Frota** | `/api/v1/veiculos(/id)` | `GET` | `VeiculosController` | `vVeiculo` |
 | **Vendas** | `/api/v1/vendas(/id)` | `GET` | `VendasController` | `vVenda` |

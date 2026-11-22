@@ -6,8 +6,10 @@
         <h5>Forma de Pagamento</h5>
     </div>
     <div class="span12" style="margin-left: 0;margin-top: 1rem;">
-        <a href="<?php echo base_url(); ?>index.php/formapagamento/adicionar" class="button btn btn-success" style="max-width: 160px">
-        <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></a>
+        <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aCadFinanceiro')) { ?>
+            <a href="<?php echo base_url(); ?>index.php/formapagamento/adicionar" class="button btn btn-success" style="max-width: 160px">
+            <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar</span></a>
+        <?php } ?>
     </div>
 
 <div class="widget-box">
@@ -30,10 +32,10 @@
                     echo '<td>' . $r->id . '</td>';
                     echo '<td>' . $r->nome . '</td>';
                     echo '<td>';
-                    if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
+                    if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCadFinanceiro')) {
                         echo '<a href="' . base_url() . 'index.php/formapagamento/editar/' . $r->id . '" style="margin-right: 1%" class="btn-nwe3" title="Editar"><i class="bx bx-edit"></i></a>';
                     }
-                    if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
+                    if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dCadFinanceiro')) {
                         echo '<a href="#modal-excluir" role="button" data-toggle="modal" forma="' . $r->id . '" class="btn-nwe4" title="Excluir"><i class="bx bx-trash-alt"></i></a>';
                     }
                     echo '</td>';

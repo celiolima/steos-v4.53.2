@@ -21,7 +21,7 @@ class Sistemas extends MY_Controller
 
     public function gerenciar()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vSistema')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para visualizar sistemas.');
             redirect(base_url());
         }
@@ -45,7 +45,7 @@ class Sistemas extends MY_Controller
 
     public function adicionar()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'aSistema')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para adicionar sistemas.');
             redirect(base_url());
         }
@@ -82,14 +82,14 @@ class Sistemas extends MY_Controller
 
     public function editar()
     {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eSistema')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para editar sistemas.');
+            redirect(base_url());
+        }
+
         if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3)) || ! $this->sistemas_model->getById($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Sistema não encontrado ou parâmetro inválido.');
             redirect('sistemas/gerenciar');
-        }
-
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para editar sistemas.');
-            redirect(base_url());
         }
 
         $this->load->library('form_validation');
@@ -128,7 +128,7 @@ class Sistemas extends MY_Controller
 
     public function excluir()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'dSistema')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para excluir sistemas.');
             redirect(base_url());
         }
@@ -151,7 +151,7 @@ class Sistemas extends MY_Controller
 
     public function adicionarCheck()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eSistema')) {
             echo json_encode(['result' => false, 'messages' => 'Acesso negado.']);
             return;
         }
@@ -178,7 +178,7 @@ class Sistemas extends MY_Controller
 
     public function excluirCheck()
     {
-        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'eSistema')) {
             echo json_encode(['result' => false, 'messages' => 'Acesso negado.']);
             return;
         }

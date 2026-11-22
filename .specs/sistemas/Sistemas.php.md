@@ -10,3 +10,6 @@ Módulo destinado ao cadastro e manutenção do catálogo de Sistemas e Equipame
 ## Tabelas de Banco
 - `sistemas`
 - `sistemas_checks`
+
+## Permissões ACL Granulares
+- Controller `Sistemas.php` e views (`sistemas.php`, `editarSistema.php`) utilizam chaves próprias: `vSistema` (`gerenciar`), `aSistema` (`adicionar`), `eSistema` (`editar`, `adicionarCheck`, `excluirCheck`), `dSistema` (`excluir`).

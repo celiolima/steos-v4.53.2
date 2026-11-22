@@ -13,4 +13,9 @@
 - **Emissão de NFS-e Asaas (`get_cobrancas_nfse`, `emitir_nfse`, `consultar_nfse`, `cancelar_nfse`):**
   - Detecta `useNationalPortal` em `Asaas::obterFiscalInfo()`: quando verdadeiro, envia `municipalServiceId = null`, `municipalServiceCode = null` e `municipalServiceName` exato.
   - Sanitiza parâmetros IBS/CBS com `asaas_sanitize_fiscal_codes()` separando `federalServiceTaxCode` (`140101`/`010101`) de `operationIndicatorCode` (`""` ou um dos 33 códigos oficiais, como `010106` para `99.03`).
-  - `cancelar_nfse()` envia `{}` via `Asaas::cancelarNfse()` tratando retorno síncrono (`CANCELED`) e assíncrono (`PROCESSING_CANCELLATION` / `CANCELLATION_DENIED`), além de fallback via `consultarNfse()`.
+  ## 3. Permissões ACL Granulares (`requireWebPermission` / `requireJsonPermission`)
+- `gerenciar`, `downloadanexo`, `visualizarChecklist`, `editarChecklist`, `imprimirChecklist`: `vOs`
+- `duplicarOs`: `aOs` | `adicionarChecklist`, `salvarChecklist`: `eOs || aOs`
+- `adicionarEquipamentoAjax`: `aEquipamento || aOs || eOs` | `adicionarClienteAjax`: `aCliente || aOs || eOs`
+- Sub-recursos editáveis (`adicionarProduto`, `excluirProduto`, `adicionarServico`, `excluirServico`, `anexar`, `excluirAnexo`, `adicionarDesconto`, `faturar`, `adicionarAnotacao`, `excluirAnotacao`): `eOs`
+- Operações fiscais na O.S.: `get_cobrancas_nfse` e `consultar_nfse` (`vNfse || aNfse || eNfse || dNfse`), `emitir_nfse` (`aNfse`), `cancelar_nfse` (`dNfse`).

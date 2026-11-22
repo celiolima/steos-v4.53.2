@@ -7,4 +7,4 @@
 - **Rota Linux Case-Sensitive:** `grupofinanceiro` -> `GrupoFinanceiro` em `application/config/routes.php`.
 
 ## 2. Propósito
-CRUD dos grupos financeiros (`grupo_financeiro`) utilizados nos agrupamentos de lançamentos e gráficos Chart.js do Financeiro. Controlado pelas permissões `*Lancamento`.
+CRUD dos grupos financeiros (`grupo_financeiro`) utilizados nos agrupamentos de lançamentos e gráficos Chart.js do Financeiro. Controlado pelas permissões `*CadFinanceiro`.

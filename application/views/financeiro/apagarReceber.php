@@ -70,18 +70,23 @@ exit; */
                 <div class="buttons">
                     <!-- <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
                         <span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text">Faturar</span></a> -->
-                    <a target="_blank" title="adicionar Contas" class="button btn btn-mini btn-inverse" href="<?php echo site_url('contas') ?>">
-                        <span class="button__icon"><i class="bx bxs-dollar-circle"></i></span> <span class="button__text">Contas</span></a>
-                    <a target="_blank" title="adicionar Bancos" class="button btn btn-mini btn-inverse" href="<?php echo site_url('bancos') ?>">
-                        <span class="button__icon"><i class="bx bxs-landmark"></i></span> <span class="button__text">Bancos</span></a>
-                    <a target="_blank" title="adicionar Class.Financ" class="button btn btn-mini btn-inverse" href="<?php echo site_url('classificacaofinanceira') ?>">
-                        <span class="button__icon"><i class="bx bx-barcode-reader"></i></span> <span class="button__text">Class. Financeira</span></a>
-                    <a target="_blank" title="adicionar Grupo Financeiro" class="button btn btn-mini btn-inverse" href="<?php echo site_url('grupofinanceiro') ?>">
-                        <span class="button__icon"><i class="bx bx-wallet"></i></span> <span class="button__text">Grupo Financeiro</span></a>
-                    <a target="_blank" title="adicionar Centro de Gastos" class="button btn btn-mini btn-inverse" href="<?php echo site_url('centrogastos') ?>">
-                        <span class="button__icon"><i class="bx bx-money"></i></span> <span class="button__text">Centro de Gastos</span></a>
-                    <a target="_blank" title="adicionar Forma de Pagamento" class="button btn btn-mini btn-inverse" href="<?php echo site_url('formapagamento') ?>">
-                        <span class="button__icon"><i class="bx bx-credit-card"></i></span> <span class="button__text">Forma de Pgto.</span></a>
+                    <?php $permFin = $this->session->userdata('permissao'); ?>
+                    <?php if ($this->permission->checkPermission($permFin, 'vConta')) { ?>
+                        <a target="_blank" title="adicionar Contas" class="button btn btn-mini btn-inverse" href="<?php echo site_url('contas') ?>">
+                            <span class="button__icon"><i class="bx bxs-dollar-circle"></i></span> <span class="button__text">Contas</span></a>
+                    <?php } ?>
+                    <?php if ($this->permission->checkPermission($permFin, 'vCadFinanceiro')) { ?>
+                        <a target="_blank" title="adicionar Bancos" class="button btn btn-mini btn-inverse" href="<?php echo site_url('bancos') ?>">
+                            <span class="button__icon"><i class="bx bxs-landmark"></i></span> <span class="button__text">Bancos</span></a>
+                        <a target="_blank" title="adicionar Class.Financ" class="button btn btn-mini btn-inverse" href="<?php echo site_url('classificacaofinanceira') ?>">
+                            <span class="button__icon"><i class="bx bx-barcode-reader"></i></span> <span class="button__text">Class. Financeira</span></a>
+                        <a target="_blank" title="adicionar Grupo Financeiro" class="button btn btn-mini btn-inverse" href="<?php echo site_url('grupofinanceiro') ?>">
+                            <span class="button__icon"><i class="bx bx-wallet"></i></span> <span class="button__text">Grupo Financeiro</span></a>
+                        <a target="_blank" title="adicionar Centro de Gastos" class="button btn btn-mini btn-inverse" href="<?php echo site_url('centrogastos') ?>">
+                            <span class="button__icon"><i class="bx bx-money"></i></span> <span class="button__text">Centro de Gastos</span></a>
+                        <a target="_blank" title="adicionar Forma de Pagamento" class="button btn btn-mini btn-inverse" href="<?php echo site_url('formapagamento') ?>">
+                            <span class="button__icon"><i class="bx bx-credit-card"></i></span> <span class="button__text">Forma de Pgto.</span></a>
+                    <?php } ?>
                     <!--   <a href="<?php //echo base_url(); 
                                     ?>index.php/os/adicionar" class="button btn btn-mini btn-success" style="max-width: 160px">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Ordem de Serviço</span></a> -->
@@ -740,10 +745,10 @@ exit; */
 
                                                                         echo '<td>';
 
-                                                                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
+                                                                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVeiculo')) {
                                                                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/veiculos/veiculo/' . $r->idVeiculos . '" class="btn-nwe3" title="Veiculo"><i class="bx bxs-car" style="color:#2945bb" ></i></a>';
                                                                         }
-                                                                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
+                                                                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eVeiculo')) {
                                                                             echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/veiculos/gasolina/' . $r->idVeiculos . '" class="btn-nwe3" title="lançar gasolina"><i class="bx bxs-gas-pump" style="color:#4a9e58"  ></i></a>';
                                                                         }
                                                                         if ((int)$r->saldoAtualVeic < 20) {

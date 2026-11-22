@@ -5,22 +5,12 @@
 // MIGRAÇÃO: Port direto do steos — Fase 3
 // Controller: Equipamentos.php
 // Responsabilidade: Cadastro de equipamentos de clientes
-// ⚠️ SEGURANÇA: Este controller não verifica permissões (checkPermission).
-// Qualquer usuário autenticado pode acessar. Adicionar verificação de permissão
-// conforme política de acesso definida pelo negócio.
-// Recomendação: $this->permission->checkPermission($permissao, 'chave_de_permissao');
-// Registrado em CONFLICTS.md — CONFLITO #6
 
 class Equipamentos extends MY_Controller
 {
     public function __construct()
     {
         parent::__construct();
-
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão de acesso a este módulo.');
-            redirect(base_url());
-        }
 
         $this->load->helper('form');
         $this->load->model('equipamentos_model');
@@ -35,6 +25,11 @@ class Equipamentos extends MY_Controller
 
     public function gerenciar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vEquipamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar equipamentos.');
+            redirect(base_url());
+        }
+
         $pesquisa = $this->input->get('pesquisa');
 
         $this->load->library('pagination');
@@ -55,6 +50,11 @@ class Equipamentos extends MY_Controller
 
     public function adicionar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aEquipamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para adicionar equipamentos.');
+            redirect(base_url());
+        }
+
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
 
@@ -88,6 +88,11 @@ class Equipamentos extends MY_Controller
 
     public function editar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eEquipamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para editar equipamentos.');
+            redirect(base_url());
+        }
+
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
             redirect('steos');
@@ -123,5 +128,28 @@ class Equipamentos extends MY_Controller
 
         $this->data['view'] = 'equipamentos/editarEquipamentos';
         return $this->layout();
+    }
+
+    public function excluir()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dEquipamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para excluir equipamentos.');
+            redirect(base_url());
+        }
+
+        $id = $this->input->post('id');
+        if ($id == null) {
+            $this->session->set_flashdata('error', 'Erro ao tentar excluir equipamento.');
+            redirect(site_url('equipamentos/gerenciar/'));
+        }
+
+        if ($this->equipamentos_model->delete('equipamentos', 'idEquipamentos', $id) == true) {
+            log_info('Removeu um equipamento. ID: ' . $id);
+            $this->session->set_flashdata('success', 'Equipamento excluído com sucesso!');
+        } else {
+            $this->session->set_flashdata('error', 'Erro ao tentar excluir equipamento.');
+        }
+
+        redirect(site_url('equipamentos/gerenciar/'));
     }
 }

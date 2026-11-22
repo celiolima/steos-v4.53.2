@@ -196,6 +196,11 @@ class Relatorios extends MY_Controller
 
     public function produtosEtiquetas()
     {
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'rProduto')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para gerar etiquetas de produtos.');
+            redirect(base_url());
+        }
+
         $de = $this->input->get('de_id');
         $ate = $this->input->get('ate_id');
         try {
@@ -1110,10 +1115,10 @@ class Relatorios extends MY_Controller
 
         public function comissaoOs()
     {
-        /* if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de serviços.');
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rComissao')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de comissões.');
             redirect(base_url());
-        } */
+        }
 
 
         $this->load->model('os_model');
@@ -1275,10 +1280,10 @@ class Relatorios extends MY_Controller
     }
     public function comissaoServicosImprimir()
     {
-        /*  if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de serviços.');
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rComissao')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de comissões.');
             redirect(base_url());
-        } */
+        }
 
         $this->load->model('os_model');
         $this->load->model('tecnicos_model');
@@ -1435,10 +1440,10 @@ class Relatorios extends MY_Controller
     }
     public function comissaoVendas()
     {
-        /* if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de serviços.');
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rComissao')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de comissões.');
             redirect(base_url());
-        } */
+        }
 
         $this->load->model('os_model');
         $this->load->model('tecnicos_model');
@@ -1601,10 +1606,10 @@ class Relatorios extends MY_Controller
     }
     public function comissaoVendasImprimir()
     {
-        /*  if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rServico')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de serviços.');
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rComissao')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de comissões.');
             redirect(base_url());
-        } */
+        }
 
         /* echo "<pre> comissaoServicosImprimir :<br>";
         print_r($this->input->post());

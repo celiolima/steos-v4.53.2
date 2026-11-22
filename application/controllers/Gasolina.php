@@ -12,8 +12,8 @@ class Gasolina extends MY_Controller
     {
         parent::__construct();
 
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cUsuario')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para configurar os usuários.');
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vVeiculo')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar abastecimentos.');
             redirect(base_url());
         }
 
@@ -60,6 +60,12 @@ class Gasolina extends MY_Controller
         }
 
         if ($this->input->post()) {
+            $perm = $this->session->userdata('permissao');
+            if (!$this->permission->checkPermission($perm, 'aVeiculo') && !$this->permission->checkPermission($perm, 'eVeiculo')) {
+                $this->session->set_flashdata('error', 'Você não tem permissão para registrar abastecimentos.');
+                redirect(base_url());
+            }
+
             $veiculos_id    = $this->input->post('idveiculos');
             $nomeVelculo    = $this->input->post('nomeVeiculo');
             $saldoAtualVeic = $this->input->post('saldoAtualVeic');

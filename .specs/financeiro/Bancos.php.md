@@ -9,8 +9,8 @@
 CRUD auxiliar de instituições bancárias (`bancos`) utilizadas no módulo Financeiro.
 
 ## 3. Permissões e Métodos
-- `__construct()`: exige permissão `vLancamento` e carrega `Bancos_model` (`model`).
+- `__construct()`: exige permissão `vCadFinanceiro` e carrega `Bancos_model` (`model`).
 - `index()` / `gerenciar()`: listagem paginada (10 por página) na view `bancos/bancos`.
-- `adicionar()`: exige `aLancamento`, valida campo `nome` obrigatório.
-- `editar()`: exige `eLancamento`, valida `nome` e atualiza pela PK `id`.
-- `excluir()`: exige `dLancamento`, remove registro via POST `id`.
+- `adicionar()`: exige `aCadFinanceiro`, valida campo `nome` obrigatório.
+- `editar()`: exige `eCadFinanceiro`, valida `nome` e atualiza pela PK `id`.
+- `excluir()`: exige `dCadFinanceiro`, remove registro via POST `id`.

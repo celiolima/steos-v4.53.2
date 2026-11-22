@@ -5,7 +5,7 @@ class FormaPagamento extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vCadFinanceiro')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para acessar esta área.');
             redirect(base_url());
         }
@@ -51,7 +51,7 @@ class FormaPagamento extends MY_Controller {
     }
 
     public function adicionar() {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aLancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aCadFinanceiro')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para adicionar.');
             redirect(base_url());
         }
@@ -80,7 +80,7 @@ class FormaPagamento extends MY_Controller {
     }
 
     public function editar() {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eCadFinanceiro')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para editar.');
             redirect(base_url());
         }
@@ -111,7 +111,7 @@ class FormaPagamento extends MY_Controller {
     }
 
     public function excluir() {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dCadFinanceiro')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para excluir.');
             redirect(base_url());
         }

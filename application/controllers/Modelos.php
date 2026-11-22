@@ -24,6 +24,11 @@ class Modelos extends MY_Controller
 
     public function gerenciar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vModelo')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar modelos.');
+            redirect(base_url());
+        }
+
         $this->load->library('pagination');
 
         $this->data['configuration']['base_url'] = site_url('modelos/gerenciar/');
@@ -39,6 +44,11 @@ class Modelos extends MY_Controller
 
     public function adicionar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aModelo')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para adicionar modelos.');
+            redirect(base_url());
+        }
+
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
 
@@ -67,6 +77,11 @@ class Modelos extends MY_Controller
 
     public function editar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eModelo')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para editar modelos.');
+            redirect(base_url());
+        }
+
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
             redirect('steos');
@@ -99,6 +114,11 @@ class Modelos extends MY_Controller
 
     public function visualizar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vModelo')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar modelos.');
+            redirect(base_url());
+        }
+
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
             redirect('steos');
@@ -115,6 +135,11 @@ class Modelos extends MY_Controller
 
     public function imprimir()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vModelo')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para imprimir modelos.');
+            redirect(base_url());
+        }
+
         if (!$this->uri->segment(3) || !is_numeric($this->uri->segment(3))) {
             $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
             redirect('steos');
@@ -150,25 +175,24 @@ class Modelos extends MY_Controller
 
     public function excluir()
     {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dGarantia')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para excluir termo de garantia');
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dModelo')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para excluir modelos.');
             redirect(base_url());
         }
 
-        $id = $this->input->post('idGarantias');
+        $id = $this->input->post('idModelos') ?: $this->input->post('id');
         if ($id == null) {
-            $this->session->set_flashdata('error', 'Erro ao tentar excluir termo de garantia.');
-            redirect(base_url() . 'index.php/garantias/gerenciar/');
+            $this->session->set_flashdata('error', 'Erro ao tentar excluir modelo.');
+            redirect(site_url('modelos/gerenciar/'));
         }
 
-        if ($this->garantias_model->delete('garantias', 'idGarantias', $id) == true) {
-            $this->garantias_model->delete('garantias', 'idGarantias', $id);
-            $this->session->set_flashdata('success', 'Termo de garantia excluída com sucesso!');
-            log_info('Removeu uma garantia. ID: ' . $id);
+        if ($this->modelos_model->delete('modelos', 'idModelos', $id) == true) {
+            $this->session->set_flashdata('success', 'Modelo excluído com sucesso!');
+            log_info('Removeu um modelo. ID: ' . $id);
         } else {
-            $this->session->set_flashdata('error', 'Você não pode excluir esse termo de garantia.<br />Verifique se tem alguma OS vinculada a esse termo e remova antes de tentar excluir novamente.');
+            $this->session->set_flashdata('error', 'Erro ao tentar excluir modelo.');
         }
 
-        redirect(site_url('garantias/gerenciar/'));
+        redirect(site_url('modelos/gerenciar/'));
     }
 }

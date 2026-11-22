@@ -54,79 +54,7 @@ class Permissoes extends MY_Controller
             $cadastro = date('Y-m-d');
             $situacao = 1;
 
-            $permissoes = [
-
-                'aCliente' => $this->input->post('aCliente'),
-                'eCliente' => $this->input->post('eCliente'),
-                'dCliente' => $this->input->post('dCliente'),
-                'vCliente' => $this->input->post('vCliente'),
-
-                'aProduto' => $this->input->post('aProduto'),
-                'eProduto' => $this->input->post('eProduto'),
-                'dProduto' => $this->input->post('dProduto'),
-                'vProduto' => $this->input->post('vProduto'),
-
-                'aServico' => $this->input->post('aServico'),
-                'eServico' => $this->input->post('eServico'),
-                'dServico' => $this->input->post('dServico'),
-                'vServico' => $this->input->post('vServico'),
-
-                'aOs' => $this->input->post('aOs'),
-                'eOs' => $this->input->post('eOs'),
-                'dOs' => $this->input->post('dOs'),
-                'vOs' => $this->input->post('vOs'),
-
-                'aVenda' => $this->input->post('aVenda'),
-                'eVenda' => $this->input->post('eVenda'),
-                'dVenda' => $this->input->post('dVenda'),
-                'vVenda' => $this->input->post('vVenda'),
-
-                'aGarantia' => $this->input->post('aGarantia'),
-                'eGarantia' => $this->input->post('eGarantia'),
-                'dGarantia' => $this->input->post('dGarantia'),
-                'vGarantia' => $this->input->post('vGarantia'),
-
-                'aArquivo' => $this->input->post('aArquivo'),
-                'eArquivo' => $this->input->post('eArquivo'),
-                'dArquivo' => $this->input->post('dArquivo'),
-                'vArquivo' => $this->input->post('vArquivo'),
-
-                'aPagamento' => $this->input->post('aPagamento'),
-                'ePagamento' => $this->input->post('ePagamento'),
-                'dPagamento' => $this->input->post('dPagamento'),
-                'vPagamento' => $this->input->post('vPagamento'),
-
-                'aLancamento' => $this->input->post('aLancamento'),
-                'eLancamento' => $this->input->post('eLancamento'),
-                'dLancamento' => $this->input->post('dLancamento'),
-                'vLancamento' => $this->input->post('vLancamento'),
-
-                'cUsuario' => $this->input->post('cUsuario'),
-                'cEmitente' => $this->input->post('cEmitente'),
-                'cPermissao' => $this->input->post('cPermissao'),
-                'cBackup' => $this->input->post('cBackup'),
-                'cAuditoria' => $this->input->post('cAuditoria'),
-                'cEmail' => $this->input->post('cEmail'),
-                'cSistema' => $this->input->post('cSistema'),
-
-                'aVeiculo' => $this->input->post('aVeiculo'),
-                'eVeiculo' => $this->input->post('eVeiculo'),
-                'dVeiculo' => $this->input->post('dVeiculo'),
-                'vVeiculo' => $this->input->post('vVeiculo'),
-
-                'rCliente' => $this->input->post('rCliente'),
-                'rProduto' => $this->input->post('rProduto'),
-                'rServico' => $this->input->post('rServico'),
-                'rOs' => $this->input->post('rOs'),
-                'rVenda' => $this->input->post('rVenda'),
-                'rFinanceiro' => $this->input->post('rFinanceiro'),
-
-                'aCobranca' => $this->input->post('aCobranca'),
-                'eCobranca' => $this->input->post('eCobranca'),
-                'dCobranca' => $this->input->post('dCobranca'),
-                'vCobranca' => $this->input->post('vCobranca'),
-            ];
-            $permissoes = json_encode($permissoes);
+            $permissoes = json_encode($this->coletarPermissoesPost());
 
             $data = [
                 'nome' => $nomePermissao,
@@ -160,80 +88,7 @@ class Permissoes extends MY_Controller
         } else {
             $nomePermissao = $this->input->post('nome');
             $situacao = $this->input->post('situacao');
-            $permissoes = [
-
-                'aCliente' => $this->input->post('aCliente'),
-                'eCliente' => $this->input->post('eCliente'),
-                'dCliente' => $this->input->post('dCliente'),
-                'vCliente' => $this->input->post('vCliente'),
-
-                'aProduto' => $this->input->post('aProduto'),
-                'eProduto' => $this->input->post('eProduto'),
-                'dProduto' => $this->input->post('dProduto'),
-                'vProduto' => $this->input->post('vProduto'),
-
-                'aServico' => $this->input->post('aServico'),
-                'eServico' => $this->input->post('eServico'),
-                'dServico' => $this->input->post('dServico'),
-                'vServico' => $this->input->post('vServico'),
-
-                'aOs' => $this->input->post('aOs'),
-                'eOs' => $this->input->post('eOs'),
-                'dOs' => $this->input->post('dOs'),
-                'vOs' => $this->input->post('vOs'),
-
-                'aVenda' => $this->input->post('aVenda'),
-                'eVenda' => $this->input->post('eVenda'),
-                'dVenda' => $this->input->post('dVenda'),
-                'vVenda' => $this->input->post('vVenda'),
-
-                'aGarantia' => $this->input->post('aGarantia'),
-                'eGarantia' => $this->input->post('eGarantia'),
-                'dGarantia' => $this->input->post('dGarantia'),
-                'vGarantia' => $this->input->post('vGarantia'),
-
-                'aArquivo' => $this->input->post('aArquivo'),
-                'eArquivo' => $this->input->post('eArquivo'),
-                'dArquivo' => $this->input->post('dArquivo'),
-                'vArquivo' => $this->input->post('vArquivo'),
-
-                'aPagamento' => $this->input->post('aPagamento'),
-                'ePagamento' => $this->input->post('ePagamento'),
-                'dPagamento' => $this->input->post('dPagamento'),
-                'vPagamento' => $this->input->post('vPagamento'),
-
-                'aLancamento' => $this->input->post('aLancamento'),
-                'eLancamento' => $this->input->post('eLancamento'),
-                'dLancamento' => $this->input->post('dLancamento'),
-                'vLancamento' => $this->input->post('vLancamento'),
-
-                'cUsuario' => $this->input->post('cUsuario'),
-                'cEmitente' => $this->input->post('cEmitente'),
-                'cPermissao' => $this->input->post('cPermissao'),
-                'cBackup' => $this->input->post('cBackup'),
-                'cAuditoria' => $this->input->post('cAuditoria'),
-                'cEmail' => $this->input->post('cEmail'),
-                'cSistema' => $this->input->post('cSistema'),
-
-                'aVeiculo' => $this->input->post('aVeiculo'),
-                'eVeiculo' => $this->input->post('eVeiculo'),
-                'dVeiculo' => $this->input->post('dVeiculo'),
-                'vVeiculo' => $this->input->post('vVeiculo'),
-
-                'rCliente' => $this->input->post('rCliente'),
-                'rProduto' => $this->input->post('rProduto'),
-                'rServico' => $this->input->post('rServico'),
-                'rOs' => $this->input->post('rOs'),
-                'rVenda' => $this->input->post('rVenda'),
-                'rFinanceiro' => $this->input->post('rFinanceiro'),
-
-                'aCobranca' => $this->input->post('aCobranca'),
-                'eCobranca' => $this->input->post('eCobranca'),
-                'dCobranca' => $this->input->post('dCobranca'),
-                'vCobranca' => $this->input->post('vCobranca'),
-
-            ];
-            $permissoes = json_encode($permissoes);
+            $permissoes = json_encode($this->coletarPermissoesPost());
 
             $data = [
                 'nome' => $nomePermissao,
@@ -275,6 +130,41 @@ class Permissoes extends MY_Controller
         }
 
         redirect(site_url('permissoes/gerenciar/'));
+    }
+
+    private function coletarPermissoesPost(): array
+    {
+        $keys = [
+            'aCliente', 'eCliente', 'dCliente', 'vCliente',
+            'aProduto', 'eProduto', 'dProduto', 'vProduto',
+            'aServico', 'eServico', 'dServico', 'vServico',
+            'aOs', 'eOs', 'dOs', 'vOs',
+            'aVenda', 'eVenda', 'dVenda', 'vVenda',
+            'aArquivo', 'eArquivo', 'dArquivo', 'vArquivo',
+            'aPagamento', 'ePagamento', 'dPagamento', 'vPagamento',
+            'aLancamento', 'eLancamento', 'dLancamento', 'vLancamento',
+            'cUsuario', 'cEmitente', 'cPermissao', 'cBackup', 'cAuditoria', 'cEmail', 'cSistema',
+            'rCliente', 'rProduto', 'rServico', 'rOs', 'rVenda', 'rFinanceiro', 'rComissao',
+            'vGarantia', 'aGarantia', 'eGarantia', 'dGarantia',
+            'aCobranca', 'eCobranca', 'dCobranca', 'vCobranca',
+            'aVeiculo', 'eVeiculo', 'dVeiculo', 'vVeiculo',
+            'vContrato', 'aContrato', 'eContrato', 'dContrato',
+            'vNfse', 'aNfse', 'eNfse', 'dNfse',
+            'vEquipamento', 'aEquipamento', 'eEquipamento', 'dEquipamento',
+            'vSistema', 'aSistema', 'eSistema', 'dSistema',
+            'vModelo', 'aModelo', 'eModelo', 'dModelo',
+            'vTecnico', 'aTecnico', 'eTecnico', 'dTecnico',
+            'vConta', 'aConta', 'eConta', 'dConta',
+            'vCadFinanceiro', 'aCadFinanceiro', 'eCadFinanceiro', 'dCadFinanceiro',
+            'vLogsAsaas', 'cAsaas',
+        ];
+
+        $permissoes = [];
+        foreach ($keys as $key) {
+            $permissoes[$key] = $this->input->post($key);
+        }
+
+        return $permissoes;
     }
 }
 

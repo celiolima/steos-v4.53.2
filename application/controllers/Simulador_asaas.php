@@ -3,6 +3,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Simulador_asaas extends MY_Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'cAsaas')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para acessar o simulador Asaas.');
+            redirect(base_url());
+        }
+    }
+
     public function index()
     {
         $tipoEvento = $this->input->get('evento');

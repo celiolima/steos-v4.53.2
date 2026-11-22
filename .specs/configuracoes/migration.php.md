@@ -10,7 +10,7 @@
 - `$config['migration_type'] = 'timestamp';`
 - `$config['migration_table'] = 'migrations';`
 - `$config['migration_auto_latest'] = false;` (executado explicitamente no boot Docker ou CLI via `php index.php tools migrate`)
-- `$config['migration_version'] = 20261121173000;`
+- `$config['migration_version'] = 20261122153000;` (`20261122153000_add_granular_permissions.php`)
 - `$config['migration_path'] = APPPATH . 'database/migrations/';`
 
 ## 3. Fluxo Recomendado

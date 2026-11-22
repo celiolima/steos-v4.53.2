@@ -17,8 +17,7 @@ class NfseController extends REST_Controller
 
     private function canViewNfse($level)
     {
-        return $this->permission->checkPermission($level, 'vLancamento')
-            || $this->permission->checkPermission($level, 'vOs');
+        return $this->permission->checkPermission($level, 'vNfse');
     }
 
     public function index_get($idOs = '')
@@ -111,7 +110,7 @@ class NfseController extends REST_Controller
     public function servicos_get()
     {
         $this->logged_user();
-        if (! $this->permission->checkPermission($this->logged_user()->level, 'vServico')) {
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'vNfse')) {
             $this->response([
                 'status' => false,
                 'message' => 'Você não está autorizado a Visualizar Serviços NFS-e.',
@@ -133,7 +132,7 @@ class NfseController extends REST_Controller
     public function emitir_post($idOs = null)
     {
         $this->logged_user();
-        if (! $this->permission->checkPermission($this->logged_user()->level, 'eOs')) {
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'aNfse')) {
             $this->response([
                 'status' => false,
                 'message' => 'Você não está autorizado a Emitir NFS-e.',
@@ -363,7 +362,7 @@ class NfseController extends REST_Controller
     public function cancelar_post($idOs = null)
     {
         $this->logged_user();
-        if (! $this->permission->checkPermission($this->logged_user()->level, 'eOs')) {
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'dNfse')) {
             $this->response([
                 'status' => false,
                 'message' => 'Você não está autorizado a Cancelar NFS-e.',

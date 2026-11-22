@@ -12,11 +12,6 @@ class Contas extends MY_Controller
     {
         parent::__construct();
 
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aOs')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para adicionar O.S.');
-            redirect(base_url());
-        }
-
         $this->load->helper('form');
         $this->load->model('contas_model');
         $this->load->model('lancamentos_contas_model');
@@ -32,6 +27,10 @@ class Contas extends MY_Controller
     // Coleta dados para enviar para views contas tab1
     public function gerenciar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vConta')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar contas.');
+            redirect(base_url());
+        }
         $this->load->library('pagination');
         $this->data['configuration']['base_url'] = base_url() . 'index.php/contas/gerenciar/';
         $this->data['configuration']['total_rows'] = $this->contas_model->count('contas');
@@ -47,6 +46,11 @@ class Contas extends MY_Controller
 
     public function conta()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vConta')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar contas.');
+            redirect(base_url());
+        }
+
         $this->load->library('form_validation');
         $this->data['custom_error'] = '';
 
@@ -62,6 +66,10 @@ class Contas extends MY_Controller
         }
 
         if (!empty($this->input->post())) {
+            if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eConta')) {
+                $this->session->set_flashdata('error', 'Você não tem permissão para movimentar/editar contas.');
+                redirect(base_url());
+            }
             $idContas     = $this->input->post('idContas');
             $conta        = $this->input->post('conta');
             $saldo        = $this->input->post('saldo');
@@ -163,6 +171,15 @@ class Contas extends MY_Controller
 
     public function adicionar()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aConta')) {
+            if (!empty($this->input->post())) {
+                echo json_encode(['result' => false, 'message' => 'Você não tem permissão para adicionar contas.']);
+                die();
+            }
+            $this->session->set_flashdata('error', 'Você não tem permissão para adicionar contas.');
+            redirect(base_url());
+        }
+
         if (!empty($this->input->post())) {
             $data = [
                 'conta'             => $this->input->post('conta'),
@@ -192,6 +209,11 @@ class Contas extends MY_Controller
 
     public function excluir()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dConta')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para excluir contas.');
+            redirect(base_url());
+        }
+
         if (!empty($this->input->post())) {
             $id = $this->input->post('id');
             if ($id == null) {

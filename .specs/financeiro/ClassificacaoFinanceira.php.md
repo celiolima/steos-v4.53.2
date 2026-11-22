@@ -8,5 +8,5 @@
 
 ## 2. Propósito e Regras
 - Gerencia categorias de classificação financeira (`classificacao_financeira`) associadas a um grupo financeiro (`nomeClassFin`, `grupoFinaceiro`).
-- Valida `vLancamento`, `aLancamento`, `eLancamento` e `dLancamento`.
+- Valida `vCadFinanceiro`, `aCadFinanceiro`, `eCadFinanceiro` e `dCadFinanceiro`.
 - Atualiza e exclui usando PK `idClassFin`.

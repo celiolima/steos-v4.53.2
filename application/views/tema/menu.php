@@ -93,6 +93,8 @@
                             <span class="title-tooltip">Ordens</span>
                         </a>
                     </li>
+                <?php } ?>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vContrato')) { ?>
                     <li class="<?php if (isset($menuContrato)) {
                                     echo 'active';
                                 }; ?>">
@@ -146,7 +148,7 @@
                         </a>
                     </li>
                 <?php } ?>
-                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) { ?>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) { ?>
                     <li class="<?php if (isset($menuCobrancas)) {
                                     echo 'active';
                                 }; ?>">
@@ -155,7 +157,8 @@
                             <span class="title-tooltip">Cobranças</span>
                         </a>
                     </li>
-
+                <?php } ?>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vNfse')) { ?>
                     <li class="<?php if (isset($menuNfse)) {
                                     echo 'active';
                                 }; ?>">
@@ -164,6 +167,8 @@
                             <span class="title-tooltip">NFS-e</span>
                         </a>
                     </li>
+                <?php } ?>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vLogsAsaas')) { ?>
                     <li class="<?php if (isset($menuLogsAsaas)) {
                                     echo 'active';
                                 }; ?>">

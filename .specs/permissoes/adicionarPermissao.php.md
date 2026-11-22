@@ -12,8 +12,8 @@ Responsável pelo processamento e lógica pertinente à camada de View do módul
 N/A
 
 ## 4. Estrutura Interna
-- Renderiza a interface para o usuário.
-- **Contém blocos de scripts JavaScript integrados.**
+- Renderiza checkboxes organizados por abas e acordeões para todas as **92 chaves granulares** de ACL, incluindo os 6 novos acordeões (`Contratos`, `NFS-e & Serviços Fiscais`, `Equipamentos`, `Sistemas & Checklists`, `Modelos de Documentos`, `Técnicos`), além de `Contas Bancárias`, `Cadastros Financeiros Auxiliares`, `Comissões`, `Logs Asaas` e `Admin/Simulador Asaas`.
+- Inclui botão "Marcar Todos" compatível com todas as 92 chaves.
 
 ## 5. Fluxo de Dados
 Recebe o array `$data` do Controller e renderiza variáveis em HTML iterando sobre elas (ex: `foreach`). Envia dados de volta através de submissão de Forms ou chamadas AJAX.

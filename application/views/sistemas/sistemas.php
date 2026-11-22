@@ -30,7 +30,7 @@
     </div>
     <div class="span12 barra-topo-sistemas" style="margin-left: 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
         <div>
-            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) { ?>
+            <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aSistema')) { ?>
                 <a href="<?php echo base_url(); ?>index.php/sistemas/adicionar" class="button btn btn-mini btn-success" style="margin: 0; max-width: 180px;">
                     <span class="button__icon"><i class='bx bx-plus-circle'></i></span><span class="button__text2">Adicionar Sistema</span>
                 </a>
@@ -77,10 +77,10 @@
                         echo '<td>R$ ' . number_format($r->preco, 2, ',', '.') . '</td>';
                         echo '<td>' . $situacao . '</td>';
                         echo '<td>';
-                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eSistema')) {
                             echo '<a href="' . base_url() . 'index.php/sistemas/editar/' . $r->idSistemas . '" class="btn-nwe3" title="Editar Sistema"><i class="bx bx-edit"></i></a>';
                         }
-                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dSistema')) {
                             echo '<a href="#modal-excluir" role="button" data-toggle="modal" sistema="' . $r->idSistemas . '" class="btn-nwe4" title="Excluir Sistema"><i class="bx bx-trash-alt"></i></a>';
                         }
                         echo '</td>';

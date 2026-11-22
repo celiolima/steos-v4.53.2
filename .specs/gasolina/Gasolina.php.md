@@ -37,5 +37,4 @@ Recebe a requisição HTTP (GET/POST), valida via `form_validation`, delega a le
 Mapeamento automático via CodeIgniter: `site_url('gasolina/metodo')`.
 
 ## 7. Observações e Regras de Negócio
-- Documentação autogerada para reconstrução.
-- Certifique-se de manter os padrões do CodeIgniter 3.
+- Controller `Gasolina.php` integra o módulo de Frota/Veículos: exige `vVeiculo` no construtor e `aVeiculo || eVeiculo` no `POST` de `listar()`.
