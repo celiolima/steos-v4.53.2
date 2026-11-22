@@ -1,8 +1,8 @@
 {
     "info": {
         "_postman_id": "c7fe9c74-5ba0-4b4e-a20f-453200000001",
-        "name": "STEOS v4.53.2 â€” API RESTful v1",
-        "description": "# STEOS v4.53.2 â€” API RESTful v1\n\nCollection oficial do **STEOS** no formato **Postman Collection v2.1.0**, alinhada integralmente a `application/config/routes_api.php` (54 rotas / 72 requisiÃ§Ãµes HTTP).\n\n## PrÃ©-requisitos no Servidor STEOS\n- VariÃ¡veis habilitadas em `application/.env` (ou `.env_dev`):\n  - `API_ENABLED=true`\n  - `API_JWT_KEY` (chave secreta HMAC-SHA256)\n  - `API_TOKEN_EXPIRE_TIME` (tempo em segundos; utilize `GET /index.php/api/v1/reGenToken` quando expirar)\n- Header `Authorization` liberado pelo `.htaccess` raiz (`RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`).\n\n## Fluxo RÃ¡pido de AutenticaÃ§Ã£o\n1. Selecione o Environment desejado (`STEOS - Desenvolvimento Local (Docker)` ou `STEOS - ProduÃ§Ã£o (Hostinger)`).\n2. Para rotas administrativas (pastas `01` a `13`), execute **`01. AutenticaÃ§Ã£o & Conta > Login Administrativo (JWT)`** â€” o script de resposta salvarÃ¡ automaticamente `{{access_token}}`.\n3. Para rotas do Portal do Cliente (pasta `14`), execute **`14. Portal do Cliente > Login do Cliente (Portal Conecte)`** â€” o script salvarÃ¡ automaticamente `{{client_access_token}}`.\n\n## ObservaÃ§Ã£o de Datas nas Rotas\n- **`OsController` (`POST /os`, `PUT /os/{id}`):** espera `dataInicial` e `dataFinal` no formato **`DD/MM/YYYY`**.\n- **Filtros de listagem (`calendario`, `nfse`, `cobrancas`, `financeiro`, `vendas`):** utilizam preferencialmente **`YYYY-MM-DD`** (em `GET /os`, `from`/`to`/`data_fech_de`/`data_fech_ate` aceitam ambos os formatos).",
+        "name": "STEOS v4.53.2 \u2014 API RESTful v1",
+        "description": "# STEOS v4.53.2 \u2014 API RESTful v1\n\nCollection oficial do **STEOS** no formato **Postman Collection v2.1.0**, alinhada integralmente a `application/config/routes_api.php` (54 rotas / 72 requisi\u00e7\u00f5es HTTP).\n\n## Pr\u00e9-requisitos no Servidor STEOS\n- Vari\u00e1veis habilitadas em `application/.env` (ou `.env_dev`):\n  - `API_ENABLED=true`\n  - `API_JWT_KEY` (chave secreta HMAC-SHA256)\n  - `API_TOKEN_EXPIRE_TIME` (tempo em segundos; utilize `GET /index.php/api/v1/reGenToken` quando expirar)\n- Header `Authorization` liberado pelo `.htaccess` raiz (`RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`).\n\n## Fluxo R\u00e1pido de Autentica\u00e7\u00e3o\n1. Selecione o Environment desejado (`STEOS - Desenvolvimento Local (Docker)` ou `STEOS - Produ\u00e7\u00e3o (Hostinger)`).\n2. Para rotas administrativas (pastas `01` a `13`), execute **`01. Autentica\u00e7\u00e3o & Conta > Login Administrativo (JWT)`** \u2014 o script de resposta salvar\u00e1 automaticamente `{{access_token}}`.\n3. Para rotas do Portal do Cliente (pasta `14`), execute **`14. Portal do Cliente > Login do Cliente (Portal Conecte)`** \u2014 o script salvar\u00e1 automaticamente `{{client_access_token}}`.\n\n## Observa\u00e7\u00e3o de Datas nas Rotas\n- **`OsController` (`POST /os`, `PUT /os/{id}`):** espera `dataInicial` e `dataFinal` no formato **`DD/MM/YYYY`**.\n- **Filtros de listagem (`calendario`, `nfse`, `cobrancas`, `financeiro`, `vendas`):** utilizam preferencialmente **`YYYY-MM-DD`** (em `GET /os`, `from`/`to`/`data_fech_de`/`data_fech_ate` aceitam ambos os formatos).",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "auth": {
@@ -17,8 +17,8 @@
     },
     "item": [
         {
-            "name": "01. AutenticaÃ§Ã£o & Conta (Admin / Staff)",
-            "description": "AutenticaÃ§Ã£o JWT para usuÃ¡rios internos do painel administrativo do STEOS (`UsuariosController`). O endpoint de login salva automaticamente `access_token` na Collection e no Environment ativo.",
+            "name": "01. Autentica\u00e7\u00e3o & Conta (Admin / Staff)",
+            "description": "Autentica\u00e7\u00e3o JWT para usu\u00e1rios internos do painel administrativo do STEOS (`UsuariosController`). O endpoint de login salva automaticamente `access_token` na Collection e no Environment ativo.",
             "item": [
                 {
                     "name": "Login Administrativo (JWT)",
@@ -48,7 +48,7 @@
                                 "login"
                             ]
                         },
-                        "description": "Autentica usuÃ¡rio interno (`usuarios`) e gera token JWT HS256 em `result.access_token`. NÃ£o exige Bearer prÃ©vio.",
+                        "description": "Autentica usu\u00e1rio interno (`usuarios`) e gera token JWT HS256 em `result.access_token`. N\u00e3o exige Bearer pr\u00e9vio.",
                         "auth": {
                             "type": "noauth"
                         },
@@ -114,7 +114,7 @@
                                 "reGenToken"
                             ]
                         },
-                        "description": "Regenera o JWT de um usuÃ¡rio administrativo mesmo apÃ³s expiraÃ§Ã£o (`API_TOKEN_EXPIRE_TIME`), enviando o token anterior no header `Authorization: Bearer {{access_token}}`."
+                        "description": "Regenera o JWT de um usu\u00e1rio administrativo mesmo ap\u00f3s expira\u00e7\u00e3o (`API_TOKEN_EXPIRE_TIME`), enviando o token anterior no header `Authorization: Bearer {{access_token}}`."
                     },
                     "response": [],
                     "event": [
@@ -171,7 +171,7 @@
                                 "conta"
                             ]
                         },
-                        "description": "Retorna perfil e imagem do usuÃ¡rio autenticado (sem o campo `senha`)."
+                        "description": "Retorna perfil e imagem do usu\u00e1rio autenticado (sem o campo `senha`)."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -181,8 +181,8 @@
             ]
         },
         {
-            "name": "02. Painel, CalendÃ¡rio, Emitente & Auditoria",
-            "description": "Indicadores do painel inicial, calendÃ¡rio FullCalendar, dados da empresa emitente e logs de auditoria (`ApiController`).",
+            "name": "02. Painel, Calend\u00e1rio, Emitente & Auditoria",
+            "description": "Indicadores do painel inicial, calend\u00e1rio FullCalendar, dados da empresa emitente e logs de auditoria (`ApiController`).",
             "item": [
                 {
                     "name": "Resumo do Painel (Dashboard)",
@@ -214,7 +214,7 @@
                     }
                 },
                 {
-                    "name": "CalendÃ¡rio de O.S.",
+                    "name": "Calend\u00e1rio de O.S.",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -250,19 +250,19 @@
                                 },
                                 {
                                     "key": "status",
-                                    "value": "A Sair | Aguard ConclusÃ£o",
+                                    "value": "A Sair | Aguard Conclus\u00e3o",
                                     "description": "Filtro opcional por status textual da O.S.",
                                     "disabled": true
                                 },
                                 {
                                     "key": "tecnicos",
                                     "value": "1",
-                                    "description": "Filtro opcional por ID de tÃ©cnico vinculado",
+                                    "description": "Filtro opcional por ID de t\u00e9cnico vinculado",
                                     "disabled": true
                                 }
                             ]
                         },
-                        "description": "Retorna `events` (compatÃ­vel com FullCalendar, diferenciando preventiva `#AEB404` vs `#00a65a`) e `allOs`. Exige permissÃ£o `vOs`."
+                        "description": "Retorna `events` (compat\u00edvel com FullCalendar, diferenciando preventiva `#AEB404` vs `#00a65a`) e `allOs`. Exige permiss\u00e3o `vOs`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -292,7 +292,7 @@
                                 "emitente"
                             ]
                         },
-                        "description": "Retorna nome da aplicaÃ§Ã£o (`appName`) e registro da tabela `emitente`."
+                        "description": "Retorna nome da aplica\u00e7\u00e3o (`appName`) e registro da tabela `emitente`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -336,7 +336,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista registros paginados da tabela `logs`. Exige permissÃ£o `cAuditoria`."
+                        "description": "Lista registros paginados da tabela `logs`. Exige permiss\u00e3o `cAuditoria`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -346,11 +346,11 @@
             ]
         },
         {
-            "name": "03. UsuÃ¡rios",
-            "description": "CRUD completo de usuÃ¡rios administrativos (`UsuariosController`). Todas as operaÃ§Ãµes de listagem, criaÃ§Ã£o e alteraÃ§Ã£o exigem permissÃ£o `cUsuario` (exceto ediÃ§Ã£o do prÃ³prio perfil). Senhas sÃ£o protegidas com `password_hash` e nunca retornam no JSON.",
+            "name": "03. Usu\u00e1rios",
+            "description": "CRUD completo de usu\u00e1rios administrativos (`UsuariosController`). Todas as opera\u00e7\u00f5es de listagem, cria\u00e7\u00e3o e altera\u00e7\u00e3o exigem permiss\u00e3o `cUsuario` (exceto edi\u00e7\u00e3o do pr\u00f3prio perfil). Senhas s\u00e3o protegidas com `password_hash` e nunca retornam no JSON.",
             "item": [
                 {
-                    "name": "Listar UsuÃ¡rios",
+                    "name": "Listar Usu\u00e1rios",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -392,7 +392,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista usuÃ¡rios paginados ou filtra pelo termo `search`. Exige `cUsuario`."
+                        "description": "Lista usu\u00e1rios paginados ou filtra pelo termo `search`. Exige `cUsuario`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -400,7 +400,7 @@
                     }
                 },
                 {
-                    "name": "Detalhar UsuÃ¡rio por ID",
+                    "name": "Detalhar Usu\u00e1rio por ID",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -423,7 +423,7 @@
                                 "{{usuario_id}}"
                             ]
                         },
-                        "description": "Retorna detalhes de um usuÃ¡rio especÃ­fico (sem `senha`). Exige `cUsuario`."
+                        "description": "Retorna detalhes de um usu\u00e1rio espec\u00edfico (sem `senha`). Exige `cUsuario`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -431,7 +431,7 @@
                     }
                 },
                 {
-                    "name": "Criar UsuÃ¡rio",
+                    "name": "Criar Usu\u00e1rio",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -458,10 +458,10 @@
                                 "usuarios"
                             ]
                         },
-                        "description": "Cadastra novo usuÃ¡rio interno validando grupo `usuarios` em `form_validation.php`. Exige `cUsuario`.",
+                        "description": "Cadastra novo usu\u00e1rio interno validando grupo `usuarios` em `form_validation.php`. Exige `cUsuario`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"nome\": \"TÃ©cnico DemonstraÃ§Ã£o API\",\n    \"rg\": \"123456789\",\n    \"cpf\": \"11144477735\",\n    \"cep\": \"01001-000\",\n    \"rua\": \"PraÃ§a da SÃ©\",\n    \"numero\": \"100\",\n    \"bairro\": \"SÃ©\",\n    \"cidade\": \"SÃ£o Paulo\",\n    \"estado\": \"SP\",\n    \"email\": \"tecnico.api@exemplo.com.br\",\n    \"senha\": \"Steos@2026\",\n    \"telefone\": \"(11) 3333-4444\",\n    \"celular\": \"(11) 99999-8888\",\n    \"dataExpiracao\": \"2030-12-31\",\n    \"situacao\": 1,\n    \"permissoes_id\": 1\n}",
+                            "raw": "{\n    \"nome\": \"T\u00e9cnico Demonstra\u00e7\u00e3o API\",\n    \"rg\": \"123456789\",\n    \"cpf\": \"11144477735\",\n    \"cep\": \"01001-000\",\n    \"rua\": \"Pra\u00e7a da S\u00e9\",\n    \"numero\": \"100\",\n    \"bairro\": \"S\u00e9\",\n    \"cidade\": \"S\u00e3o Paulo\",\n    \"estado\": \"SP\",\n    \"email\": \"tecnico.api@exemplo.com.br\",\n    \"senha\": \"Steos@2026\",\n    \"telefone\": \"(11) 3333-4444\",\n    \"celular\": \"(11) 99999-8888\",\n    \"dataExpiracao\": \"2030-12-31\",\n    \"situacao\": 1,\n    \"permissoes_id\": 1\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -472,7 +472,7 @@
                     "response": []
                 },
                 {
-                    "name": "Atualizar UsuÃ¡rio",
+                    "name": "Atualizar Usu\u00e1rio",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -500,10 +500,10 @@
                                 "{{usuario_id}}"
                             ]
                         },
-                        "description": "Atualiza dados do usuÃ¡rio. Todos os campos obrigatÃ³rios devem ser enviados; `senha` Ã© opcional (quando informada, recebe `password_hash`). Super admin (`id=1`) nÃ£o pode ter `situacao=0`.",
+                        "description": "Atualiza dados do usu\u00e1rio. Todos os campos obrigat\u00f3rios devem ser enviados; `senha` \u00e9 opcional (quando informada, recebe `password_hash`). Super admin (`id=1`) n\u00e3o pode ter `situacao=0`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"nome\": \"Administrador STEOS\",\n    \"rg\": \"123456789\",\n    \"cpf\": \"11144477735\",\n    \"cep\": \"01001-000\",\n    \"rua\": \"Rua Atualizada\",\n    \"numero\": \"100\",\n    \"bairro\": \"Centro\",\n    \"cidade\": \"SÃ£o Paulo\",\n    \"estado\": \"SP\",\n    \"email\": \"{{admin_email}}\",\n    \"telefone\": \"(11) 3333-4444\",\n    \"celular\": \"(11) 99999-8888\",\n    \"dataExpiracao\": \"2030-12-31\",\n    \"situacao\": 1,\n    \"permissoes_id\": 1,\n    \"senha\": \"\"\n}",
+                            "raw": "{\n    \"nome\": \"Administrador STEOS\",\n    \"rg\": \"123456789\",\n    \"cpf\": \"11144477735\",\n    \"cep\": \"01001-000\",\n    \"rua\": \"Rua Atualizada\",\n    \"numero\": \"100\",\n    \"bairro\": \"Centro\",\n    \"cidade\": \"S\u00e3o Paulo\",\n    \"estado\": \"SP\",\n    \"email\": \"{{admin_email}}\",\n    \"telefone\": \"(11) 3333-4444\",\n    \"celular\": \"(11) 99999-8888\",\n    \"dataExpiracao\": \"2030-12-31\",\n    \"situacao\": 1,\n    \"permissoes_id\": 1,\n    \"senha\": \"\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -514,7 +514,7 @@
                     "response": []
                 },
                 {
-                    "name": "Excluir UsuÃ¡rio",
+                    "name": "Excluir Usu\u00e1rio",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -537,7 +537,7 @@
                                 "{{usuario_id}}"
                             ]
                         },
-                        "description": "Remove um usuÃ¡rio pelo ID. Impede exclusÃ£o do usuÃ¡rio Super Admin (`id=1`) ou de si mesmo. Exige `cUsuario`."
+                        "description": "Remove um usu\u00e1rio pelo ID. Impede exclus\u00e3o do usu\u00e1rio Super Admin (`id=1`) ou de si mesmo. Exige `cUsuario`."
                     },
                     "response": []
                 }
@@ -590,7 +590,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista clientes com paginaÃ§Ã£o e filtro `search`. Exige `vCliente`."
+                        "description": "Lista clientes com pagina\u00e7\u00e3o e filtro `search`. Exige `vCliente`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -621,7 +621,7 @@
                                 "{{cliente_id}}"
                             ]
                         },
-                        "description": "Retorna cliente + array `ordensServicos` vinculadas. Retorna HTTP 404 se nÃ£o existir. Exige `vCliente`."
+                        "description": "Retorna cliente + array `ordensServicos` vinculadas. Retorna HTTP 404 se n\u00e3o existir. Exige `vCliente`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -656,10 +656,10 @@
                                 "clientes"
                             ]
                         },
-                        "description": "Cadastra cliente validando CPF/CNPJ (`verific_cpf_cnpj`). Se `senha` for omitida, usa padrÃ£o `steas@123`. Exige `aCliente`.",
+                        "description": "Cadastra cliente validando CPF/CNPJ (`verific_cpf_cnpj`). Se `senha` for omitida, usa padr\u00e3o `steas@123`. Exige `aCliente`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"nomeCliente\": \"Empresa Cliente Exemplo Ltda\",\n    \"contato\": \"JoÃ£o ResponsÃ¡vel\",\n    \"documento\": \"11222333000181\",\n    \"telefone\": \"(11) 3000-1000\",\n    \"celular\": \"(11) 98888-7777\",\n    \"email\": \"cliente.api@exemplo.com.br\",\n    \"senha\": \"steas@123\",\n    \"rua\": \"Av. Paulista\",\n    \"numero\": \"1000\",\n    \"complemento\": \"Sala 10\",\n    \"bairro\": \"Bela Vista\",\n    \"cidade\": \"SÃ£o Paulo\",\n    \"estado\": \"SP\",\n    \"cep\": \"01310-100\",\n    \"fornecedor\": false\n}",
+                            "raw": "{\n    \"nomeCliente\": \"Empresa Cliente Exemplo Ltda\",\n    \"contato\": \"Jo\u00e3o Respons\u00e1vel\",\n    \"documento\": \"11222333000181\",\n    \"telefone\": \"(11) 3000-1000\",\n    \"celular\": \"(11) 98888-7777\",\n    \"email\": \"cliente.api@exemplo.com.br\",\n    \"senha\": \"steas@123\",\n    \"rua\": \"Av. Paulista\",\n    \"numero\": \"1000\",\n    \"complemento\": \"Sala 10\",\n    \"bairro\": \"Bela Vista\",\n    \"cidade\": \"S\u00e3o Paulo\",\n    \"estado\": \"SP\",\n    \"cep\": \"01310-100\",\n    \"fornecedor\": false\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -701,7 +701,7 @@
                         "description": "Atualiza cadastro de cliente validando CPF/CNPJ caso informado. Exige `eCliente`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"nomeCliente\": \"Empresa Cliente Exemplo Ltda\",\n    \"contato\": \"JoÃ£o ResponsÃ¡vel\",\n    \"documento\": \"11222333000181\",\n    \"telefone\": \"(11) 3000-1000\",\n    \"celular\": \"(11) 98888-7777\",\n    \"email\": \"cliente.api@exemplo.com.br\",\n    \"rua\": \"Av. Paulista\",\n    \"numero\": \"1000\",\n    \"complemento\": \"Sala 12\",\n    \"bairro\": \"Bela Vista\",\n    \"cidade\": \"SÃ£o Paulo\",\n    \"estado\": \"SP\",\n    \"cep\": \"01310-100\",\n    \"fornecedor\": false\n}",
+                            "raw": "{\n    \"nomeCliente\": \"Empresa Cliente Exemplo Ltda\",\n    \"contato\": \"Jo\u00e3o Respons\u00e1vel\",\n    \"documento\": \"11222333000181\",\n    \"telefone\": \"(11) 3000-1000\",\n    \"celular\": \"(11) 98888-7777\",\n    \"email\": \"cliente.api@exemplo.com.br\",\n    \"rua\": \"Av. Paulista\",\n    \"numero\": \"1000\",\n    \"complemento\": \"Sala 12\",\n    \"bairro\": \"Bela Vista\",\n    \"cidade\": \"S\u00e3o Paulo\",\n    \"estado\": \"SP\",\n    \"cep\": \"01310-100\",\n    \"fornecedor\": false\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -783,12 +783,12 @@
                                 {
                                     "key": "search",
                                     "value": "Cabo",
-                                    "description": "Busca por descriÃ§Ã£o ou cÃ³digo de barras",
+                                    "description": "Busca por descri\u00e7\u00e3o ou c\u00f3digo de barras",
                                     "disabled": true
                                 }
                             ]
                         },
-                        "description": "Lista produtos com paginaÃ§Ã£o e filtro `search` sanitizado."
+                        "description": "Lista produtos com pagina\u00e7\u00e3o e filtro `search` sanitizado."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -819,7 +819,7 @@
                                 "{{produto_id}}"
                             ]
                         },
-                        "description": "Retorna produto por ID ou HTTP 404 caso nÃ£o localizado."
+                        "description": "Retorna produto por ID ou HTTP 404 caso n\u00e3o localizado."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -933,18 +933,18 @@
                                 "{{produto_id}}"
                             ]
                         },
-                        "description": "Remove produto e referÃªncias em `produtos_os` e `itens_de_vendas`. Exige `dProduto`."
+                        "description": "Remove produto e refer\u00eancias em `produtos_os` e `itens_de_vendas`. Exige `dProduto`."
                     },
                     "response": []
                 }
             ]
         },
         {
-            "name": "06. ServiÃ§os",
-            "description": "CRUD RESTful do catÃ¡logo de serviÃ§os (`ServicosController`). Exige `vServico`, `aServico`, `eServico` ou `dServico`.",
+            "name": "06. Servi\u00e7os",
+            "description": "CRUD RESTful do cat\u00e1logo de servi\u00e7os (`ServicosController`). Exige `vServico`, `aServico`, `eServico` ou `dServico`.",
             "item": [
                 {
-                    "name": "Listar ServiÃ§os",
+                    "name": "Listar Servi\u00e7os",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -980,13 +980,13 @@
                                 },
                                 {
                                     "key": "search",
-                                    "value": "ManutenÃ§Ã£o",
-                                    "description": "Termo de busca pelo nome/descriÃ§Ã£o",
+                                    "value": "Manuten\u00e7\u00e3o",
+                                    "description": "Termo de busca pelo nome/descri\u00e7\u00e3o",
                                     "disabled": true
                                 }
                             ]
                         },
-                        "description": "Lista serviÃ§os com paginaÃ§Ã£o e filtro `search` sanitizado."
+                        "description": "Lista servi\u00e7os com pagina\u00e7\u00e3o e filtro `search` sanitizado."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -994,7 +994,7 @@
                     }
                 },
                 {
-                    "name": "Detalhar ServiÃ§o por ID",
+                    "name": "Detalhar Servi\u00e7o por ID",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -1017,7 +1017,7 @@
                                 "{{servico_id}}"
                             ]
                         },
-                        "description": "Retorna dados do serviÃ§o ou HTTP 404 caso inexistente."
+                        "description": "Retorna dados do servi\u00e7o ou HTTP 404 caso inexistente."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -1025,7 +1025,7 @@
                     }
                 },
                 {
-                    "name": "Criar ServiÃ§o",
+                    "name": "Criar Servi\u00e7o",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -1052,10 +1052,10 @@
                                 "servicos"
                             ]
                         },
-                        "description": "Cadastra novo serviÃ§o no catÃ¡logo. Exige `aServico`.",
+                        "description": "Cadastra novo servi\u00e7o no cat\u00e1logo. Exige `aServico`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"nome\": \"ManutenÃ§Ã£o Preventiva Mensal\",\n    \"descricao\": \"InspeÃ§Ã£o tÃ©cnica e limpeza preventiva de equipamentos.\",\n    \"preco\": \"250.00\"\n}",
+                            "raw": "{\n    \"nome\": \"Manuten\u00e7\u00e3o Preventiva Mensal\",\n    \"descricao\": \"Inspe\u00e7\u00e3o t\u00e9cnica e limpeza preventiva de equipamentos.\",\n    \"preco\": \"250.00\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1066,7 +1066,7 @@
                     "response": []
                 },
                 {
-                    "name": "Atualizar ServiÃ§o",
+                    "name": "Atualizar Servi\u00e7o",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -1094,10 +1094,10 @@
                                 "{{servico_id}}"
                             ]
                         },
-                        "description": "Atualiza nome, descriÃ§Ã£o e preÃ§o do serviÃ§o. Exige `eServico`.",
+                        "description": "Atualiza nome, descri\u00e7\u00e3o e pre\u00e7o do servi\u00e7o. Exige `eServico`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"nome\": \"ManutenÃ§Ã£o Preventiva Mensal v2\",\n    \"descricao\": \"InspeÃ§Ã£o completa e relatÃ³rio checklist digital.\",\n    \"preco\": \"280.00\"\n}",
+                            "raw": "{\n    \"nome\": \"Manuten\u00e7\u00e3o Preventiva Mensal v2\",\n    \"descricao\": \"Inspe\u00e7\u00e3o completa e relat\u00f3rio checklist digital.\",\n    \"preco\": \"280.00\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1108,7 +1108,7 @@
                     "response": []
                 },
                 {
-                    "name": "Excluir ServiÃ§o",
+                    "name": "Excluir Servi\u00e7o",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -1131,18 +1131,18 @@
                                 "{{servico_id}}"
                             ]
                         },
-                        "description": "Exclui o serviÃ§o e referÃªncias em `servicos_os`. Exige `dServico`."
+                        "description": "Exclui o servi\u00e7o e refer\u00eancias em `servicos_os`. Exige `dServico`."
                     },
                     "response": []
                 }
             ]
         },
         {
-            "name": "07. Ordens de ServiÃ§o (O.S.)",
-            "description": "Ciclo completo de Ordens de ServiÃ§o (`OsController`): listagem com filtros STEOS, CRUD, checklists digitais v2, desconto, produtos, serviÃ§os, anotaÃ§Ãµes e upload de anexos. AtenÃ§Ã£o: `POST` e `PUT` de O.S. esperam `dataInicial` e `dataFinal` no formato `DD/MM/YYYY`.",
+            "name": "07. Ordens de Servi\u00e7o (O.S.)",
+            "description": "Ciclo completo de Ordens de Servi\u00e7o (`OsController`): listagem com filtros STEOS, CRUD, checklists digitais v2, desconto, produtos, servi\u00e7os, anota\u00e7\u00f5es e upload de anexos. Aten\u00e7\u00e3o: `POST` e `PUT` de O.S. esperam `dataInicial` e `dataFinal` no formato `DD/MM/YYYY`.",
             "item": [
                 {
-                    "name": "Listar Ordens de ServiÃ§o",
+                    "name": "Listar Ordens de Servi\u00e7o",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -1179,13 +1179,13 @@
                                 {
                                     "key": "search",
                                     "value": "",
-                                    "description": "Cliente ou nÂº da O.S.",
+                                    "description": "Cliente ou n\u00ba da O.S.",
                                     "disabled": true
                                 },
                                 {
                                     "key": "status",
                                     "value": "Aberto",
-                                    "description": "Status da O.S. (ex.: Aberto, Em Andamento, A Sair | Aguard ConclusÃ£o, Finalizado, Faturado, Cancelado)",
+                                    "description": "Status da O.S. (ex.: Aberto, Em Andamento, A Sair | Aguard Conclus\u00e3o, Finalizado, Faturado, Cancelado)",
                                     "disabled": true
                                 },
                                 {
@@ -1215,7 +1215,7 @@
                                 {
                                     "key": "tecnico",
                                     "value": "1",
-                                    "description": "ID do tÃ©cnico vinculado em `tecnicos_os`",
+                                    "description": "ID do t\u00e9cnico vinculado em `tecnicos_os`",
                                     "disabled": true
                                 },
                                 {
@@ -1238,7 +1238,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista O.S. com paginaÃ§Ã£o, totais de produtos/serviÃ§os e todos os filtros avanÃ§ados do STEOS (`vOs`)."
+                        "description": "Lista O.S. com pagina\u00e7\u00e3o, totais de produtos/servi\u00e7os e todos os filtros avan\u00e7ados do STEOS (`vOs`)."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -1277,7 +1277,7 @@
                     }
                 },
                 {
-                    "name": "Criar Ordem de ServiÃ§o",
+                    "name": "Criar Ordem de Servi\u00e7o",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -1307,7 +1307,7 @@
                         "description": "Cria uma nova O.S. com suporte aos campos de Contrato/Preventiva do STEOS. Exige `aOs`. Datas devem ser enviadas como `DD/MM/YYYY`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"dataInicial\": \"21/11/2026\",\n    \"dataFinal\": \"22/11/2026\",\n    \"clientes_id\": 1,\n    \"usuarios_id\": 1,\n    \"contratos_id\": null,\n    \"garantia\": \"90\",\n    \"termoGarantia\": \"\",\n    \"garantias_id\": null,\n    \"descricaoProduto\": \"Nobreak 1500VA Senoidal\",\n    \"defeito\": \"NÃ£o segura carga na falta de energia.\",\n    \"defeito_encontrado\": \"Baterias internas degradadas.\",\n    \"status\": \"Aberto\",\n    \"observacoes\": \"Cliente solicitou orÃ§amento prÃ©vio.\",\n    \"laudoTecnico\": \"\",\n    \"local\": \"Interno\",\n    \"tipo\": \"Avulso\",\n    \"manutPreventiva\": 0,\n    \"prioridade\": \"Normal\",\n    \"classificacao\": \"ManutenÃ§Ã£o Corretiva\"\n}",
+                            "raw": "{\n    \"dataInicial\": \"21/11/2026\",\n    \"dataFinal\": \"22/11/2026\",\n    \"clientes_id\": 1,\n    \"usuarios_id\": 1,\n    \"contratos_id\": null,\n    \"garantia\": \"90\",\n    \"termoGarantia\": \"\",\n    \"garantias_id\": null,\n    \"descricaoProduto\": \"Nobreak 1500VA Senoidal\",\n    \"defeito\": \"N\u00e3o segura carga na falta de energia.\",\n    \"defeito_encontrado\": \"Baterias internas degradadas.\",\n    \"status\": \"Aberto\",\n    \"observacoes\": \"Cliente solicitou or\u00e7amento pr\u00e9vio.\",\n    \"laudoTecnico\": \"\",\n    \"local\": \"Interno\",\n    \"tipo\": \"Avulso\",\n    \"manutPreventiva\": 0,\n    \"prioridade\": \"Normal\",\n    \"classificacao\": \"Manuten\u00e7\u00e3o Corretiva\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1318,7 +1318,7 @@
                     "response": []
                 },
                 {
-                    "name": "Atualizar Ordem de ServiÃ§o",
+                    "name": "Atualizar Ordem de Servi\u00e7o",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -1346,10 +1346,10 @@
                                 "{{os_id}}"
                             ]
                         },
-                        "description": "Atualiza a O.S. preservando campos do STEOS (`faturado`, `contratos_id`, `prioridade`, etc.). Gerencia devoluÃ§Ã£o/baixa de estoque quando status alterna com `Cancelado`. Exige `eOs`.",
+                        "description": "Atualiza a O.S. preservando campos do STEOS (`faturado`, `contratos_id`, `prioridade`, etc.). Gerencia devolu\u00e7\u00e3o/baixa de estoque quando status alterna com `Cancelado`. Exige `eOs`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"dataInicial\": \"21/11/2026\",\n    \"dataFinal\": \"23/11/2026\",\n    \"clientes_id\": 1,\n    \"usuarios_id\": 1,\n    \"contratos_id\": null,\n    \"garantia\": \"90\",\n    \"termoGarantia\": \"\",\n    \"garantias_id\": null,\n    \"descricaoProduto\": \"Nobreak 1500VA Senoidal\",\n    \"defeito\": \"NÃ£o segura carga na falta de energia.\",\n    \"defeito_encontrado\": \"SubstituiÃ§Ã£o de banco de baterias 12V 7Ah.\",\n    \"status\": \"Em Andamento\",\n    \"observacoes\": \"Troca autorizada pelo cliente.\",\n    \"laudoTecnico\": \"Equipamento testado em carga nominal.\",\n    \"local\": \"Interno\",\n    \"tipo\": \"Avulso\",\n    \"manutPreventiva\": 0,\n    \"prioridade\": \"Alta\",\n    \"classificacao\": \"ManutenÃ§Ã£o Corretiva\",\n    \"faturado\": 0\n}",
+                            "raw": "{\n    \"dataInicial\": \"21/11/2026\",\n    \"dataFinal\": \"23/11/2026\",\n    \"clientes_id\": 1,\n    \"usuarios_id\": 1,\n    \"contratos_id\": null,\n    \"garantia\": \"90\",\n    \"termoGarantia\": \"\",\n    \"garantias_id\": null,\n    \"descricaoProduto\": \"Nobreak 1500VA Senoidal\",\n    \"defeito\": \"N\u00e3o segura carga na falta de energia.\",\n    \"defeito_encontrado\": \"Substitui\u00e7\u00e3o de banco de baterias 12V 7Ah.\",\n    \"status\": \"Em Andamento\",\n    \"observacoes\": \"Troca autorizada pelo cliente.\",\n    \"laudoTecnico\": \"Equipamento testado em carga nominal.\",\n    \"local\": \"Interno\",\n    \"tipo\": \"Avulso\",\n    \"manutPreventiva\": 0,\n    \"prioridade\": \"Alta\",\n    \"classificacao\": \"Manuten\u00e7\u00e3o Corretiva\",\n    \"faturado\": 0\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -1360,7 +1360,7 @@
                     "response": []
                 },
                 {
-                    "name": "Excluir Ordem de ServiÃ§o",
+                    "name": "Excluir Ordem de Servi\u00e7o",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -1383,7 +1383,7 @@
                                 "{{os_id}}"
                             ]
                         },
-                        "description": "Exige permissÃ£o `dOs`. Bloqueia se houver cobranÃ§a ativa nÃ£o cancelada, estorna estoque e exclui lanÃ§amentos associados."
+                        "description": "Exige permiss\u00e3o `dOs`. Bloqueia se houver cobran\u00e7a ativa n\u00e3o cancelada, estorna estoque e exclui lan\u00e7amentos associados."
                     },
                     "response": []
                 },
@@ -1412,7 +1412,7 @@
                                 "checklists"
                             ]
                         },
-                        "description": "Retorna `os_checklists` e seus itens (`os_checklists_itens`) vinculados Ã  O.S. Exige `vOs`."
+                        "description": "Retorna `os_checklists` e seus itens (`os_checklists_itens`) vinculados \u00e0 O.S. Exige `vOs`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -1449,7 +1449,7 @@
                                 "desconto"
                             ]
                         },
-                        "description": "Define desconto (`real` ou `porcento`) e `valor_desconto` calculado caso a O.S. seja editÃ¡vel (`eOs`).",
+                        "description": "Define desconto (`real` ou `porcento`) e `valor_desconto` calculado caso a O.S. seja edit\u00e1vel (`eOs`).",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"tipoDesconto\": \"real\",\n    \"desconto\": 25,\n    \"valor_desconto\": 225\n}",
@@ -1536,7 +1536,7 @@
                                 "{{produto_os_id}}"
                             ]
                         },
-                        "description": "Atualiza quantidade/preÃ§o de um item em `produtos_os` ajustando diferenÃ§a de estoque.",
+                        "description": "Atualiza quantidade/pre\u00e7o de um item em `produtos_os` ajustando diferen\u00e7a de estoque.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"quantidade\": 3,\n    \"preco\": 75\n}",
@@ -1580,7 +1580,7 @@
                     "response": []
                 },
                 {
-                    "name": "Adicionar ServiÃ§o na O.S.",
+                    "name": "Adicionar Servi\u00e7o na O.S.",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -1609,7 +1609,7 @@
                                 "servicos"
                             ]
                         },
-                        "description": "Adiciona serviÃ§o em `servicos_os` e zera desconto anterior.",
+                        "description": "Adiciona servi\u00e7o em `servicos_os` e zera desconto anterior.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"idServico\": 1,\n    \"quantidade\": 1,\n    \"preco\": 250\n}",
@@ -1623,7 +1623,7 @@
                     "response": []
                 },
                 {
-                    "name": "Atualizar ServiÃ§o da O.S.",
+                    "name": "Atualizar Servi\u00e7o da O.S.",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -1653,7 +1653,7 @@
                                 "{{servico_os_id}}"
                             ]
                         },
-                        "description": "Atualiza quantidade/preÃ§o do serviÃ§o em `servicos_os`.",
+                        "description": "Atualiza quantidade/pre\u00e7o do servi\u00e7o em `servicos_os`.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"quantidade\": 2,\n    \"preco\": 240\n}",
@@ -1667,7 +1667,7 @@
                     "response": []
                 },
                 {
-                    "name": "Remover ServiÃ§o da O.S.",
+                    "name": "Remover Servi\u00e7o da O.S.",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -1692,12 +1692,12 @@
                                 "{{servico_os_id}}"
                             ]
                         },
-                        "description": "Remove serviÃ§o de `servicos_os` e zera desconto."
+                        "description": "Remove servi\u00e7o de `servicos_os` e zera desconto."
                     },
                     "response": []
                 },
                 {
-                    "name": "Adicionar AnotaÃ§Ã£o na O.S.",
+                    "name": "Adicionar Anota\u00e7\u00e3o na O.S.",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -1726,7 +1726,7 @@
                                 "anotacoes"
                             ]
                         },
-                        "description": "Grava anotaÃ§Ã£o vinculada Ã  O.S. prefixada com o nome do usuÃ¡rio autenticado.",
+                        "description": "Grava anota\u00e7\u00e3o vinculada \u00e0 O.S. prefixada com o nome do usu\u00e1rio autenticado.",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"anotacao\": \"Equipamento encaminhado para bancada de testes.\"\n}",
@@ -1740,7 +1740,7 @@
                     "response": []
                 },
                 {
-                    "name": "Remover AnotaÃ§Ã£o da O.S.",
+                    "name": "Remover Anota\u00e7\u00e3o da O.S.",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -1765,7 +1765,7 @@
                                 "{{anotacao_os_id}}"
                             ]
                         },
-                        "description": "Exclui registro especÃ­fico de `anotacoes_os`."
+                        "description": "Exclui registro espec\u00edfico de `anotacoes_os`."
                     },
                     "response": []
                 },
@@ -1794,7 +1794,7 @@
                                 "anexos"
                             ]
                         },
-                        "description": "Faz upload `multipart/form-data` para `assets/anexos/m-Y/OS-{id}` com geraÃ§Ã£o automÃ¡tica de miniatura para imagens.",
+                        "description": "Faz upload `multipart/form-data` para `assets/anexos/m-Y/OS-{id}` com gera\u00e7\u00e3o autom\u00e1tica de miniatura para imagens.",
                         "body": {
                             "mode": "formdata",
                             "formdata": [
@@ -1802,7 +1802,7 @@
                                     "key": "userfile",
                                     "type": "file",
                                     "src": [],
-                                    "description": "ExtensÃµes permitidas: jpg, png, gif, jpeg, pdf, cdr, docx, txt"
+                                    "description": "Extens\u00f5es permitidas: jpg, png, gif, jpeg, pdf, cdr, docx, txt"
                                 }
                             ]
                         }
@@ -1835,7 +1835,7 @@
                                 "{{anexo_os_id}}"
                             ]
                         },
-                        "description": "Apaga arquivo fÃ­sico, miniatura e registro da tabela `anexos`."
+                        "description": "Apaga arquivo f\u00edsico, miniatura e registro da tabela `anexos`."
                     },
                     "response": []
                 }
@@ -1843,7 +1843,7 @@
         },
         {
             "name": "08. Contratos",
-            "description": "Consulta do mÃ³dulo guarda-chuva de Contratos (`ContratosController`).",
+            "description": "Consulta do m\u00f3dulo guarda-chuva de Contratos (`ContratosController`).",
             "item": [
                 {
                     "name": "Listar Contratos",
@@ -1889,13 +1889,13 @@
                                 {
                                     "key": "contrato",
                                     "value": "",
-                                    "description": "CÃ³digo/nÃºmero do contrato",
+                                    "description": "C\u00f3digo/n\u00famero do contrato",
                                     "disabled": true
                                 },
                                 {
                                     "key": "nome",
                                     "value": "",
-                                    "description": "Nome/tÃ­tulo do contrato",
+                                    "description": "Nome/t\u00edtulo do contrato",
                                     "disabled": true
                                 },
                                 {
@@ -1953,11 +1953,11 @@
             ]
         },
         {
-            "name": "09. CobranÃ§as & Pix (Asaas v3)",
-            "description": "Consulta administrativa de cobranÃ§as (`CobrancasController`) e geraÃ§Ã£o/recuperaÃ§Ã£o de QR Code Pix dinÃ¢mico no Asaas v3. Exige permissÃ£o `vCobranca`.",
+            "name": "09. Cobran\u00e7as & Pix (Asaas v3)",
+            "description": "Consulta administrativa de cobran\u00e7as (`CobrancasController`) e gera\u00e7\u00e3o/recupera\u00e7\u00e3o de QR Code Pix din\u00e2mico no Asaas v3. Exige permiss\u00e3o `vCobranca`.",
             "item": [
                 {
-                    "name": "Listar CobranÃ§as",
+                    "name": "Listar Cobran\u00e7as",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -1994,7 +1994,7 @@
                                 {
                                     "key": "pesquisa",
                                     "value": "",
-                                    "description": "Cliente, descriÃ§Ã£o ou charge_id",
+                                    "description": "Cliente, descri\u00e7\u00e3o ou charge_id",
                                     "disabled": true
                                 },
                                 {
@@ -2012,7 +2012,7 @@
                                 {
                                     "key": "tipo",
                                     "value": "PIX",
-                                    "description": "Tipo de cobranÃ§a (`PIX`, `BOLETO`, `CREDIT_CARD`)",
+                                    "description": "Tipo de cobran\u00e7a (`PIX`, `BOLETO`, `CREDIT_CARD`)",
                                     "disabled": true
                                 },
                                 {
@@ -2035,7 +2035,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista cobranÃ§as com filtros por referÃªncia, tipo, status e perÃ­odo."
+                        "description": "Lista cobran\u00e7as com filtros por refer\u00eancia, tipo, status e per\u00edodo."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2043,7 +2043,7 @@
                     }
                 },
                 {
-                    "name": "Detalhar CobranÃ§a por ID",
+                    "name": "Detalhar Cobran\u00e7a por ID",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -2066,7 +2066,7 @@
                                 "{{cobranca_id}}"
                             ]
                         },
-                        "description": "Retorna detalhes de uma cobranÃ§a sem o campo `senha`."
+                        "description": "Retorna detalhes de uma cobran\u00e7a sem o campo `senha`."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2074,7 +2074,7 @@
                     }
                 },
                 {
-                    "name": "Obter QR Code Pix da CobranÃ§a",
+                    "name": "Obter QR Code Pix da Cobran\u00e7a",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -2109,7 +2109,7 @@
         },
         {
             "name": "10. NFS-e Asaas v3 (Portal Nacional & IBS/CBS)",
-            "description": "Ciclo completo de Notas Fiscais de ServiÃ§o EletrÃ´nicas via Asaas v3 (`NfseController`), aderente ao Portal Nacional (`useNationalPortal`) e Ã  Reforma TributÃ¡ria (IBS/CBS + `operationIndicatorCode` + `federalServiceTaxCode`).",
+            "description": "Ciclo completo de Notas Fiscais de Servi\u00e7o Eletr\u00f4nicas via Asaas v3 (`NfseController`), aderente ao Portal Nacional (`useNationalPortal`) e \u00e0 Reforma Tribut\u00e1ria (IBS/CBS + `operationIndicatorCode` + `federalServiceTaxCode`).",
             "item": [
                 {
                     "name": "Listar NFS-e Emitidas / Agendadas",
@@ -2149,7 +2149,7 @@
                                 {
                                     "key": "search",
                                     "value": "",
-                                    "description": "Nome do cliente, CPF/CNPJ, nÂº NFS-e ou nÂº da O.S.",
+                                    "description": "Nome do cliente, CPF/CNPJ, n\u00ba NFS-e ou n\u00ba da O.S.",
                                     "disabled": true
                                 },
                                 {
@@ -2211,7 +2211,7 @@
                     }
                 },
                 {
-                    "name": "Listar ServiÃ§os NFS-e & Indicadores de OperaÃ§Ã£o",
+                    "name": "Listar Servi\u00e7os NFS-e & Indicadores de Opera\u00e7\u00e3o",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -2234,7 +2234,7 @@
                                 "servicos"
                             ]
                         },
-                        "description": "Retorna catÃ¡logo `servicos_nfse` e os 33 cÃ³digos oficiais de `asaas_operation_indicator_codes()` (`vServico`)."
+                        "description": "Retorna cat\u00e1logo `servicos_nfse` e os 33 c\u00f3digos oficiais de `asaas_operation_indicator_codes()` (`vServico`)."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2271,10 +2271,10 @@
                                 "{{os_id}}"
                             ]
                         },
-                        "description": "Emite ou agenda NFS-e no Asaas v3 usando `asaas_sanitize_fiscal_codes()`, separando `federalServiceTaxCode` (6 dÃ­gitos) de `operationIndicatorCode`, alÃ©m de `nbsCode`, `taxSituationCode` e `taxClassificationCode` (`eOs`).",
+                        "description": "Emite ou agenda NFS-e no Asaas v3 usando `asaas_sanitize_fiscal_codes()`, separando `federalServiceTaxCode` (6 d\u00edgitos) de `operationIndicatorCode`, al\u00e9m de `nbsCode`, `taxSituationCode` e `taxClassificationCode` (`eOs`).",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"servico_nfse_id\": \"{{servico_nfse_id}}\",\n    \"value\": 250,\n    \"aliquota_iss\": 3.5,\n    \"retain_iss\": false,\n    \"effective_date\": \"2026-11-21\",\n    \"municipal_service_code\": \"952150001 | 14.01 - ReparaÃ§Ã£o e manutenÃ§Ã£o de equipamentos eletroeletrÃ´nicos de uso pessoal e domestico.\",\n    \"codigo_nbs\": \"1.2001.30.00\",\n    \"federal_service_tax_code\": \"140101\",\n    \"operation_indicator_code\": \"\",\n    \"tax_situation_code\": \"000\",\n    \"tax_classification_code\": \"000001\",\n    \"service_description\": \"PrestaÃ§Ã£o de ServiÃ§os tÃ©cnicos conforme Ordem de ServiÃ§o.\",\n    \"observations\": \"EmissÃ£o via API REST STEOS v4.53.2.\"\n}",
+                            "raw": "{\n    \"servico_nfse_id\": \"{{servico_nfse_id}}\",\n    \"value\": 250,\n    \"aliquota_iss\": 3.5,\n    \"retain_iss\": false,\n    \"effective_date\": \"2026-11-21\",\n    \"municipal_service_code\": \"952150001 | 14.01 - Repara\u00e7\u00e3o e manuten\u00e7\u00e3o de equipamentos eletroeletr\u00f4nicos de uso pessoal e domestico.\",\n    \"codigo_nbs\": \"1.2001.30.00\",\n    \"federal_service_tax_code\": \"140101\",\n    \"operation_indicator_code\": \"\",\n    \"tax_situation_code\": \"000\",\n    \"tax_classification_code\": \"000001\",\n    \"service_description\": \"Presta\u00e7\u00e3o de Servi\u00e7os t\u00e9cnicos conforme Ordem de Servi\u00e7o.\",\n    \"observations\": \"Emiss\u00e3o via API REST STEOS v4.53.2.\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -2363,10 +2363,10 @@
         },
         {
             "name": "11. Financeiro",
-            "description": "Consulta somente leitura de lanÃ§amentos financeiros e estatÃ­sticas consolidadas (`FinanceiroController`). Exige permissÃ£o `vLancamento`.",
+            "description": "Consulta somente leitura de lan\u00e7amentos financeiros e estat\u00edsticas consolidadas (`FinanceiroController`). Exige permiss\u00e3o `vLancamento`.",
             "item": [
                 {
-                    "name": "Listar LanÃ§amentos Financeiros",
+                    "name": "Listar Lan\u00e7amentos Financeiros",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -2433,7 +2433,7 @@
                                 {
                                     "key": "classificacao_fin",
                                     "value": "",
-                                    "description": "ID/nome da ClassificaÃ§Ã£o Financeira",
+                                    "description": "ID/nome da Classifica\u00e7\u00e3o Financeira",
                                     "disabled": true
                                 },
                                 {
@@ -2450,7 +2450,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista lanÃ§amentos com filtros avanÃ§ados por tipo, baixa, vencimento, centro de gastos, classificaÃ§Ã£o, grupo e forma de pagamento."
+                        "description": "Lista lan\u00e7amentos com filtros avan\u00e7ados por tipo, baixa, vencimento, centro de gastos, classifica\u00e7\u00e3o, grupo e forma de pagamento."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2458,7 +2458,7 @@
                     }
                 },
                 {
-                    "name": "Detalhar LanÃ§amento por ID",
+                    "name": "Detalhar Lan\u00e7amento por ID",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -2481,7 +2481,7 @@
                                 "{{lancamento_id}}"
                             ]
                         },
-                        "description": "Retorna lanÃ§amento individual e array `anexos` (`Financeiro_model::getAnexos`)."
+                        "description": "Retorna lan\u00e7amento individual e array `anexos` (`Financeiro_model::getAnexos`)."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2489,7 +2489,7 @@
                     }
                 },
                 {
-                    "name": "Resumo EstatÃ­stico Financeiro",
+                    "name": "Resumo Estat\u00edstico Financeiro",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -2522,11 +2522,11 @@
             ]
         },
         {
-            "name": "12. Frota & VeÃ­culos",
-            "description": "Consulta de veÃ­culos cadastrados, abastecimentos/odÃ´metro e trilha de auditoria (`VeiculosController`). Exige permissÃ£o `vVeiculo`.",
+            "name": "12. Frota & Ve\u00edculos",
+            "description": "Consulta de ve\u00edculos cadastrados, abastecimentos/od\u00f4metro e trilha de auditoria (`VeiculosController`). Exige permiss\u00e3o `vVeiculo`.",
             "item": [
                 {
-                    "name": "Listar VeÃ­culos",
+                    "name": "Listar Ve\u00edculos",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -2570,7 +2570,7 @@
                     }
                 },
                 {
-                    "name": "Detalhar VeÃ­culo por ID",
+                    "name": "Detalhar Ve\u00edculo por ID",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -2593,7 +2593,7 @@
                                 "{{veiculo_id}}"
                             ]
                         },
-                        "description": "Retorna dados do veÃ­culo com `abastecimentos` (`gasolina`) e Ãºltimos 25 registros de auditoria (`veiculos_logs`)."
+                        "description": "Retorna dados do ve\u00edculo com `abastecimentos` (`gasolina`) e \u00faltimos 25 registros de auditoria (`veiculos_logs`)."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2604,7 +2604,7 @@
         },
         {
             "name": "13. Vendas",
-            "description": "Consulta RESTful de vendas e itens/cobranÃ§as vinculadas (`VendasController`). Exige permissÃ£o `vVenda`.",
+            "description": "Consulta RESTful de vendas e itens/cobran\u00e7as vinculadas (`VendasController`). Exige permiss\u00e3o `vVenda`.",
             "item": [
                 {
                     "name": "Listar Vendas",
@@ -2644,7 +2644,7 @@
                                 {
                                     "key": "search",
                                     "value": "",
-                                    "description": "Cliente ou nÂº da venda",
+                                    "description": "Cliente ou n\u00ba da venda",
                                     "disabled": true
                                 },
                                 {
@@ -2816,7 +2816,7 @@
                                 "client"
                             ]
                         },
-                        "description": "Retorna Ãºltimas O.S. (`Os`) e Ãºltimas compras (`compras`) do cliente autenticado."
+                        "description": "Retorna \u00faltimas O.S. (`Os`) e \u00faltimas compras (`compras`) do cliente autenticado."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2893,7 +2893,7 @@
                                 "{{os_id}}"
                             ]
                         },
-                        "description": "Retorna O.S. do cliente autenticado com produtos (sem custo/estoque interno), serviÃ§os, anexos (sem `path`), QR Code Pix e dados do emitente. Bloqueia O.S. de terceiros com HTTP 403."
+                        "description": "Retorna O.S. do cliente autenticado com produtos (sem custo/estoque interno), servi\u00e7os, anexos (sem `path`), QR Code Pix e dados do emitente. Bloqueia O.S. de terceiros com HTTP 403."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -2929,10 +2929,10 @@
                                 "os"
                             ]
                         },
-                        "description": "Permite ao cliente abrir uma solicitaÃ§Ã£o de Ordem de ServiÃ§o com status `Aberto`.",
+                        "description": "Permite ao cliente abrir uma solicita\u00e7\u00e3o de Ordem de Servi\u00e7o com status `Aberto`.",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"descricaoProduto\": \"Impressora TÃ©rmica NÃ£o Fiscal\",\n    \"defeito\": \"Falha intermitente na alimentaÃ§Ã£o do papel.\",\n    \"observacoes\": \"Equipamento disponÃ­vel na recepÃ§Ã£o em horÃ¡rio comercial.\"\n}",
+                            "raw": "{\n    \"descricaoProduto\": \"Impressora T\u00e9rmica N\u00e3o Fiscal\",\n    \"defeito\": \"Falha intermitente na alimenta\u00e7\u00e3o do papel.\",\n    \"observacoes\": \"Equipamento dispon\u00edvel na recep\u00e7\u00e3o em hor\u00e1rio comercial.\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -3020,7 +3020,7 @@
                     }
                 },
                 {
-                    "name": "Listar Minhas CobranÃ§as",
+                    "name": "Listar Minhas Cobran\u00e7as",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -3057,7 +3057,7 @@
                                 }
                             ]
                         },
-                        "description": "Lista cobranÃ§as vinculadas exclusivamente ao cliente autenticado."
+                        "description": "Lista cobran\u00e7as vinculadas exclusivamente ao cliente autenticado."
                     },
                     "response": [],
                     "protocolProfileBehavior": {
@@ -3173,7 +3173,7 @@
             "key": "admin_password",
             "value": "admin",
             "type": "secret",
-            "description": "Senha do usuÃ¡rio administrativo para testes de login."
+            "description": "Senha do usu\u00e1rio administrativo para testes de login."
         },
         {
             "key": "client_email",
@@ -3185,7 +3185,7 @@
             "key": "client_password",
             "value": "steas@123",
             "type": "secret",
-            "description": "Senha do cliente (padrÃ£o STEOS: steas@123)."
+            "description": "Senha do cliente (padr\u00e3o STEOS: steas@123)."
         },
         {
             "key": "usuario_id",
