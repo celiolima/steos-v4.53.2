@@ -26,12 +26,12 @@ class ServicosController extends REST_Controller
         }
 
         if (! $id) {
-            $search = trim($this->get('search', true));
-            $where = $search ? "nome LIKE '%{$search}%' OR descricao LIKE '%{$search}%'" : '';
+            $search = trim((string) $this->get('search', true));
+            $where = $search !== '' ? $this->db->escape_like_str($search) : '';
 
-            $perPage = $this->get('perPage', true) ?: 20;
-            $page = $this->get('page', true) ?: 0;
-            $start = $page ? ($perPage * $page) : 0;
+            $perPage = (int) ($this->get('perPage', true) ?: 20);
+            $page = (int) ($this->get('page', true) ?: 0);
+            $start = $page > 0 ? ($perPage * $page) : 0;
 
             $servicos = $this->servicos_model->get('servicos', '*', $where, $perPage, $start);
 
@@ -44,19 +44,20 @@ class ServicosController extends REST_Controller
 
         if ($id && is_numeric($id)) {
             $servico = $this->servicos_model->getById($id);
-
-            $this->response([
-                'status' => true,
-                'message' => 'Detalhes do Serviço',
-                'result' => $servico,
-            ], REST_Controller::HTTP_OK);
+            if ($servico) {
+                $this->response([
+                    'status' => true,
+                    'message' => 'Detalhes do Serviço',
+                    'result' => $servico,
+                ], REST_Controller::HTTP_OK);
+            }
         }
 
         $this->response([
             'status' => false,
-            'message' => 'Nenhum Produto localizado.',
+            'message' => 'Nenhum Serviço localizado.',
             'result' => null,
-        ], REST_Controller::HTTP_OK);
+        ], REST_Controller::HTTP_NOT_FOUND);
     }
 
     public function index_post()
@@ -90,10 +91,11 @@ class ServicosController extends REST_Controller
         ];
 
         if ($this->servicos_model->add('servicos', $data)) {
+            $this->load->model('Api_model');
             $this->response([
                 'status' => true,
                 'message' => 'Serviço adicionado com sucesso!',
-                'result' => $this->servicos_model->get('servicos', '*', "descricao = '{$data['descricao']}'", 1, 0, true),
+                'result' => $this->Api_model->lastRow('servicos', 'idServicos'),
             ], REST_Controller::HTTP_CREATED);
         }
 

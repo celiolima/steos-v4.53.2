@@ -21,20 +21,25 @@ class ClientCobrancasController extends REST_Controller
     public function index_get()
     {
         $clientLogged = $this->logged_client();
-        
-        $cobrancas = $this->Conecte_model->getCobrancas('cobrancas', '*', '', 20, $this->uri->segment(3), '', '', $this->logged_client()->usuario->idClientes);
-        
+        $clienteId = (int) $clientLogged->usuario->idClientes;
+        $perPage = (int) ($this->get('perPage', true) ?: 20);
+        $page = max(0, (int) $this->get('page', true));
+        $start = $page * $perPage;
+
+        $cobrancas = $this->Conecte_model->getCobrancas('cobrancas', '*', '', $perPage, $start, false, '', $clienteId);
+
         if (empty($cobrancas)) {
             $this->response([
-                'status' => false,
-                'message' => 'Nenhum resultado encontrado'
-            ], REST_Controller::HTTP_NOT_FOUND);
+                'status' => true,
+                'message' => 'Nenhuma cobrança encontrada',
+                'result' => [],
+            ], REST_Controller::HTTP_OK);
         }
 
         foreach ($cobrancas as $cobranca) {
             unset($cobranca->senha);
         }
-        
+
         $this->response([
             'status' => true,
             'message' => 'Listando resultados',

@@ -31,6 +31,32 @@ $route['api/v1/os/(:num)/anotacoes/(:num)'] = 'api/v1/OsController/anotacoes/$1/
 $route['api/v1/os/(:num)/anexos'] = 'api/v1/OsController/anexos/$1';
 $route['api/v1/os/(:num)/anexos/(:num)'] = 'api/v1/OsController/anexos/$1/$2';
 $route['api/v1/os/(:num)/desconto'] = 'api/v1/OsController/desconto/$1';
+$route['api/v1/os/(:num)/checklists'] = 'api/v1/OsController/checklists/$1';
+
+// Novos modulos administrativos STEOS v4.53.2
+$route['api/v1/contratos'] = 'api/v1/ContratosController/index';
+$route['api/v1/contratos/(:num)'] = 'api/v1/ContratosController/index/$1';
+
+$route['api/v1/cobrancas'] = 'api/v1/CobrancasController/index';
+$route['api/v1/cobrancas/(:num)'] = 'api/v1/CobrancasController/index/$1';
+$route['api/v1/cobrancas/(:num)/pix'] = 'api/v1/CobrancasController/pix/$1';
+
+$route['api/v1/nfse'] = 'api/v1/NfseController/index';
+$route['api/v1/nfse/servicos'] = 'api/v1/NfseController/servicos';
+$route['api/v1/nfse/emitir/(:num)'] = 'api/v1/NfseController/emitir/$1';
+$route['api/v1/nfse/consultar/(:num)'] = 'api/v1/NfseController/consultar/$1';
+$route['api/v1/nfse/cancelar/(:num)'] = 'api/v1/NfseController/cancelar/$1';
+$route['api/v1/nfse/(:num)'] = 'api/v1/NfseController/index/$1';
+
+$route['api/v1/financeiro'] = 'api/v1/FinanceiroController/index';
+$route['api/v1/financeiro/resumo'] = 'api/v1/FinanceiroController/resumo';
+$route['api/v1/financeiro/(:num)'] = 'api/v1/FinanceiroController/index/$1';
+
+$route['api/v1/veiculos'] = 'api/v1/VeiculosController/index';
+$route['api/v1/veiculos/(:num)'] = 'api/v1/VeiculosController/index/$1';
+
+$route['api/v1/vendas'] = 'api/v1/VendasController/index';
+$route['api/v1/vendas/(:num)'] = 'api/v1/VendasController/index/$1';
 
 /*
 Routes for clients API
@@ -47,3 +73,6 @@ $route['api/v1/client/compras'] = 'api/v1/client/ClientComprasController/index';
 $route['api/v1/client/compras/(:num)'] = 'api/v1/client/ClientComprasController/index/$1';
 
 $route['api/v1/client/cobrancas'] = 'api/v1/client/ClientCobrancasController/index';
+
+$route['api/v1/client/contratos'] = 'api/v1/client/ClientContratosController/index';
+$route['api/v1/client/contratos/(:num)'] = 'api/v1/client/ClientContratosController/index/$1';

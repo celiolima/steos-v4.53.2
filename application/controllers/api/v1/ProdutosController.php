@@ -25,12 +25,12 @@ class ProdutosController extends REST_Controller
         }
 
         if (! $id) {
-            $search = trim($this->get('search', true));
-            $where = $search ? "codDeBarra LIKE '%{$search}%' OR descricao LIKE '%{$search}%'" : '';
+            $search = trim((string) $this->get('search', true));
+            $where = $search !== '' ? $this->db->escape_like_str($search) : '';
 
-            $perPage = $this->get('perPage', true) ?: 20;
-            $page = $this->get('page', true) ?: 0;
-            $start = $page ? ($perPage * $page) : 0;
+            $perPage = (int) ($this->get('perPage', true) ?: 20);
+            $page = (int) ($this->get('page', true) ?: 0);
+            $start = $page > 0 ? ($perPage * $page) : 0;
 
             $produtos = $this->produtos_model->get('produtos', '*', $where, $perPage, $start);
 
@@ -43,19 +43,20 @@ class ProdutosController extends REST_Controller
 
         if ($id && is_numeric($id)) {
             $produto = $this->produtos_model->getById($id);
-
-            $this->response([
-                'status' => true,
-                'message' => 'Detalhes do Produto',
-                'result' => $produto,
-            ], REST_Controller::HTTP_OK);
+            if ($produto) {
+                $this->response([
+                    'status' => true,
+                    'message' => 'Detalhes do Produto',
+                    'result' => $produto,
+                ], REST_Controller::HTTP_OK);
+            }
         }
 
         $this->response([
             'status' => false,
             'message' => 'Nenhum Produto localizado.',
             'result' => null,
-        ], REST_Controller::HTTP_OK);
+        ], REST_Controller::HTTP_NOT_FOUND);
     }
 
     public function index_post()
@@ -96,10 +97,11 @@ class ProdutosController extends REST_Controller
         ];
 
         if ($this->produtos_model->add('produtos', $data)) {
+            $this->load->model('Api_model');
             $this->response([
                 'status' => true,
                 'message' => 'Produto adicionado com sucesso!',
-                'result' => $this->produtos_model->get('produtos', '*', "descricao = '{$data['descricao']}'", 1, 0, true),
+                'result' => $this->Api_model->lastRow('produtos', 'idProdutos'),
             ], REST_Controller::HTTP_CREATED);
         }
 

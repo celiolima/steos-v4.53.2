@@ -11,7 +11,24 @@ class OsController extends REST_Controller
         parent::__construct();
 
         $this->load->model('os_model');
+        $this->load->model('tecnicos_os_model');
+        $this->load->model('equipamentos_os_model');
         $this->load->model('Api_model');
+    }
+
+    private function parseFilterDate($dateStr)
+    {
+        $dateStr = trim((string) $dateStr);
+        if ($dateStr === '') {
+            return null;
+        }
+        if (strpos($dateStr, '/') !== false) {
+            $parts = explode('/', $dateStr);
+            if (count($parts) === 3) {
+                return $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+            }
+        }
+        return $dateStr;
     }
 
     public function index_get($id = '')
@@ -26,34 +43,52 @@ class OsController extends REST_Controller
 
         $where_array = [];
 
-        $pesquisa = trim($this->get('search', true));
+        $pesquisa = trim((string) $this->get('search', true));
         $status = $this->get('status', true);
-        $de = $this->get('from', true);
-        $ate = $this->get('to', true);
+        $de = $this->parseFilterDate($this->get('from', true));
+        $ate = $this->parseFilterDate($this->get('to', true));
+        $fechDe = $this->parseFilterDate($this->get('data_fech_de', true));
+        $fechAte = $this->parseFilterDate($this->get('data_fech_ate', true));
+        $tecnico = $this->get('tecnico', true);
+        $local = $this->get('local', true);
+        $tipo = $this->get('tipo', true);
+        $manPrevnt = $this->get('manPrevnt', true);
 
-        if ($pesquisa) {
+        if ($pesquisa !== '') {
             $where_array['pesquisa'] = $pesquisa;
         }
         if ($status) {
             $where_array['status'] = $status;
         }
         if ($de) {
-            $de = explode('/', $de);
-            $de = $de[2] . '-' . $de[1] . '-' . $de[0];
-
             $where_array['de'] = $de;
         }
         if ($ate) {
-            $ate = explode('/', $ate);
-            $ate = $ate[2] . '-' . $ate[1] . '-' . $ate[0];
-
             $where_array['ate'] = $ate;
+        }
+        if ($fechDe) {
+            $where_array['data_fech_de'] = $fechDe;
+        }
+        if ($fechAte) {
+            $where_array['data_fech_ate'] = $fechAte;
+        }
+        if ($tecnico) {
+            $where_array['tecnico'] = $tecnico;
+        }
+        if ($local) {
+            $where_array['local'] = $local;
+        }
+        if ($tipo) {
+            $where_array['tipo'] = $tipo;
+        }
+        if ($manPrevnt !== null && $manPrevnt !== '') {
+            $where_array['manPrevnt'] = $manPrevnt;
         }
 
         if (! $id) {
-            $perPage = $this->get('perPage', true) ?: 20;
-            $page = $this->get('page', true) ? ($this->get('page', true) * $perPage) : 0;
-            $start = $page ? ($perPage * $page) : 0;
+            $perPage = (int) ($this->get('perPage', true) ?: 20);
+            $page = (int) ($this->get('page', true) ?: 0);
+            $start = $page > 0 ? ($perPage * $page) : 0;
 
             $oss = $this->os_model->getOs(
                 'os',
@@ -62,7 +97,7 @@ class OsController extends REST_Controller
                 COALESCE((SELECT SUM(servicos_os.preco * servicos_os.quantidade ) FROM servicos_os WHERE servicos_os.os_id = os.idOs), 0) totalServicos',
                 $where_array,
                 $perPage,
-                $page
+                $start
             );
 
             $this->response([
@@ -73,16 +108,28 @@ class OsController extends REST_Controller
         }
 
         $os = $this->os_model->getById($id);
+        if (! $os) {
+            $this->response([
+                'status' => false,
+                'message' => 'Ordem de Serviço não encontrada.',
+            ], REST_Controller::HTTP_NOT_FOUND);
+        }
+
         $os->produtos = $this->os_model->getProdutos($id);
         $os->servicos = $this->os_model->getServicos($id);
         $os->anexos = $this->os_model->getAnexos($id);
         $os->anotacoes = $this->os_model->getAnotacoes($id);
+        $os->tecnicos = $this->tecnicos_os_model->getById($id);
+        $os->equipamentos = $this->equipamentos_os_model->getAll($id);
+        $os->cobrancas = $this->os_model->getCobrancas($id);
+        $os->checklists = $this->db->where('os_id', $id)->order_by('idChecklist', 'DESC')->get('os_checklists')->result();
         $os->calcTotal = $this->calcTotal($id);
         unset($os->senha);
         $os->totalProdutos = array_sum(array_map(fn ($p) => $p->preco * $p->quantidade, $os->produtos));
         $os->totalServicos = array_sum(array_map(fn ($p) => $p->preco * $p->quantidade, $os->servicos));
 
-        // Montando texto para whatsapp
+        $totalProdutos = 0;
+        $totalServico = 0;
         if ($return = $this->os_model->valorTotalOS($id)) {
             $totalProdutos = $return['totalProdutos'];
             $totalServico = $return['totalServico'];
@@ -140,17 +187,25 @@ class OsController extends REST_Controller
         }
 
         $data = [
+            'dataAbertura' => date('Y-m-d H:i:s'),
             'dataInicial' => $dataInicial,
             'clientes_id' => $this->post('clientes_id', true),
             'usuarios_id' => $this->post('usuarios_id', true),
+            'contratos_id' => $this->post('contratos_id', true) ?: null,
             'dataFinal' => $dataFinal,
             'garantia' => $this->post('garantia', true),
             'garantias_id' => $termoGarantiaId,
             'descricaoProduto' => $this->post('descricaoProduto', true),
             'defeito' => $this->post('defeito', true),
+            'defeito_encontrado' => $this->post('defeito_encontrado', true),
             'status' => $this->post('status', true),
             'observacoes' => $this->post('observacoes', true),
             'laudoTecnico' => $this->post('laudoTecnico', true),
+            'local' => $this->post('local', true),
+            'tipo' => $this->post('tipo', true) ?: 'Avulso',
+            'manutPreventiva' => (int) ($this->post('manutPreventiva', true) ?: 0),
+            'prioridade' => $this->post('prioridade', true),
+            'classificacao' => $this->post('classificacao', true),
             'faturado' => 0,
         ];
 
@@ -261,15 +316,22 @@ class OsController extends REST_Controller
             'dataInicial' => $dataInicial,
             'clientes_id' => $this->put('clientes_id', true),
             'usuarios_id' => $this->put('usuarios_id', true),
+            'contratos_id' => $this->put('contratos_id') !== null ? ($this->put('contratos_id', true) ?: null) : $os->contratos_id,
             'dataFinal' => $dataFinal,
             'garantia' => $this->put('garantia', true),
             'garantias_id' => $termoGarantiaId,
             'descricaoProduto' => $this->put('descricaoProduto', true),
             'defeito' => $this->put('defeito', true),
+            'defeito_encontrado' => $this->put('defeito_encontrado') !== null ? $this->put('defeito_encontrado', true) : ($os->defeito_encontrado ?? null),
             'status' => $this->put('status', true),
             'observacoes' => $this->put('observacoes', true),
             'laudoTecnico' => $this->put('laudoTecnico', true),
-            'faturado' => 0,
+            'local' => $this->put('local') !== null ? $this->put('local', true) : ($os->local ?? null),
+            'tipo' => $this->put('tipo') !== null ? $this->put('tipo', true) : ($os->tipo ?? 'Avulso'),
+            'manutPreventiva' => $this->put('manutPreventiva') !== null ? (int) $this->put('manutPreventiva', true) : (int) ($os->manutPreventiva ?? 0),
+            'prioridade' => $this->put('prioridade') !== null ? $this->put('prioridade', true) : ($os->prioridade ?? null),
+            'classificacao' => $this->put('classificacao') !== null ? $this->put('classificacao', true) : ($os->classificacao ?? null),
+            'faturado' => $this->put('faturado') !== null ? (int) $this->put('faturado', true) : (int) ($os->faturado ?? 0),
         ];
 
         if (strtolower($this->put('status')) == 'cancelado' && strtolower($os->status) != 'cancelado') {
@@ -331,7 +393,7 @@ class OsController extends REST_Controller
     public function index_delete($id)
     {
         $this->logged_user();
-        if (! $this->permission->checkPermission($this->logged_user()->level, 'dServico')) {
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'dOs')) {
             $this->response([
                 'status' => false,
                 'message' => 'Você não está autorizado a Apagar OS!',
@@ -356,7 +418,7 @@ class OsController extends REST_Controller
             }
         }
 
-        if (isset($os->idCobranca) != null) {
+        if (!empty($os->idCobranca)) {
             if ($os->status == 'canceled') {
                 $this->os_model->delete('cobrancas', 'os_id', $id);
             } else {
@@ -378,7 +440,7 @@ class OsController extends REST_Controller
         $this->os_model->delete('anexos', 'os_id', $id);
 
         if ((int) $os->faturado === 1) {
-            $this->os_model->delete('lancamentos', 'descricao', "Fatura de OS - #${id}");
+            $this->os_model->delete('lancamentos', 'descricao', "Fatura de OS - #{$id}");
         }
 
         if ($this->os_model->delete('os', 'idOs', $id)) {
@@ -393,6 +455,28 @@ class OsController extends REST_Controller
             'status' => false,
             'message' => 'Não foi possível excluir a OS Avise ao Administrador.',
         ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    public function checklists_get($id)
+    {
+        $this->logged_user();
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'vOs')) {
+            $this->response([
+                'status' => false,
+                'message' => 'Você não está autorizado a Visualizar Ordens de Serviços',
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+        $checklists = $this->db->where('os_id', $id)->order_by('idChecklist', 'DESC')->get('os_checklists')->result();
+        foreach ($checklists as $ck) {
+            $ck->itens = $this->db->where('checklist_id', $ck->idChecklist)->get('os_checklists_itens')->result();
+        }
+
+        $this->response([
+            'status' => true,
+            'message' => 'Checklists da O.S.',
+            'result' => $checklists,
+        ], REST_Controller::HTTP_OK);
     }
 
     public function desconto_post($id)

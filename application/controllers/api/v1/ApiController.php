@@ -25,6 +25,11 @@ class ApiController extends REST_Controller
             'servicos' => $this->steos_model->count('servicos'),
             'garantias' => $this->steos_model->count('garantias'),
             'vendas' => $this->steos_model->count('vendas'),
+            'contratos' => $this->steos_model->count('contratos'),
+            'equipamentos' => $this->steos_model->count('equipamentos'),
+            'veiculos' => $this->steos_model->count('veiculos'),
+            'tecnicos' => $this->steos_model->count('tecnicos'),
+            'cobrancas' => $this->steos_model->count('cobrancas'),
         ];
 
         if ($this->permission->checkPermission($this->logged_user()->level, 'vOs')) {
@@ -51,13 +56,17 @@ class ApiController extends REST_Controller
 
         $this->load->model('os_model');
         $status = $this->get('status', true) ?: null;
+        $tecnicos = $this->get('tecnicos', true) ?: null;
         $start = $this->get('start', true) ?: date('Y-m-01');
         $end = $this->get('end', true) ?: date('Y-m-t');
 
-        $allOs = $this->steos_model->calendario($start, $end, $status);
+        $allOs = $this->steos_model->calendario($start, $end, $status, $tecnicos);
 
         $events = array_map(function ($os) {
             switch ($os->status) {
+                case 'A Sair | Aguard Conclusão':
+                    $cor = !empty($os->manutPreventiva) ? '#AEB404' : '#00a65a';
+                    break;
                 case 'Aberto':
                     $cor = '#00cd00';
                     break;
@@ -88,21 +97,24 @@ class ApiController extends REST_Controller
             }
 
             return [
+                'id' => $os->idOs,
                 'title' => "OS: {$os->idOs}, Cliente: {$os->nomeCliente}",
-                'start' => $os->dataFinal,
+                'start' => $os->dataInicial ?: $os->dataFinal,
                 'end' => $os->dataFinal,
                 'color' => $cor,
                 'extendedProps' => [
                     'id' => $os->idOs,
                     'cliente' => '<b>Cliente:</b> ' . $os->nomeCliente,
-                    'dataInicial' => '<b>Data Inicial:</b> ' . date('d/m/Y', strtotime($os->dataInicial)),
-                    'dataFinal' => '<b>Data Final:</b> ' . date('d/m/Y', strtotime($os->dataFinal)),
+                    'dataInicial' => '<b>Data Inicial:</b> ' . date('d/m/Y H:i', strtotime($os->dataInicial)),
+                    'dataFinal' => '<b>Data Final:</b> ' . date('d/m/Y H:i', strtotime($os->dataFinal)),
                     'garantia' => '<b>Garantia:</b> ' . $os->garantia . ' dias',
                     'status' => '<b>Status da OS:</b> ' . $os->status,
-                    'description' => '<b>Descrição/Produto:</b> ' . strip_tags(html_entity_decode($os->descricaoProduto)),
-                    'defeito' => '<b>Defeito:</b> ' . strip_tags(html_entity_decode($os->defeito)),
-                    'observacoes' => '<b>Observações:</b> ' . strip_tags(html_entity_decode($os->observacoes)),
-                    'total' => '<b>Valor Total:</b> R$ ' . number_format($os->totalProdutos + $os->totalServicos, 2, ',', '.'),
+                    'manutPreventiva' => (int) ($os->manutPreventiva ?? 0),
+                    'tecnicos' => $os->tecnicos ?? '',
+                    'description' => '<b>Descrição/Produto:</b> ' . strip_tags(html_entity_decode((string) $os->descricaoProduto)),
+                    'defeito' => '<b>Defeito:</b> ' . strip_tags(html_entity_decode((string) $os->defeito)),
+                    'observacoes' => '<b>Observações:</b> ' . strip_tags(html_entity_decode((string) $os->observacoes)),
+                    'total' => '<b>Valor Total:</b> R$ ' . number_format(($os->totalProdutos ?? 0) + ($os->totalServicos ?? 0), 2, ',', '.'),
                     'desconto' => '<b>Desconto: </b>R$ ' . number_format($this->desconto(floatval($os->valorTotal), floatval($os->desconto), strval($os->tipo_desconto)), 2, ',', '.'),
                     'valorFaturado' => '<b>Valor Faturado:</b> ' . ($os->faturado ? 'R$ ' . number_format($os->valorTotal - $this->desconto(floatval($os->valorTotal), floatval($os->desconto), strval($os->tipo_desconto)), 2, ',', '.') : 'PENDENTE'),
                     'editar' => $this->os_model->isEditable($os->idOs),
@@ -113,6 +125,7 @@ class ApiController extends REST_Controller
         $result = [
             'start' => $start,
             'end' => $end,
+            'events' => $events,
             'allOs' => $allOs,
         ];
 
@@ -134,7 +147,7 @@ class ApiController extends REST_Controller
 
         $this->response([
             'status' => true,
-            'message' => 'Dados do Map-OS',
+            'message' => 'Dados do STEOS',
             'result' => $result,
         ], REST_Controller::HTTP_OK);
     }

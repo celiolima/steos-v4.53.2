@@ -25,16 +25,19 @@ class ClientesController extends REST_Controller
         }
 
         if (! $id) {
-            $search = trim($this->get('search', true));
-            $where = $search ? "nomeCliente LIKE '%{$search}%' OR documento LIKE '%{$search}%' OR telefone LIKE '%{$search}%' OR celular LIKE '%{$search}%' OR email LIKE '%{$search}%' OR contato LIKE '%{$search}%'" : '';
+            $search = trim((string) $this->get('search', true));
+            $where = $search !== '' ? $this->db->escape_like_str($search) : '';
 
-            $perPage = $this->get('perPage', true) ?: 20;
-            $page = $this->get('page', true) ?: 0;
-            $start = $page ? ($perPage * $page) : 0;
+            $perPage = (int) ($this->get('perPage', true) ?: 20);
+            $page = (int) ($this->get('page', true) ?: 0);
+            $start = $page > 0 ? ($perPage * $page) : 0;
 
             $clientes = $this->clientes_model->get('clientes', '*', $where, $perPage, $start);
 
             if ($clientes) {
+                foreach ($clientes as $c) {
+                    unset($c->senha);
+                }
                 $this->response([
                     'status' => true,
                     'message' => 'Lista de Clientes',
@@ -47,6 +50,7 @@ class ClientesController extends REST_Controller
             $cliente = $this->clientes_model->getById($id);
 
             if ($cliente) {
+                unset($cliente->senha);
                 $cliente->ordensServicos = $this->clientes_model->getOsByCliente($id);
                 $this->response([
                     'status' => true,
@@ -59,7 +63,7 @@ class ClientesController extends REST_Controller
                 'status' => false,
                 'message' => 'Nenhum cliente localizado com esse ID.',
                 'result' => null,
-            ], REST_Controller::HTTP_OK);
+            ], REST_Controller::HTTP_NOT_FOUND);
         }
 
         $this->response([
@@ -114,11 +118,15 @@ class ClientesController extends REST_Controller
             'fornecedor' => $this->post('fornecedor', true) == true ? 1 : 0,
         ];
 
-        if ($this->clientes_model->add('clientes', $data) == true) {
+        if ($newId = $this->clientes_model->add('clientes', $data)) {
+            $clienteCriado = $this->clientes_model->getById($newId);
+            if ($clienteCriado) {
+                unset($clienteCriado->senha);
+            }
             $this->response([
                 'status' => true,
                 'message' => 'Cliente adicionado com sucesso!',
-                'result' => $this->clientes_model->get('clientes', '*', "telefone = '{$data['telefone']}'", 1, 0, true),
+                'result' => $clienteCriado,
             ], REST_Controller::HTTP_CREATED);
         }
 
@@ -167,10 +175,14 @@ class ClientesController extends REST_Controller
         }
 
         if ($this->clientes_model->edit('clientes', $data, 'idClientes', $id) == true) {
+            $clienteAtualizado = $this->clientes_model->getById($id);
+            if ($clienteAtualizado) {
+                unset($clienteAtualizado->senha);
+            }
             $this->response([
                 'status' => true,
                 'message' => 'Cliente editado com sucesso!',
-                'result' => $this->clientes_model->getById($id),
+                'result' => $clienteAtualizado,
             ], REST_Controller::HTTP_OK);
         }
 

@@ -47,14 +47,16 @@ class ClientOsController extends REST_Controller
         }
     }
 
-    public function os_get(int $id = null)
+    public function os_get(?int $id = null)
     {
         $clientLogged = $this->logged_client();
+        $clienteId = (int) $clientLogged->usuario->idClientes;
         if (! $id) {
-            $config['per_page'] = $this->CI->db->get_where('configuracoes', ['config' => 'per_page'])->row_object()->valor;
-            $this->pagination->initialize($config);
-            $data['results'] = $this->Conecte_model->getOs('os', '*', '', $config['per_page'], $this->uri->segment(3), '', '', $this->logged_client()->usuario->idClientes);
-        
+            $perPage = (int) ($this->get('perPage', true) ?: $this->CI->db->get_where('configuracoes', ['config' => 'per_page'])->row_object()->valor ?: 20);
+            $page = max(0, (int) $this->get('page', true));
+            $start = $page * $perPage;
+            $data['results'] = $this->Conecte_model->getOs('os', '*', '', $perPage, $start, false, '', $clienteId);
+
             $this->response([
                 'status' => true,
                 'message' => 'Listando resultados',
@@ -63,19 +65,26 @@ class ClientOsController extends REST_Controller
                 ],
             ], REST_Controller::HTTP_OK);
         }
-        
+
         $data['pix_key'] = $this->CI->db->get_where('configuracoes', ['config' => 'pix_key'])->row_object()->valor;
-        $data['result'] = $this->os_model->getById($this->uri->segment(5));
-        if (empty($data['result'])) {
+        $os = $this->os_model->getById($id);
+        if (empty($os)) {
             $this->response([
                 'status' => false,
-                'message' => 'Ordem de serviço encontrada'
+                'message' => 'Ordem de serviço não encontrada.'
             ], REST_Controller::HTTP_NOT_FOUND);
         }
-        $os = $this->os_model->getById($this->uri->segment(5));
-        $produtos = $this->os_model->getProdutos($this->uri->segment(5));
-        $servicos = $this->os_model->getServicos($this->uri->segment(5));
-        $anexos = $this->os_model->getAnexos($this->uri->segment(5));
+
+        if ((int) $os->clientes_id !== $clienteId) {
+            $this->response([
+                'status' => false,
+                'message' => 'Você não possui permissão para visualizar esta Ordem de Serviço.'
+            ], REST_Controller::HTTP_FORBIDDEN);
+        }
+
+        $produtos = $this->os_model->getProdutos($id);
+        $servicos = $this->os_model->getServicos($id);
+        $anexos = $this->os_model->getAnexos($id);
         $emitente = $this->steos_model->getEmitente();
         $qrCode = $this->os_model->getQrCode(
             $id,
@@ -109,7 +118,7 @@ class ClientOsController extends REST_Controller
             'qrCode' => $qrCode,
             'chaveFormatada' => $chaveFormatada,
         ];
-        
+
         $this->response([
             'status' => true,
             'message' => 'Listando resultados',
@@ -176,7 +185,7 @@ class ClientOsController extends REST_Controller
         $this->load->model('Audit_model');
         $log_data = [
             'Usuario' => '[APP]',
-            'tarefa' => 'Cliente ' . $this->logged_client()->usuario->nomeCliente . " Adicionou uma OS Nº ${osId} pelo APP",
+            'tarefa' => 'Cliente ' . $this->logged_client()->usuario->nomeCliente . " Adicionou uma OS Nº {$osId} pelo APP",
             'data' => date('Y-m-d'),
             'hora' => date('H:i:s'),
             'ip' => $_SERVER['REMOTE_ADDR']

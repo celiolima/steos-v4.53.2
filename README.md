@@ -1,29 +1,52 @@
-# 🚀 STEOS - Sistema de Gestão ERP
+# STEOS v4.53.2 — Sistema de Gestão ERP Comercial e de Serviços
 
-**Versão:** 4.53.2 (Custom Steos Branch)
+O **STEOS** é um ERP completo voltado para empresas de assistência técnica, prestação de serviços, locação de equipamentos e contratos de manutenção recorrente. Construído em **PHP 8.4** sobre **CodeIgniter 3 (MVC)** e **MySQL 8.0**, com integração nativa à **API v3 do Asaas** (Cobranças, Assinaturas, Webhooks e NFS-e no Portal Nacional + Reforma Tributária IBS/CBS) e **API RESTful v1 (JWT)**.
 
-O **STEOS** é um ERP e sistema de gestão robusto, desenvolvido especialmente para empresas de serviços, locação, contratos de manutenção e assistências técnicas. Construído sobre o framework CodeIgniter (PHP) com banco de dados MySQL, o sistema oferece gestão financeira completa integrada com gateways de pagamento.
+---
 
-## 🛠️ Tecnologias e Setup
-- **Backend:** CodeIgniter 3 (PHP)
-- **Banco de Dados:** MySQL 8.0
-- **Frontend:** Bootstrap 4, jQuery, DataTables, SweetAlert2
-- **Infraestrutura:** Docker e Docker Compose
+## Stack Tecnológica
+- **Backend:** PHP 8.4 (`php:8.4-apache`), CodeIgniter 3, `CodePhix\Asaas` + `asaas_helper` cURL v3, `REST_Controller` JWT.
+- **Banco de Dados:** MySQL 8.0 (`utf8mb4` / `utf8mb4_unicode_ci`) com migrations versionadas (`application/database/migrations/`) e snapshot estrutural (`migrations/schema_snapshot.json`).
+- **Frontend:** Bootstrap 4, jQuery, DataTables, FullCalendar, Chart.js, Select2, SweetAlert2, Trumbowyg, MaskMoney e assinaturas em Canvas HTML5.
+- **Infraestrutura:** Docker Compose (Desenvolvimento com live-reload vs Produção com Traefik Let's Encrypt e CI/CD GitHub Actions Zero-Data-Loss).
 
-### 🐳 Subindo o Ambiente (Docker)
-Para iniciar o projeto localmente com as configurações padrão e orquestração automatizada:
-```bash
-docker-compose up -d --build
+---
+
+## Fluxo Automatizado de Ambientes (Dev vs Produção)
+
+### 1. Desenvolvimento Local (`branch develop` + Asaas Sandbox)
+```powershell
+.\steos-env.ps1 start      # Garante rede Docker + override com live-reload e sobe http://localhost:8080
+.\steos-env.ps1 pull-db    # Clona banco real da VPS para Dev preservando modo Sandbox
+.\steos-env.ps1 status     # Status dos containers locais/VPS e runs do Actions
+.\steos-env.ps1 stop       # Para containers locais
 ```
-O Docker orquestrará os seguintes contêineres:
-- `steosMySql`: Servidor de Banco de Dados MySQL
-- `steos`: Servidor Web Apache (rodando a aplicação na porta 8080)
-- `steosMyadmin`: Interface PHPMyAdmin (disponível na porta 9080)
 
-> **Dica:** As migrações do CodeIgniter (`php index.php tools migrate`) e a verificação de dependências do Composer são executadas automaticamente no boot do contêiner da aplicação web, garantindo que o banco de dados esteja sempre na estrutura mais recente.
+### 2. Banco de Dados & Migrations (`steos-db-sync.ps1`)
+```powershell
+.\steos-db-sync.ps1 diff
+.\steos-db-sync.ps1 sync "descricao_da_alteracao"
+.\steos-db-sync.ps1 migrate
+```
 
-## 📖 Documentação Completa e Arquitetura
+### 3. Versionamento & Deploy em Produção (`branch main` -> VPS `ste01`)
+```powershell
+.\steos-env.ps1 save "mensagem"     # Salva commit apenas na develop (sem deploy)
+.\steos-env.ps1 release "mensagem"  # Merge develop -> main e push (dispara GitHub Actions -> /usr/local/bin/steos-deploy)
+```
+O deploy em produção realiza backup `mysqldump` pré-deploy, protege `.env.production` e uploads do volume `steos_data`, executa `php index.php tools migrate` e conta com rollback automático.
 
-Para obter detalhes profundos sobre as regras de negócio, estrutura MVC, Integrações (Asaas API V3), Portal do Cliente e o Módulo de Contratos, preparamos um documento estendido:
+---
 
-👉 **[Acessar a Documentação Técnica Detalhada (DOCUMENTACAO_STEOS.md)](./DOCUMENTACAO_STEOS.md)**
+## Portas e Acessos Locais
+- **Aplicação Web STEOS:** [http://localhost:8080](http://localhost:8080)
+- **Portal do Cliente (Conecte):** [http://localhost:8080/index.php/mine](http://localhost:8080/index.php/mine)
+- **phpMyAdmin:** [http://localhost:9080](http://localhost:9080)
+- **MySQL 8.0:** `localhost:3306`
+
+---
+
+## Documentação Complementar
+- **[DOCUMENTACAO_STEOS.md](./DOCUMENTACAO_STEOS.md)** — Documentação técnica consolidada do sistema.
+- **[.specs/](./.specs/)** — Especificações detalhadas por módulo, controller, model, view, API v1 e configurações.
+- **[.agents/memoria.md](./.agents/memoria.md)** — Memória persistente global e governança dos agentes especialistas.

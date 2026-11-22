@@ -3,22 +3,14 @@
 ## 1. Identificação
 - **Caminho:** `e:\DEV\EMISSOR DE NOTAS\STEOS\application\config\routes.php`
 - **Tipo:** Config
-- **Módulo:** configuracoes
+- **Módulo:** `configuracoes`
 
-## 2. Propósito
-Responsável pelo processamento e lógica pertinente à camada de Config do módulo de configuracoes.
-
-## 3. Dependências
-N/A
-
-## 4. Estrutura Interna
-
-## 5. Fluxo de Dados
-N/A
-
-## 6. Rotas Relacionadas
-N/A
-
-## 7. Observações e Regras de Negócio
-- Documentação autogerada para reconstrução.
-- Certifique-se de manter os padrões do CodeIgniter 3.
+## 2. Estrutura de Roteamento Configurada
+- `$route['default_controller'] = 'steos';`
+- **Mapeamento explícito em lowercase para Controllers CamelCase (blindagem Linux case-sensitive):**
+  - `classificacaofinanceira` -> `ClassificacaoFinanceira`
+  - `grupofinanceiro` -> `GrupoFinanceiro`
+  - `centrogastos` -> `CentroGastos`
+  - `formapagamento` -> `FormaPagamento`
+- **Carregamento condicional da API REST v1:**
+  - Quando `$_ENV['API_ENABLED']` for `true`, carrega `APPPATH . 'config/routes_api.php'`.

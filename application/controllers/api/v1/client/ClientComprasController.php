@@ -22,26 +22,29 @@ class ClientComprasController extends REST_Controller
         $this->load->model('os_model');
     }
 
-    public function index_get(int $idVendas = null)
+    public function index_get(?int $idVendas = null)
     {
         $clientLogged = $this->logged_client();
+        $clienteId = (int) $clientLogged->usuario->idClientes;
 
         if ($idVendas == '') {
-            $config['per_page'] = $this->CI->db->get_where('configuracoes', ['config' => 'per_page'])->row_object()->valor;
-            $this->pagination->initialize($config);
+            $perPage = (int) ($this->get('perPage', true) ?: $this->CI->db->get_where('configuracoes', ['config' => 'per_page'])->row_object()->valor ?: 20);
+            $page = max(0, (int) $this->get('page', true));
+            $start = $page * $perPage;
 
-            $compras = $this->Conecte_model->getCompras('vendas', '*', '', $config['per_page'], $this->uri->segment(3), '', '', $this->logged_client()->usuario->idClientes);
+            $compras = $this->Conecte_model->getCompras('vendas', '*', '', $perPage, $start, false, '', $clienteId);
             if (empty($compras)) {
                 $this->response([
-                    'status' => false,
-                    'message' => 'Nenhuma compra encontrada'
-                ], REST_Controller::HTTP_NOT_FOUND);
+                    'status' => true,
+                    'message' => 'Nenhuma compra encontrada',
+                    'result' => ['Compras' => []],
+                ], REST_Controller::HTTP_OK);
             }
 
             foreach ($compras as $compra) {
                 unset($compra->senha);
             }
-            
+
             $this->response([
                 'status' => true,
                 'message' => 'Listando resultados',
@@ -51,24 +54,31 @@ class ClientComprasController extends REST_Controller
             ], REST_Controller::HTTP_OK);
         }
 
+        $this->load->model('vendas_model');
+        $result = $this->vendas_model->getById($idVendas);
+        if (empty($result)) {
+            $this->response([
+                'status' => false,
+                'message' => 'Compra não encontrada'
+            ], REST_Controller::HTTP_NOT_FOUND);
+        }
+
+        if ((int) $result->clientes_id !== $clienteId) {
+            $this->response([
+                'status' => false,
+                'message' => 'Você não possui permissão para visualizar esta compra.'
+            ], REST_Controller::HTTP_FORBIDDEN);
+        }
+
         $pixKey = $this->CI->db->get_where('configuracoes', ['config' => 'pix_key'])->row_object()->valor;
         $emitente = $this->steos_model->getEmitente();
-        $qrCode = $this->os_model->getQrCode(
+        $qrCode = $this->vendas_model->getQrCode(
             $idVendas,
             $pixKey,
             $emitente
         );
         $chaveFormatada = $this->format->formatarChave($pixKey);
-        
-        $this->load->model('vendas_model');
-        $result = $this->vendas_model->getById($this->uri->segment(5));
-        if (empty($result)) {
-            $this->response([
-                'status' => false,
-                'message' => 'Compra Não encontrada'
-            ], REST_Controller::HTTP_NOT_FOUND);
-        }
-        $produtos = $this->vendas_model->getProdutos($this->uri->segment(5));
+        $produtos = $this->vendas_model->getProdutos($idVendas);
         unset(
             $result->senha,
             $result->email,
@@ -78,13 +88,13 @@ class ClientComprasController extends REST_Controller
             $result->usuarios_id
         );
         $this->response([
-        'status' => true,
-        'message' => 'Listando resultados',
-        'result' => [
-            'Compras' => $result,
-            'Produtos' => $produtos,
-            'QrCode' => $qrCode,
-            'ChaveFormatada' => $chaveFormatada,
+            'status' => true,
+            'message' => 'Listando resultados',
+            'result' => [
+                'Compras' => $result,
+                'Produtos' => $produtos,
+                'QrCode' => $qrCode,
+                'ChaveFormatada' => $chaveFormatada,
             ],
         ], REST_Controller::HTTP_OK);
     }

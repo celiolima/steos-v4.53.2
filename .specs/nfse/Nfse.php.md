@@ -1,12 +1,13 @@
-# Controller `Nfse.php`
+# Documentação: Nfse.php
 
-## Objetivo
-Módulo responsável pela orquestração e emissão de Notas Fiscais de Serviço Eletrônica (NFSe).
+## 1. Identificação
+- **Caminho:** `e:\DEV\EMISSOR DE NOTAS\STEOS\application\controllers\Nfse.php`
+- **View Associada:** `application/views/nfse/nfse.php`
+- **Tipo:** Controller (`MY_Controller`)
+- **Módulo:** `nfse`
 
-## Funcionalidades Principais
-- Integração com gateways de prefeituras (quando aplicável).
-- Recebimento de ordens e faturamentos fechados, preparando o lote de emissão.
-- Armazenamento de XML/PDF da nota emitida atrelada ao Cliente/Contrato.
-
-## Relacionamentos MVC
-- Relaciona-se intimamente com o fechamento do Financeiro e `Servicos_nfse.php` para codificação municipal e tributária.
+## 2. Funcionalidades e Regras de Negócio
+- Exige permissão `vLancamento` para listagem paginada.
+- `listar()`: consulta tabela `os` com `asaas_invoice_status` preenchido, aplicando filtros por `pesquisa` (cliente, documento, número NFS-e ou `idOs`), `status` e período (`data_de` / `data_ate`), exibindo link PDF, XML, atualização (`os/consultar_nfse`) e cancelamento (`os/cancelar_nfse`).
+- **Status suportados na interface:** `SCHEDULED`, `SYNCHRONIZED`, `PROCESSING`, `AUTHORIZED`, `PROCESSING_CANCELLATION`, `CANCELED`/`CANCELLED`, `CANCELLATION_DENIED` e `ERROR`.
+- **Emissão / Consulta / Cancelamento:** centralizados em `Os.php` (`emitir_nfse`, `consultar_nfse`, `cancelar_nfse`) via `Gateways/Asaas.php` e webhooks `INVOICE_*` em `Asaas_webhook.php`.
