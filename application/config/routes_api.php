@@ -65,6 +65,7 @@ Rotas Para API area do cliente.
 
 $route['api/v1/client'] = 'api/v1/client/ClientOsController/index';
 $route['api/v1/client/auth'] = 'api/v1/client/ClientLoginController/login';
+$route['api/v1/client/auth-bot'] = 'api/v1/client/ClientLoginController/auth_bot';
 
 $route['api/v1/client/os'] = 'api/v1/client/ClientOsController/os';
 $route['api/v1/client/os/(:num)'] = 'api/v1/client/ClientOsController/os/$1';

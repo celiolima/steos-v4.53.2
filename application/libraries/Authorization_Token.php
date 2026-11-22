@@ -37,6 +37,11 @@ class Authorization_Token
     protected $token_header;
 
     /**
+     * CI Instance
+     */
+    protected $CI;
+
+    /**
      * Token Expire Time
      */
     protected $token_expire_time;
@@ -109,25 +114,28 @@ class Authorization_Token
 
                 if (! empty($token_decode) and is_object($token_decode)) {
                     // Check Token API Time [API_TIME]
-                    if (empty($token_decode->API_TIME or ! is_numeric($token_decode->API_TIME))) {
-
+                    if (empty($token_decode->API_TIME) || ! is_numeric($token_decode->API_TIME)) {
                         return ['status' => false, 'message' => 'Token Time Not Define!'];
-                    } else {
-                        /**
-                         * Check Token Time Valid
-                         */
-                        $time_difference = strtotime('now') - $token_decode->API_TIME;
-                        if ($time_difference >= $this->token_expire_time && $regenToken == false) {
-                            return ['status' => false, 'message' => 'Token Time Expire.'];
-
-                        } else {
-                            /**
-                             * All Validation False Return Data
-                             */
-                            return ['status' => true, 'data' => $token_decode];
-                        }
                     }
 
+                    /**
+                     * Check Token Time Valid
+                     */
+                    $time_difference = strtotime('now') - (int) $token_decode->API_TIME;
+                    $effectiveExpire = (int) $this->token_expire_time;
+                    if (isset($token_decode->exp_ttl) && is_numeric($token_decode->exp_ttl) && (int) $token_decode->exp_ttl > 0) {
+                        $ttl = (int) $token_decode->exp_ttl;
+                        $effectiveExpire = $effectiveExpire > 0 ? min($effectiveExpire, $ttl) : $ttl;
+                    }
+
+                    if ($effectiveExpire > 0 && $time_difference >= $effectiveExpire && $regenToken == false) {
+                        return ['status' => false, 'message' => 'Token Time Expire.'];
+                    }
+
+                    /**
+                     * All Validation Passed Return Data
+                     */
+                    return ['status' => true, 'data' => $token_decode];
                 } else {
                     return ['status' => false, 'message' => 'Forbidden'];
                 }
@@ -147,11 +155,20 @@ class Authorization_Token
      */
     private function tokenIsExist($headers)
     {
+        $targetHeader = strtolower(trim((string) ($this->token_header ?? 'Authorization')));
+
         if (! empty($headers) and is_array($headers)) {
             foreach ($headers as $header_name => $header_value) {
-                if (strtolower(trim($header_name)) == strtolower(trim($this->token_header))) {
+                if (strtolower(trim((string) $header_name)) === $targetHeader && ! empty($header_value)) {
                     return ['status' => true, 'token' => $header_value];
                 }
+            }
+        }
+
+        if ($targetHeader === 'authorization') {
+            $serverAuth = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
+            if (! empty($serverAuth)) {
+                return ['status' => true, 'token' => $serverAuth];
             }
         }
 

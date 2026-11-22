@@ -1,0 +1,41 @@
+services:
+  steos-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: steos_mcp
+    restart: unless-stopped
+    environment:
+      PORT: ${PORT:-3001}
+      NODE_ENV: ${NODE_ENV:-production}
+      STEOS_BASE_URL: ${STEOS_BASE_URL:-http://steos}
+      STEOS_SERVICE_EMAIL: ${STEOS_SERVICE_EMAIL:-mcp.service@stesistemas.com}
+      STEOS_SERVICE_PASSWORD: ${STEOS_SERVICE_PASSWORD:-}
+      STEOS_BOT_SECRET: ${STEOS_BOT_SECRET:-}
+      MCP_ADMIN_API_KEY: ${MCP_ADMIN_API_KEY:-}
+      MCP_CLIENT_API_KEY: ${MCP_CLIENT_API_KEY:-}
+      MCP_ENABLE_WRITE: ${MCP_ENABLE_WRITE:-true}
+      MCP_ENABLE_FISCAL_WRITE: ${MCP_ENABLE_FISCAL_WRITE:-false}
+      MCP_CORS_ORIGIN: ${MCP_CORS_ORIGIN:-*}
+      MCP_RATE_LIMIT_PER_MIN: ${MCP_RATE_LIMIT_PER_MIN:-120}
+    ports:
+      - "127.0.0.1:${MCP_HOST_PORT:-3001}:3001"
+    networks:
+      - steos
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.steos-mcp.rule=Host(`mcp.steos.stesistemas.com`)"
+      - "traefik.http.routers.steos-mcp.entrypoints=websecure"
+      - "traefik.http.routers.steos-mcp.tls=true"
+      - "traefik.http.routers.steos-mcp.tls.certresolver=letsencrypt"
+      - "traefik.http.services.steos-mcp.loadbalancer.server.port=3001"
+      - "traefik.docker.network=steos"
+
+networks:
+  steos:
+    external: true

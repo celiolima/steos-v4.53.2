@@ -421,6 +421,21 @@ abstract class REST_Controller extends CI_Controller
     private $auth_override;
 
     /**
+     * @var CI_Controller|null
+     */
+    protected $CI = null;
+
+    /**
+     * @var object|null
+     */
+    protected $user = null;
+
+    /**
+     * @var object|null
+     */
+    protected $client = null;
+
+    /**
      * Extend this function to apply additional checking early on in the process
      *
      * @return void
@@ -2204,72 +2219,108 @@ abstract class REST_Controller extends CI_Controller
         return $array ? $this->CI->db->get($table)->row_array() : $this->CI->db->get($table)->row_object();
     }
 
-    public function logged_user($reGenToken = false)
+    private function extractBearerToken(): string
     {
-        $headers = $this->input->request_headers();
+        $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
 
-        $this->CI = &get_instance();
-        $this->CI->load->config('jwt');
-        $token_header = $this->config->item('token_header');
+        if (empty($header)) {
+            $headers = $this->input->request_headers();
+            if (is_array($headers)) {
+                foreach ($headers as $name => $value) {
+                    if (strtolower(trim((string) $name)) === 'authorization') {
+                        $header = $value;
+                        break;
+                    }
+                }
+            }
+        }
 
-        if (! isset($_SERVER["HTTP_AUTHORIZATION"])) {
+        if (empty($header) || ! is_string($header)) {
             $this->response([
                 'status' => false,
                 'message' => 'Faça login para acessar a API.',
             ], REST_Controller::HTTP_UNAUTHORIZED);
-            $this->response(['Authentication failed'], REST_Controller::HTTP_OK);
         }
 
-        $this->load->library('Authorization_Token');
-        $token = explode(' ', $_SERVER["HTTP_AUTHORIZATION"]);
-        $decodedToken = (object) $this->authorization_token->validateToken($token[1], $reGenToken);
+        if (! preg_match('/^Bearer\s+(\S+)$/i', trim($header), $matches)) {
+            $this->response([
+                'status' => false,
+                'message' => 'Cabeçalho Authorization inválido. Use o formato Bearer <token>.',
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+        }
 
-        if (! $reGenToken && ! $decodedToken->status) {
+        return $matches[1];
+    }
+
+    public function logged_user($reGenToken = false)
+    {
+        $bearerToken = $this->extractBearerToken();
+
+        $this->load->library('Authorization_Token');
+        $decodedToken = (object) $this->authorization_token->validateToken($bearerToken, $reGenToken);
+
+        if (empty($decodedToken->status) || empty($decodedToken->data) || empty($decodedToken->data->uid)) {
             $this->response([
                 'status' => false,
                 'message' => 'Faça o login novamente!',
+            ], self::HTTP_FORBIDDEN);
+        }
+
+        if (isset($decodedToken->data->type) && $decodedToken->data->type === 'client') {
+            $this->response([
+                'status' => false,
+                'message' => 'Token de cliente não autorizado neste endpoint.',
             ], self::HTTP_FORBIDDEN);
         }
 
         $this->load->model('Usuarios_model');
         $this->user = $decodedToken;
         $this->user->usuario = $this->Usuarios_model->getById($decodedToken->data->uid);
-        $this->user->level = $decodedToken->data->permissao;
+
+        if (empty($this->user->usuario) || (int) $this->user->usuario->situacao !== 1) {
+            $this->response([
+                'status' => false,
+                'message' => 'Usuário inválido ou inativo.',
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+        $this->user->level = $decodedToken->data->permissao ?? null;
 
         return $this->user;
     }
 
     public function logged_client($reGenToken = false)
     {
-        $headers = $this->input->request_headers();
-
-        $this->CI = &get_instance();
-        $this->CI->load->config('jwt');
-        $token_header = $this->config->item('token_header');
-
-        if (! isset($_SERVER["HTTP_AUTHORIZATION"])) {
-            $this->response([
-                'status' => false,
-                'message' => 'Faça login para acessar a API.',
-            ], REST_Controller::HTTP_UNAUTHORIZED);
-            $this->response(['Authentication failed'], REST_Controller::HTTP_OK);
-        }
+        $bearerToken = $this->extractBearerToken();
 
         $this->load->library('Authorization_Token');
-        $token = explode(' ', $_SERVER["HTTP_AUTHORIZATION"]);
-        $decodedToken = (object) $this->authorization_token->validateToken($token[1], $reGenToken);
+        $decodedToken = (object) $this->authorization_token->validateToken($bearerToken, $reGenToken);
 
-        if (! $reGenToken && ! $decodedToken->status) {
+        if (empty($decodedToken->status) || empty($decodedToken->data) || empty($decodedToken->data->uid)) {
             $this->response([
                 'status' => false,
                 'message' => 'Faça o login novamente!',
             ], self::HTTP_FORBIDDEN);
         }
 
+        if ((isset($decodedToken->data->type) && $decodedToken->data->type === 'staff') || isset($decodedToken->data->permissao)) {
+            $this->response([
+                'status' => false,
+                'message' => 'Token administrativo não autorizado no portal do cliente.',
+            ], self::HTTP_FORBIDDEN);
+        }
+
         $this->load->model('Clientes_model');
         $this->client = $decodedToken;
         $this->client->usuario = $this->Clientes_model->getById($decodedToken->data->uid);
-        
+
+        if (empty($this->client->usuario)) {
+            $this->response([
+                'status' => false,
+                'message' => 'Cliente não encontrado.',
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         return $this->client;
     }
 

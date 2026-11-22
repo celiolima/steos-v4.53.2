@@ -39,3 +39,5 @@ assets/userImage
 *.zip
 application/.env_desenvolvimento
 txt.txt
+mcp-server/node_modules/
+mcp-server/.env

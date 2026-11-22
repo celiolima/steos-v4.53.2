@@ -57,12 +57,14 @@ Documento de referência da arquitetura, módulos de negócio, integração Asaa
    - Controle de autonomia e trava de 1 lançamento de odômetro por dia, com auditoria registrada em `veiculos_logs`.
 5. **Portal do Cliente Conecte (`Mine.php` / `Conecte_model.php`):**
    - Autenticação isolada (`isCliente`), recuperação por token criptográfico e isolamento rigoroso `WHERE clientes_id = <ID>` em O.S., Vendas, Cobranças, Contratos e NFS-e.
-6. **API RESTful v1 (`application/controllers/api/v1/`):**
-   - Endpoints para Dashboard/Calendário, Usuários (com hash bcrypt obrigatório no `PUT`), Clientes/Produtos/Serviços (com `escape_like_str`), O.S. (com checklists/técnicos/equipamentos), Contratos, Cobranças/Pix, NFS-e (IBS/CBS), Financeiro, Veículos, Vendas e endpoints Client protegidos contra IDOR.
+6. **API RESTful v1 (`application/controllers/api/v1/`) & Servidor MCP (`mcp-server/`):**
+   - Endpoints para Dashboard/Calendário, Usuários (com hash bcrypt obrigatório no `PUT`), Clientes/Produtos/Serviços (com `escape_like_str`), O.S. (com checklists/técnicos/equipamentos), Contratos, Cobranças/Pix, NFS-e (IBS/CBS), Financeiro, Veículos, Vendas e endpoints Client protegidos contra IDOR (incluindo `POST /api/v1/client/auth-bot` via `X-Bot-Secret` + rate-limit).
+   - **Separação JWT:** Claims `type=staff` vs `type=client` validadas em `REST_Controller`, com suporte a `exp_ttl` em `Authorization_Token`.
+   - **Servidor MCP Privado (`mcp-server/`):** Node.js 22 (`@modelcontextprotocol/sdk`) com endpoints isolados `/mcp/admin` (31 tools em 3 ondas) e `/mcp/client` (10 tools multi-tenant), compatível com **n8n**, **WhatsApp bots**, **Postman** e **IDEs** via Streamable HTTP stateless, SSE legado e STDIO. Stack Docker independente em `mcp-server/docker-compose.mcp.yml` (`https://mcp.steos.stesistemas.com`).
 
 ---
 
 ## 5. Segurança, ACL Granular (92 Chaves) & Governança Multi-Agente
-- **Controle de Acesso Granular (ACL):** Tabela `permissoes` com **92 chaves** (57 originais + 35 novas adicionadas pela migration `20261122153000_add_granular_permissions.php` / `026_add_granular_permissions.sql`), cobrindo `Contratos`, `NFS-e`, `Equipamentos`, `Sistemas`, `Modelos`, `Técnicos`, `Contas`, `Cadastros Financeiros`, `Comissões`, `Logs Asaas` e `Admin Asaas`, aplicadas em Controllers Web, Views/Menus (`menu.php`, `topo.php`) e API RESTful v1.
+- **Controle de Acesso Granular (ACL):** Tabela `permissoes` com **92 chaves** (57 originais + 35 novas adicionadas pela migration `20261122153000_add_granular_permissions.php` / `026_add_granular_permissions.sql`) e perfil dedicado **`API MCP Admin`** + conta de serviço **`mcp.service@stesistemas.com`** criados na migration `20261122170000_add_mcp_service_profile.php` / `027_add_mcp_service_profile.sql`, aplicadas em Controllers Web, Views/Menus (`menu.php`, `topo.php`) e API RESTful v1.
 - **CSRF Web:** `assets/js/csrf.js?v=20261121` utiliza `$.ajaxPrefilter` garantindo envio válido de `STEOS_TOKEN` e `Content-Type` inclusive em requisições POST sem corpo.
 - **Agentes Especialistas (`.agents/`):** Memória global `.agents/memoria.md`, regra obrigatória `.agents/rules/memoria-e-agentes.md` (incluindo obrigatoriedade de granulação ACL em novos módulos/recursos) e 6 agentes isolados (`ste_dev`, `especialista-steos`, `especialista-asaas`, `especialista-deploy`, `gerenciando-codeigniter`, `gerenciando-frontend-jjb`).

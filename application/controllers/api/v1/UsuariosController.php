@@ -289,12 +289,14 @@ class UsuariosController extends REST_Controller
             // Verificar credenciais do usuário
             if (password_verify($password, $user->senha)) {
                 $this->log_app('Efetuou login no sistema', $user->nome);
-                $permissoes = json_decode_legacy($this->getInstanceDatabase('permissoes', '*', 'idPermissao = ' . $user->permissoes_id, 1, true)['permissoes']);
+                $permRow = $this->getInstanceDatabase('permissoes', '*', 'idPermissao = ' . (int) $user->permissoes_id, 1, true);
+                $permissoes = ! empty($permRow['permissoes']) ? json_decode_legacy($permRow['permissoes']) : null;
 
                 $token_data = [
                     'uid' => $user->idUsuarios,
                     'email' => $user->email,
                     'permissao' => $user->permissoes_id,
+                    'type' => 'staff',
                 ];
 
                 $result = [
@@ -330,39 +332,34 @@ class UsuariosController extends REST_Controller
     {
         $user = $this->logged_user(true)->usuario;
 
-        if (! empty($user->email)) {
-            if (! empty($user)) {
-                // token regeneration process
-                $token_data = [
-                    'uid' => $user->idUsuarios,
-                    'email' => $user->email,
-                    'permissao' => $user->permissoes_id,
-                ];
+        if (! empty($user) && ! empty($user->email) && (int) $user->situacao === 1 && ! $this->chk_date($user->dataExpiracao)) {
+            // token regeneration process
+            $token_data = [
+                'uid' => $user->idUsuarios,
+                'email' => $user->email,
+                'permissao' => $user->permissoes_id,
+                'type' => 'staff',
+            ];
 
-                $permissoes = json_decode_legacy($this->getInstanceDatabase('permissoes', '*', 'idPermissao = ' . $user->permissoes_id, 1, true)['permissoes']);
+            $permRow = $this->getInstanceDatabase('permissoes', '*', 'idPermissao = ' . (int) $user->permissoes_id, 1, true);
+            $permissoes = ! empty($permRow['permissoes']) ? json_decode_legacy($permRow['permissoes']) : null;
 
-                $result = [
-                    'access_token' => $this->authorization_token->generateToken($token_data),
-                    'permissions' => [$permissoes],
-                ];
-
-                $this->response([
-                    'status' => true,
-                    'message' => 'Login realizado com sucesso!',
-                    'result' => $result,
-                ], REST_Controller::HTTP_OK);
-            }
+            $result = [
+                'access_token' => $this->authorization_token->generateToken($token_data),
+                'permissions' => [$permissoes],
+            ];
 
             $this->response([
-                'status' => false,
-                'message' => 'Usuário não encontrado, verifique se suas credenciais estão corretas!',
-            ], REST_Controller::HTTP_UNAUTHORIZED);
+                'status' => true,
+                'message' => 'Login realizado com sucesso!',
+                'result' => $result,
+            ], REST_Controller::HTTP_OK);
         }
 
         $this->response([
             'status' => false,
-            'message' => 'O x-api-key expirado é necessário para gerar um novo x-api-key!',
-        ], REST_Controller::HTTP_OK);
+            'message' => 'Usuário inválido, inativo ou com acesso expirado!',
+        ], REST_Controller::HTTP_UNAUTHORIZED);
     }
 
     public function conta_get()
@@ -380,7 +377,11 @@ class UsuariosController extends REST_Controller
 
     private function chk_date($data_banco)
     {
-        $data_banco = new DateTime($data_banco);
+        if (empty($data_banco)) {
+            return false;
+        }
+
+        $data_banco = new DateTime((string) $data_banco);
         $data_hoje = new DateTime('now');
 
         return $data_banco < $data_hoje;

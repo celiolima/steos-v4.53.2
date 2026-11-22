@@ -46,11 +46,12 @@ O deploy em produção realiza backup `mysqldump` pré-deploy, protege `.env.pro
 
 ---
 
-## Segurança & ACL Granular
-- Controle de acesso baseado em **92 chaves granulares** (migration `20261122153000_add_granular_permissions.php` / `026`), aplicadas de forma consistente nos controllers Web (`MY_Controller`), views/menus (`menu.php`, `topo.php`) e endpoints JWT da API RESTful v1.
+## Segurança, ACL Granular & Servidor MCP
+- Controle de acesso baseado em **92 chaves granulares** (migration `20261122153000_add_granular_permissions.php` / `026`) + perfil dedicado **`API MCP Admin`** e conta de serviço **`mcp.service@stesistemas.com`** (migration `20261122170000_add_mcp_service_profile.php` / `027`), aplicadas de forma consistente nos controllers Web (`MY_Controller`), views/menus (`menu.php`, `topo.php`) e endpoints JWT da API RESTful v1 (com separação `type=staff` vs `type=client`).
+- **Servidor MCP Privado (`mcp-server/`):** Endpoints isolados `/mcp/admin` e `/mcp/client` (Streamable HTTP, SSE legado e STDIO) para **n8n**, bots **WhatsApp**, **Postman** e **IDEs**. Veja o guia em **[.specs/mcp/README.md](./.specs/mcp/README.md)**.
 
 ## Documentação Complementar
 - **[DOCUMENTACAO_STEOS.md](./DOCUMENTACAO_STEOS.md)** — Documentação técnica consolidada do sistema.
-- **[.specs/](./.specs/)** — Especificações detalhadas por módulo, controller, model, view, API v1 e configurações.
-- **[postman/](./postman/)** — Collection Postman v2.1.0 ([`STEOS_API_v1.postman_collection.json`](./postman/STEOS_API_v1.postman_collection.json)) e Environments Dev/Produção com todas as 54 rotas da API v1.
+- **[.specs/](./.specs/)** — Especificações detalhadas por módulo, controller, model, view, API v1, Servidor MCP e configurações.
+- **[postman/](./postman/)** — Collection Postman v2.1.0 ([`STEOS_API_v1.postman_collection.json`](./postman/STEOS_API_v1.postman_collection.json)) e Environments Dev/Produção com todas as 55 rotas da API v1.
 - **[.agents/memoria.md](./.agents/memoria.md)** — Memória persistente global e governança dos agentes especialistas.
