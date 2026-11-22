@@ -49,4 +49,5 @@ O deploy em produção realiza backup `mysqldump` pré-deploy, protege `.env.pro
 ## Documentação Complementar
 - **[DOCUMENTACAO_STEOS.md](./DOCUMENTACAO_STEOS.md)** — Documentação técnica consolidada do sistema.
 - **[.specs/](./.specs/)** — Especificações detalhadas por módulo, controller, model, view, API v1 e configurações.
+- **[postman/](./postman/)** — Collection Postman v2.1.0 ([`STEOS_API_v1.postman_collection.json`](./postman/STEOS_API_v1.postman_collection.json)) e Environments Dev/Produção com todas as 54 rotas da API v1.
 - **[.agents/memoria.md](./.agents/memoria.md)** — Memória persistente global e governança dos agentes especialistas.

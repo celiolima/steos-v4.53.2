@@ -31,3 +31,14 @@ A API RESTful do STEOS opera sobre `REST_Controller` (CodeIgniter 3) com autenti
 | **Frota** | `/api/v1/veiculos(/id)` | `GET` | `VeiculosController` | `vVeiculo` |
 | **Vendas** | `/api/v1/vendas(/id)` | `GET` | `VendasController` | `vVenda` |
 | **Cliente Conecte** | `/api/v1/client`, `/auth`, `/os(/id)`, `/compras(/id)`, `/cobrancas`, `/contratos(/id)` | `GET`, `POST` | `Client*Controller` | Token JWT do Cliente |
+
+---
+
+## 3. Collection Postman v2.1.0 & Environments
+
+Os artefatos prontos para importação no Postman estão disponíveis em [`postman/`](../../postman/README.md):
+- **Collection v2.1.0 (14 pastas, 72 requisições cobrindo todas as 54 rotas):** `postman/STEOS_API_v1.postman_collection.json`
+- **Environment Desenvolvimento Local:** `postman/STEOS_Local_Dev.postman_environment.json` (`http://localhost:8080`)
+- **Environment Produção:** `postman/STEOS_Production.postman_environment.json` (`https://steos.stesistemas.com`)
+
+> Os endpoints `POST /index.php/api/v1/login`, `GET /index.php/api/v1/reGenToken` e `POST /index.php/api/v1/client/auth` possuem scripts de resposta que gravam automaticamente `{{access_token}}` e `{{client_access_token}}` na Collection e no Environment ativo.

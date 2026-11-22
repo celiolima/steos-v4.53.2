@@ -1,0 +1,3266 @@
+{
+    "info": {
+        "_postman_id": "c7fe9c74-5ba0-4b4e-a20f-453200000001",
+        "name": "STEOS v4.53.2 â€” API RESTful v1",
+        "description": "# STEOS v4.53.2 â€” API RESTful v1\n\nCollection oficial do **STEOS** no formato **Postman Collection v2.1.0**, alinhada integralmente a `application/config/routes_api.php` (54 rotas / 72 requisiÃ§Ãµes HTTP).\n\n## PrÃ©-requisitos no Servidor STEOS\n- VariÃ¡veis habilitadas em `application/.env` (ou `.env_dev`):\n  - `API_ENABLED=true`\n  - `API_JWT_KEY` (chave secreta HMAC-SHA256)\n  - `API_TOKEN_EXPIRE_TIME` (tempo em segundos; utilize `GET /index.php/api/v1/reGenToken` quando expirar)\n- Header `Authorization` liberado pelo `.htaccess` raiz (`RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`).\n\n## Fluxo RÃ¡pido de AutenticaÃ§Ã£o\n1. Selecione o Environment desejado (`STEOS - Desenvolvimento Local (Docker)` ou `STEOS - ProduÃ§Ã£o (Hostinger)`).\n2. Para rotas administrativas (pastas `01` a `13`), execute **`01. AutenticaÃ§Ã£o & Conta > Login Administrativo (JWT)`** â€” o script de resposta salvarÃ¡ automaticamente `{{access_token}}`.\n3. Para rotas do Portal do Cliente (pasta `14`), execute **`14. Portal do Cliente > Login do Cliente (Portal Conecte)`** â€” o script salvarÃ¡ automaticamente `{{client_access_token}}`.\n\n## ObservaÃ§Ã£o de Datas nas Rotas\n- **`OsController` (`POST /os`, `PUT /os/{id}`):** espera `dataInicial` e `dataFinal` no formato **`DD/MM/YYYY`**.\n- **Filtros de listagem (`calendario`, `nfse`, `cobrancas`, `financeiro`, `vendas`):** utilizam preferencialmente **`YYYY-MM-DD`** (em `GET /os`, `from`/`to`/`data_fech_de`/`data_fech_ate` aceitam ambos os formatos).",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{access_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "01. AutenticaÃ§Ã£o & Conta (Admin / Staff)",
+            "description": "AutenticaÃ§Ã£o JWT para usuÃ¡rios internos do painel administrativo do STEOS (`UsuariosController`). O endpoint de login salva automaticamente `access_token` na Collection e no Environment ativo.",
+            "item": [
+                {
+                    "name": "Login Administrativo (JWT)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "login"
+                            ]
+                        },
+                        "description": "Autentica usuÃ¡rio interno (`usuarios`) e gera token JWT HS256 em `result.access_token`. NÃ£o exige Bearer prÃ©vio.",
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "evt-login-admin",
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test(\"Status HTTP 200 OK\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "try {",
+                                    "    const json = pm.response.json();",
+                                    "    if (json && json.status === true && json.result && json.result.access_token) {",
+                                    "        pm.collectionVariables.set(\"access_token\", json.result.access_token);",
+                                    "        if (pm.environment && pm.environment.name) {",
+                                    "            pm.environment.set(\"access_token\", json.result.access_token);",
+                                    "        }",
+                                    "        console.log(\"access_token atualizado com sucesso.\");",
+                                    "    }",
+                                    "} catch (err) {",
+                                    "    console.error(\"Erro ao processar access_token:\", err);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Renovar Token JWT (reGenToken)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/reGenToken",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "reGenToken"
+                            ]
+                        },
+                        "description": "Regenera o JWT de um usuÃ¡rio administrativo mesmo apÃ³s expiraÃ§Ã£o (`API_TOKEN_EXPIRE_TIME`), enviando o token anterior no header `Authorization: Bearer {{access_token}}`."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "evt-regen-admin",
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test(\"Status HTTP 200 OK\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "try {",
+                                    "    const json = pm.response.json();",
+                                    "    if (json && json.status === true && json.result && json.result.access_token) {",
+                                    "        pm.collectionVariables.set(\"access_token\", json.result.access_token);",
+                                    "        if (pm.environment && pm.environment.name) {",
+                                    "            pm.environment.set(\"access_token\", json.result.access_token);",
+                                    "        }",
+                                    "        console.log(\"access_token atualizado com sucesso.\");",
+                                    "    }",
+                                    "} catch (err) {",
+                                    "    console.error(\"Erro ao processar access_token:\", err);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Dados da Conta Autenticada",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/conta",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "conta"
+                            ]
+                        },
+                        "description": "Retorna perfil e imagem do usuÃ¡rio autenticado (sem o campo `senha`)."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "02. Painel, CalendÃ¡rio, Emitente & Auditoria",
+            "description": "Indicadores do painel inicial, calendÃ¡rio FullCalendar, dados da empresa emitente e logs de auditoria (`ApiController`).",
+            "item": [
+                {
+                    "name": "Resumo do Painel (Dashboard)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1"
+                            ]
+                        },
+                        "description": "Retorna contadores globais (`countOs`, `clientes`, `produtos`, `servicos`, `garantias`, `vendas`, `contratos`, `equipamentos`, `veiculos`, `tecnicos`, `cobrancas`) e alertas de O.S./estoque caso possua `vOs`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "CalendÃ¡rio de O.S.",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/calendario?start=2026-11-01&end=2026-11-30",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "calendario"
+                            ],
+                            "query": [
+                                {
+                                    "key": "start",
+                                    "value": "2026-11-01",
+                                    "description": "Data inicial YYYY-MM-DD",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "end",
+                                    "value": "2026-11-30",
+                                    "description": "Data final YYYY-MM-DD",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "A Sair | Aguard ConclusÃ£o",
+                                    "description": "Filtro opcional por status textual da O.S.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "tecnicos",
+                                    "value": "1",
+                                    "description": "Filtro opcional por ID de tÃ©cnico vinculado",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Retorna `events` (compatÃ­vel com FullCalendar, diferenciando preventiva `#AEB404` vs `#00a65a`) e `allOs`. Exige permissÃ£o `vOs`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Dados do Emitente",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/emitente",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "emitente"
+                            ]
+                        },
+                        "description": "Retorna nome da aplicaÃ§Ã£o (`appName`) e registro da tabela `emitente`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Logs de Auditoria",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/audit?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "audit"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "description": "Lista registros paginados da tabela `logs`. Exige permissÃ£o `cAuditoria`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "03. UsuÃ¡rios",
+            "description": "CRUD completo de usuÃ¡rios administrativos (`UsuariosController`). Todas as operaÃ§Ãµes de listagem, criaÃ§Ã£o e alteraÃ§Ã£o exigem permissÃ£o `cUsuario` (exceto ediÃ§Ã£o do prÃ³prio perfil). Senhas sÃ£o protegidas com `password_hash` e nunca retornam no JSON.",
+            "item": [
+                {
+                    "name": "Listar UsuÃ¡rios",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/usuarios?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "usuarios"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "admin",
+                                    "description": "Busca por nome, e-mail ou CPF",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista usuÃ¡rios paginados ou filtra pelo termo `search`. Exige `cUsuario`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar UsuÃ¡rio por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/usuarios/{{usuario_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "usuarios",
+                                "{{usuario_id}}"
+                            ]
+                        },
+                        "description": "Retorna detalhes de um usuÃ¡rio especÃ­fico (sem `senha`). Exige `cUsuario`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Criar UsuÃ¡rio",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/usuarios",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "usuarios"
+                            ]
+                        },
+                        "description": "Cadastra novo usuÃ¡rio interno validando grupo `usuarios` em `form_validation.php`. Exige `cUsuario`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"TÃ©cnico DemonstraÃ§Ã£o API\",\n    \"rg\": \"123456789\",\n    \"cpf\": \"11144477735\",\n    \"cep\": \"01001-000\",\n    \"rua\": \"PraÃ§a da SÃ©\",\n    \"numero\": \"100\",\n    \"bairro\": \"SÃ©\",\n    \"cidade\": \"SÃ£o Paulo\",\n    \"estado\": \"SP\",\n    \"email\": \"tecnico.api@exemplo.com.br\",\n    \"senha\": \"Steos@2026\",\n    \"telefone\": \"(11) 3333-4444\",\n    \"celular\": \"(11) 99999-8888\",\n    \"dataExpiracao\": \"2030-12-31\",\n    \"situacao\": 1,\n    \"permissoes_id\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualizar UsuÃ¡rio",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/usuarios/{{usuario_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "usuarios",
+                                "{{usuario_id}}"
+                            ]
+                        },
+                        "description": "Atualiza dados do usuÃ¡rio. Todos os campos obrigatÃ³rios devem ser enviados; `senha` Ã© opcional (quando informada, recebe `password_hash`). Super admin (`id=1`) nÃ£o pode ter `situacao=0`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"Administrador STEOS\",\n    \"rg\": \"123456789\",\n    \"cpf\": \"11144477735\",\n    \"cep\": \"01001-000\",\n    \"rua\": \"Rua Atualizada\",\n    \"numero\": \"100\",\n    \"bairro\": \"Centro\",\n    \"cidade\": \"SÃ£o Paulo\",\n    \"estado\": \"SP\",\n    \"email\": \"{{admin_email}}\",\n    \"telefone\": \"(11) 3333-4444\",\n    \"celular\": \"(11) 99999-8888\",\n    \"dataExpiracao\": \"2030-12-31\",\n    \"situacao\": 1,\n    \"permissoes_id\": 1,\n    \"senha\": \"\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Excluir UsuÃ¡rio",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/usuarios/{{usuario_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "usuarios",
+                                "{{usuario_id}}"
+                            ]
+                        },
+                        "description": "Remove um usuÃ¡rio pelo ID. Impede exclusÃ£o do usuÃ¡rio Super Admin (`id=1`) ou de si mesmo. Exige `cUsuario`."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "04. Clientes & Fornecedores",
+            "description": "CRUD RESTful de `clientes` (`ClientesController`). Busca `search` sanitizada com `escape_like_str()` e senha removida de todas as respostas.",
+            "item": [
+                {
+                    "name": "Listar Clientes",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/clientes?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "clientes"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "Silva",
+                                    "description": "Termo de busca (nome, documento ou e-mail)",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista clientes com paginaÃ§Ã£o e filtro `search`. Exige `vCliente`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar Cliente por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/clientes/{{cliente_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "clientes",
+                                "{{cliente_id}}"
+                            ]
+                        },
+                        "description": "Retorna cliente + array `ordensServicos` vinculadas. Retorna HTTP 404 se nÃ£o existir. Exige `vCliente`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Criar Cliente / Fornecedor",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/clientes",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "clientes"
+                            ]
+                        },
+                        "description": "Cadastra cliente validando CPF/CNPJ (`verific_cpf_cnpj`). Se `senha` for omitida, usa padrÃ£o `steas@123`. Exige `aCliente`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nomeCliente\": \"Empresa Cliente Exemplo Ltda\",\n    \"contato\": \"JoÃ£o ResponsÃ¡vel\",\n    \"documento\": \"11222333000181\",\n    \"telefone\": \"(11) 3000-1000\",\n    \"celular\": \"(11) 98888-7777\",\n    \"email\": \"cliente.api@exemplo.com.br\",\n    \"senha\": \"steas@123\",\n    \"rua\": \"Av. Paulista\",\n    \"numero\": \"1000\",\n    \"complemento\": \"Sala 10\",\n    \"bairro\": \"Bela Vista\",\n    \"cidade\": \"SÃ£o Paulo\",\n    \"estado\": \"SP\",\n    \"cep\": \"01310-100\",\n    \"fornecedor\": false\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualizar Cliente / Fornecedor",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/clientes/{{cliente_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "clientes",
+                                "{{cliente_id}}"
+                            ]
+                        },
+                        "description": "Atualiza cadastro de cliente validando CPF/CNPJ caso informado. Exige `eCliente`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nomeCliente\": \"Empresa Cliente Exemplo Ltda\",\n    \"contato\": \"JoÃ£o ResponsÃ¡vel\",\n    \"documento\": \"11222333000181\",\n    \"telefone\": \"(11) 3000-1000\",\n    \"celular\": \"(11) 98888-7777\",\n    \"email\": \"cliente.api@exemplo.com.br\",\n    \"rua\": \"Av. Paulista\",\n    \"numero\": \"1000\",\n    \"complemento\": \"Sala 12\",\n    \"bairro\": \"Bela Vista\",\n    \"cidade\": \"SÃ£o Paulo\",\n    \"estado\": \"SP\",\n    \"cep\": \"01310-100\",\n    \"fornecedor\": false\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Excluir Cliente",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/clientes/{{cliente_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "clientes",
+                                "{{cliente_id}}"
+                            ]
+                        },
+                        "description": "Remove cliente e suas O.S./vendas vinculadas conforme regras de `Clientes_model`. Exige `dCliente`."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "05. Produtos",
+            "description": "CRUD RESTful de `produtos` (`ProdutosController`). Exige `vProduto`, `aProduto`, `eProduto` ou `dProduto`.",
+            "item": [
+                {
+                    "name": "Listar Produtos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/produtos?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "produtos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "Cabo",
+                                    "description": "Busca por descriÃ§Ã£o ou cÃ³digo de barras",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista produtos com paginaÃ§Ã£o e filtro `search` sanitizado."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar Produto por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/produtos/{{produto_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "produtos",
+                                "{{produto_id}}"
+                            ]
+                        },
+                        "description": "Retorna produto por ID ou HTTP 404 caso nÃ£o localizado."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Criar Produto",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/produtos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "produtos"
+                            ]
+                        },
+                        "description": "Adiciona novo produto ao estoque. Exige `aProduto`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"codDeBarra\": \"7890000000012\",\n    \"descricao\": \"Fonte Chaveada 12V 5A\",\n    \"unidade\": \"UN\",\n    \"precoCompra\": \"35.00\",\n    \"precoVenda\": \"75.00\",\n    \"estoque\": 10,\n    \"estoqueMinimo\": 2,\n    \"entrada\": 1,\n    \"saida\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualizar Produto",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/produtos/{{produto_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "produtos",
+                                "{{produto_id}}"
+                            ]
+                        },
+                        "description": "Atualiza cadastro e estoque do produto. Exige `eProduto`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"codDeBarra\": \"7890000000012\",\n    \"descricao\": \"Fonte Chaveada 12V 5A Bivolt\",\n    \"unidade\": \"UN\",\n    \"precoCompra\": \"38.00\",\n    \"precoVenda\": \"80.00\",\n    \"estoque\": 12,\n    \"estoqueMinimo\": 3,\n    \"entrada\": 1,\n    \"saida\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Excluir Produto",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/produtos/{{produto_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "produtos",
+                                "{{produto_id}}"
+                            ]
+                        },
+                        "description": "Remove produto e referÃªncias em `produtos_os` e `itens_de_vendas`. Exige `dProduto`."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "06. ServiÃ§os",
+            "description": "CRUD RESTful do catÃ¡logo de serviÃ§os (`ServicosController`). Exige `vServico`, `aServico`, `eServico` ou `dServico`.",
+            "item": [
+                {
+                    "name": "Listar ServiÃ§os",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/servicos?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "servicos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "ManutenÃ§Ã£o",
+                                    "description": "Termo de busca pelo nome/descriÃ§Ã£o",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista serviÃ§os com paginaÃ§Ã£o e filtro `search` sanitizado."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar ServiÃ§o por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/servicos/{{servico_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "servicos",
+                                "{{servico_id}}"
+                            ]
+                        },
+                        "description": "Retorna dados do serviÃ§o ou HTTP 404 caso inexistente."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Criar ServiÃ§o",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/servicos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "servicos"
+                            ]
+                        },
+                        "description": "Cadastra novo serviÃ§o no catÃ¡logo. Exige `aServico`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"ManutenÃ§Ã£o Preventiva Mensal\",\n    \"descricao\": \"InspeÃ§Ã£o tÃ©cnica e limpeza preventiva de equipamentos.\",\n    \"preco\": \"250.00\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualizar ServiÃ§o",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/servicos/{{servico_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "servicos",
+                                "{{servico_id}}"
+                            ]
+                        },
+                        "description": "Atualiza nome, descriÃ§Ã£o e preÃ§o do serviÃ§o. Exige `eServico`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"ManutenÃ§Ã£o Preventiva Mensal v2\",\n    \"descricao\": \"InspeÃ§Ã£o completa e relatÃ³rio checklist digital.\",\n    \"preco\": \"280.00\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Excluir ServiÃ§o",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/servicos/{{servico_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "servicos",
+                                "{{servico_id}}"
+                            ]
+                        },
+                        "description": "Exclui o serviÃ§o e referÃªncias em `servicos_os`. Exige `dServico`."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "07. Ordens de ServiÃ§o (O.S.)",
+            "description": "Ciclo completo de Ordens de ServiÃ§o (`OsController`): listagem com filtros STEOS, CRUD, checklists digitais v2, desconto, produtos, serviÃ§os, anotaÃ§Ãµes e upload de anexos. AtenÃ§Ã£o: `POST` e `PUT` de O.S. esperam `dataInicial` e `dataFinal` no formato `DD/MM/YYYY`.",
+            "item": [
+                {
+                    "name": "Listar Ordens de ServiÃ§o",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Cliente ou nÂº da O.S.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "Aberto",
+                                    "description": "Status da O.S. (ex.: Aberto, Em Andamento, A Sair | Aguard ConclusÃ£o, Finalizado, Faturado, Cancelado)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "from",
+                                    "value": "01/11/2026",
+                                    "description": "Data inicial de abertura (DD/MM/YYYY ou YYYY-MM-DD)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "to",
+                                    "value": "30/11/2026",
+                                    "description": "Data final de abertura (DD/MM/YYYY ou YYYY-MM-DD)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "data_fech_de",
+                                    "value": "01/11/2026",
+                                    "description": "Data inicial de fechamento `dataFinal`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "data_fech_ate",
+                                    "value": "30/11/2026",
+                                    "description": "Data final de fechamento `dataFinal`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "tecnico",
+                                    "value": "1",
+                                    "description": "ID do tÃ©cnico vinculado em `tecnicos_os`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "local",
+                                    "value": "Externo",
+                                    "description": "Local de atendimento (`Interno` ou `Externo`)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "tipo",
+                                    "value": "Avulso",
+                                    "description": "Tipo de O.S. (`Avulso` ou `Contrato`)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "manPrevnt",
+                                    "value": "0",
+                                    "description": "Indicador de preventiva (`1` ou `0`)",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista O.S. com paginaÃ§Ã£o, totais de produtos/serviÃ§os e todos os filtros avanÃ§ados do STEOS (`vOs`)."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar O.S. por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}"
+                            ]
+                        },
+                        "description": "Retorna detalhes completos da O.S.: `produtos`, `servicos`, `anexos`, `anotacoes`, `tecnicos`, `equipamentos`, `cobrancas`, `checklists`, `calcTotal` e `textoWhatsApp`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Criar Ordem de ServiÃ§o",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os"
+                            ]
+                        },
+                        "description": "Cria uma nova O.S. com suporte aos campos de Contrato/Preventiva do STEOS. Exige `aOs`. Datas devem ser enviadas como `DD/MM/YYYY`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"dataInicial\": \"21/11/2026\",\n    \"dataFinal\": \"22/11/2026\",\n    \"clientes_id\": 1,\n    \"usuarios_id\": 1,\n    \"contratos_id\": null,\n    \"garantia\": \"90\",\n    \"termoGarantia\": \"\",\n    \"garantias_id\": null,\n    \"descricaoProduto\": \"Nobreak 1500VA Senoidal\",\n    \"defeito\": \"NÃ£o segura carga na falta de energia.\",\n    \"defeito_encontrado\": \"Baterias internas degradadas.\",\n    \"status\": \"Aberto\",\n    \"observacoes\": \"Cliente solicitou orÃ§amento prÃ©vio.\",\n    \"laudoTecnico\": \"\",\n    \"local\": \"Interno\",\n    \"tipo\": \"Avulso\",\n    \"manutPreventiva\": 0,\n    \"prioridade\": \"Normal\",\n    \"classificacao\": \"ManutenÃ§Ã£o Corretiva\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualizar Ordem de ServiÃ§o",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}"
+                            ]
+                        },
+                        "description": "Atualiza a O.S. preservando campos do STEOS (`faturado`, `contratos_id`, `prioridade`, etc.). Gerencia devoluÃ§Ã£o/baixa de estoque quando status alterna com `Cancelado`. Exige `eOs`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"dataInicial\": \"21/11/2026\",\n    \"dataFinal\": \"23/11/2026\",\n    \"clientes_id\": 1,\n    \"usuarios_id\": 1,\n    \"contratos_id\": null,\n    \"garantia\": \"90\",\n    \"termoGarantia\": \"\",\n    \"garantias_id\": null,\n    \"descricaoProduto\": \"Nobreak 1500VA Senoidal\",\n    \"defeito\": \"NÃ£o segura carga na falta de energia.\",\n    \"defeito_encontrado\": \"SubstituiÃ§Ã£o de banco de baterias 12V 7Ah.\",\n    \"status\": \"Em Andamento\",\n    \"observacoes\": \"Troca autorizada pelo cliente.\",\n    \"laudoTecnico\": \"Equipamento testado em carga nominal.\",\n    \"local\": \"Interno\",\n    \"tipo\": \"Avulso\",\n    \"manutPreventiva\": 0,\n    \"prioridade\": \"Alta\",\n    \"classificacao\": \"ManutenÃ§Ã£o Corretiva\",\n    \"faturado\": 0\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Excluir Ordem de ServiÃ§o",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}"
+                            ]
+                        },
+                        "description": "Exige permissÃ£o `dOs`. Bloqueia se houver cobranÃ§a ativa nÃ£o cancelada, estorna estoque e exclui lanÃ§amentos associados."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Listar Checklists Digitais da O.S.",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/checklists",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "checklists"
+                            ]
+                        },
+                        "description": "Retorna `os_checklists` e seus itens (`os_checklists_itens`) vinculados Ã  O.S. Exige `vOs`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Aplicar Desconto na O.S.",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/desconto",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "desconto"
+                            ]
+                        },
+                        "description": "Define desconto (`real` ou `porcento`) e `valor_desconto` calculado caso a O.S. seja editÃ¡vel (`eOs`).",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"tipoDesconto\": \"real\",\n    \"desconto\": 25,\n    \"valor_desconto\": 225\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Adicionar Produto na O.S.",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/produtos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "produtos"
+                            ]
+                        },
+                        "description": "Adiciona item em `produtos_os`, atualiza estoque (se `control_estoque` ativo) e zera desconto anterior.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"idProduto\": 1,\n    \"quantidade\": 2,\n    \"preco\": 75\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualizar Produto da O.S.",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/produtos/{{produto_os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "produtos",
+                                "{{produto_os_id}}"
+                            ]
+                        },
+                        "description": "Atualiza quantidade/preÃ§o de um item em `produtos_os` ajustando diferenÃ§a de estoque.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"quantidade\": 3,\n    \"preco\": 75\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remover Produto da O.S.",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/produtos/{{produto_os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "produtos",
+                                "{{produto_os_id}}"
+                            ]
+                        },
+                        "description": "Remove item de `produtos_os`, devolve ao estoque e zera desconto."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Adicionar ServiÃ§o na O.S.",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/servicos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "servicos"
+                            ]
+                        },
+                        "description": "Adiciona serviÃ§o em `servicos_os` e zera desconto anterior.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"idServico\": 1,\n    \"quantidade\": 1,\n    \"preco\": 250\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Atualizar ServiÃ§o da O.S.",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/servicos/{{servico_os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "servicos",
+                                "{{servico_os_id}}"
+                            ]
+                        },
+                        "description": "Atualiza quantidade/preÃ§o do serviÃ§o em `servicos_os`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"quantidade\": 2,\n    \"preco\": 240\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remover ServiÃ§o da O.S.",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/servicos/{{servico_os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "servicos",
+                                "{{servico_os_id}}"
+                            ]
+                        },
+                        "description": "Remove serviÃ§o de `servicos_os` e zera desconto."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Adicionar AnotaÃ§Ã£o na O.S.",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/anotacoes",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "anotacoes"
+                            ]
+                        },
+                        "description": "Grava anotaÃ§Ã£o vinculada Ã  O.S. prefixada com o nome do usuÃ¡rio autenticado.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"anotacao\": \"Equipamento encaminhado para bancada de testes.\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remover AnotaÃ§Ã£o da O.S.",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/anotacoes/{{anotacao_os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "anotacoes",
+                                "{{anotacao_os_id}}"
+                            ]
+                        },
+                        "description": "Exclui registro especÃ­fico de `anotacoes_os`."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Enviar Anexo na O.S.",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/anexos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "anexos"
+                            ]
+                        },
+                        "description": "Faz upload `multipart/form-data` para `assets/anexos/m-Y/OS-{id}` com geraÃ§Ã£o automÃ¡tica de miniatura para imagens.",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "userfile",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "ExtensÃµes permitidas: jpg, png, gif, jpeg, pdf, cdr, docx, txt"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remover Anexo da O.S.",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/os/{{os_id}}/anexos/{{anexo_os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "os",
+                                "{{os_id}}",
+                                "anexos",
+                                "{{anexo_os_id}}"
+                            ]
+                        },
+                        "description": "Apaga arquivo fÃ­sico, miniatura e registro da tabela `anexos`."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "08. Contratos",
+            "description": "Consulta do mÃ³dulo guarda-chuva de Contratos (`ContratosController`).",
+            "item": [
+                {
+                    "name": "Listar Contratos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/contratos?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "contratos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Busca geral",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "contrato",
+                                    "value": "",
+                                    "description": "CÃ³digo/nÃºmero do contrato",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "nome",
+                                    "value": "",
+                                    "description": "Nome/tÃ­tulo do contrato",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "Ativo",
+                                    "description": "Status do contrato",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "clientes_id",
+                                    "value": "1",
+                                    "description": "ID do cliente contratante",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista contratos paginados via `Contratos_model::getContratos()` com filtros opcionais."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar Contrato por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/contratos/{{contrato_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "contratos",
+                                "{{contrato_id}}"
+                            ]
+                        },
+                        "description": "Retorna contrato completo com `sistemas` (incluindo `checks`), `os`, `vendas`, `cobrancas` e `anexos`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "09. CobranÃ§as & Pix (Asaas v3)",
+            "description": "Consulta administrativa de cobranÃ§as (`CobrancasController`) e geraÃ§Ã£o/recuperaÃ§Ã£o de QR Code Pix dinÃ¢mico no Asaas v3. Exige permissÃ£o `vCobranca`.",
+            "item": [
+                {
+                    "name": "Listar CobranÃ§as",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/cobrancas?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "cobrancas"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "pesquisa",
+                                    "value": "",
+                                    "description": "Cliente, descriÃ§Ã£o ou charge_id",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "os_id",
+                                    "value": "",
+                                    "description": "Filtrar por ID da O.S.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "vendas_id",
+                                    "value": "",
+                                    "description": "Filtrar por ID da Venda",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "tipo",
+                                    "value": "PIX",
+                                    "description": "Tipo de cobranÃ§a (`PIX`, `BOLETO`, `CREDIT_CARD`)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "PENDING",
+                                    "description": "Status no gateway (`PENDING`, `RECEIVED`, `CONFIRMED`, `OVERDUE`)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "data_de",
+                                    "value": "2026-11-01",
+                                    "description": "Data inicial YYYY-MM-DD",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "data_ate",
+                                    "value": "2026-11-30",
+                                    "description": "Data final YYYY-MM-DD",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista cobranÃ§as com filtros por referÃªncia, tipo, status e perÃ­odo."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar CobranÃ§a por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/cobrancas/{{cobranca_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "cobrancas",
+                                "{{cobranca_id}}"
+                            ]
+                        },
+                        "description": "Retorna detalhes de uma cobranÃ§a sem o campo `senha`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Obter QR Code Pix da CobranÃ§a",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/cobrancas/{{cobranca_id}}/pix",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "cobrancas",
+                                "{{cobranca_id}}",
+                                "pix"
+                            ]
+                        },
+                        "description": "Consulta `Asaas::getPixQrCode($charge_id)` retornando `encodedImage`, `payload` (Copia e Cola) e `expirationDate`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "10. NFS-e Asaas v3 (Portal Nacional & IBS/CBS)",
+            "description": "Ciclo completo de Notas Fiscais de ServiÃ§o EletrÃ´nicas via Asaas v3 (`NfseController`), aderente ao Portal Nacional (`useNationalPortal`) e Ã  Reforma TributÃ¡ria (IBS/CBS + `operationIndicatorCode` + `federalServiceTaxCode`).",
+            "item": [
+                {
+                    "name": "Listar NFS-e Emitidas / Agendadas",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/nfse?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "nfse"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Nome do cliente, CPF/CNPJ, nÂº NFS-e ou nÂº da O.S.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "AUTHORIZED",
+                                    "description": "Status Asaas (`SCHEDULED`, `SYNCHRONIZED`, `AUTHORIZED`, `PROCESSING_CANCELLATION`, `CANCELED`, `CANCELLATION_DENIED`, `ERROR`)",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "data_de",
+                                    "value": "2026-11-01",
+                                    "description": "Data inicial YYYY-MM-DD",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "data_ate",
+                                    "value": "2026-11-30",
+                                    "description": "Data final YYYY-MM-DD",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista O.S. com `asaas_invoice_status` preenchido (`vLancamento` ou `vOs`)."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Consultar NFS-e por O.S. (Banco Local)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/nfse/{{os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "nfse",
+                                "{{os_id}}"
+                            ]
+                        },
+                        "description": "Retorna campos locais da NFS-e gravados na tabela `os`. Exige `vLancamento` ou `vOs`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Listar ServiÃ§os NFS-e & Indicadores de OperaÃ§Ã£o",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/nfse/servicos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "nfse",
+                                "servicos"
+                            ]
+                        },
+                        "description": "Retorna catÃ¡logo `servicos_nfse` e os 33 cÃ³digos oficiais de `asaas_operation_indicator_codes()` (`vServico`)."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Emitir / Agendar NFS-e para O.S.",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/nfse/emitir/{{os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "nfse",
+                                "emitir",
+                                "{{os_id}}"
+                            ]
+                        },
+                        "description": "Emite ou agenda NFS-e no Asaas v3 usando `asaas_sanitize_fiscal_codes()`, separando `federalServiceTaxCode` (6 dÃ­gitos) de `operationIndicatorCode`, alÃ©m de `nbsCode`, `taxSituationCode` e `taxClassificationCode` (`eOs`).",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"servico_nfse_id\": \"{{servico_nfse_id}}\",\n    \"value\": 250,\n    \"aliquota_iss\": 3.5,\n    \"retain_iss\": false,\n    \"effective_date\": \"2026-11-21\",\n    \"municipal_service_code\": \"952150001 | 14.01 - ReparaÃ§Ã£o e manutenÃ§Ã£o de equipamentos eletroeletrÃ´nicos de uso pessoal e domestico.\",\n    \"codigo_nbs\": \"1.2001.30.00\",\n    \"federal_service_tax_code\": \"140101\",\n    \"operation_indicator_code\": \"\",\n    \"tax_situation_code\": \"000\",\n    \"tax_classification_code\": \"000001\",\n    \"service_description\": \"PrestaÃ§Ã£o de ServiÃ§os tÃ©cnicos conforme Ordem de ServiÃ§o.\",\n    \"observations\": \"EmissÃ£o via API REST STEOS v4.53.2.\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Sincronizar Status da NFS-e no Asaas",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/nfse/consultar/{{os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "nfse",
+                                "consultar",
+                                "{{os_id}}"
+                            ]
+                        },
+                        "description": "Consulta o Asaas em tempo real e atualiza `asaas_invoice_status`, `number`, `pdfUrl` e `xmlUrl` na O.S. (`vLancamento` ou `vOs`)."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Cancelar NFS-e no Asaas",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/nfse/cancelar/{{os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "nfse",
+                                "cancelar",
+                                "{{os_id}}"
+                            ]
+                        },
+                        "description": "Solicita cancelamento da NFS-e (`POST /v3/invoices/{id}/cancel`), tratando retornos `PROCESSING_CANCELLATION`, `CANCELED` e `CANCELLATION_DENIED` (`eOs`).",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"cancelOnlyOnAsaas\": false\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "11. Financeiro",
+            "description": "Consulta somente leitura de lanÃ§amentos financeiros e estatÃ­sticas consolidadas (`FinanceiroController`). Exige permissÃ£o `vLancamento`.",
+            "item": [
+                {
+                    "name": "Listar LanÃ§amentos Financeiros",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/financeiro?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "financeiro"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "tipo",
+                                    "value": "receita",
+                                    "description": "`receita`, `despesa` ou `Todos`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "baixado",
+                                    "value": "1",
+                                    "description": "`1` para baixado, `0` para pendente ou `Todos`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "vencimento_de",
+                                    "value": "2026-11-01",
+                                    "description": "Vencimento inicial YYYY-MM-DD",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "vencimento_ate",
+                                    "value": "2026-11-30",
+                                    "description": "Vencimento final YYYY-MM-DD",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "centro_de_gastos",
+                                    "value": "",
+                                    "description": "ID/nome do Centro de Gastos",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "classificacao_fin",
+                                    "value": "",
+                                    "description": "ID/nome da ClassificaÃ§Ã£o Financeira",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "grupo_finaceiro",
+                                    "value": "",
+                                    "description": "ID/nome do Grupo Financeiro",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "forma_pgto",
+                                    "value": "",
+                                    "description": "ID/nome da Forma de Pagamento",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista lanÃ§amentos com filtros avanÃ§ados por tipo, baixa, vencimento, centro de gastos, classificaÃ§Ã£o, grupo e forma de pagamento."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar LanÃ§amento por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/financeiro/{{lancamento_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "financeiro",
+                                "{{lancamento_id}}"
+                            ]
+                        },
+                        "description": "Retorna lanÃ§amento individual e array `anexos` (`Financeiro_model::getAnexos`)."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Resumo EstatÃ­stico Financeiro",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/financeiro/resumo",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "financeiro",
+                                "resumo"
+                            ]
+                        },
+                        "description": "Retorna totais de receitas e despesas realizadas e pendentes via `Financeiro_model::getEstatisticasFinanceiro2()`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "12. Frota & VeÃ­culos",
+            "description": "Consulta de veÃ­culos cadastrados, abastecimentos/odÃ´metro e trilha de auditoria (`VeiculosController`). Exige permissÃ£o `vVeiculo`.",
+            "item": [
+                {
+                    "name": "Listar VeÃ­culos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/veiculos?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "veiculos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "description": "Lista paginada da frota cadastrada em `veiculos`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar VeÃ­culo por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/veiculos/{{veiculo_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "veiculos",
+                                "{{veiculo_id}}"
+                            ]
+                        },
+                        "description": "Retorna dados do veÃ­culo com `abastecimentos` (`gasolina`) e Ãºltimos 25 registros de auditoria (`veiculos_logs`)."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "13. Vendas",
+            "description": "Consulta RESTful de vendas e itens/cobranÃ§as vinculadas (`VendasController`). Exige permissÃ£o `vVenda`.",
+            "item": [
+                {
+                    "name": "Listar Vendas",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/vendas?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "vendas"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Cliente ou nÂº da venda",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "Faturado",
+                                    "description": "Status da venda",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "from",
+                                    "value": "2026-11-01",
+                                    "description": "Data inicial YYYY-MM-DD",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "to",
+                                    "value": "2026-11-30",
+                                    "description": "Data final YYYY-MM-DD",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Lista vendas paginadas calculando `totalProdutos`, com filtros opcionais."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar Venda por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/vendas/{{venda_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "vendas",
+                                "{{venda_id}}"
+                            ]
+                        },
+                        "description": "Retorna detalhes da venda (sem `senha` do cliente), `produtos`, `cobrancas` e `totalProdutos`."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "14. Portal do Cliente (Conecte / App)",
+            "description": "Endpoints multi-tenant para o cliente final autenticado via `/api/v1/client/auth`. Toda a pasta usa `Bearer {{client_access_token}}` e aplica isolamento estrito de `clientes_id` (`HTTP 403` contra IDOR).",
+            "auth": {
+                "type": "bearer",
+                "bearer": [
+                    {
+                        "key": "token",
+                        "value": "{{client_access_token}}",
+                        "type": "string"
+                    }
+                ]
+            },
+            "item": [
+                {
+                    "name": "Login do Cliente (Portal Conecte)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/auth",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "auth"
+                            ]
+                        },
+                        "description": "Autentica cliente em `clientes` e grava `client_access_token` na Collection e no Environment ativo.",
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{client_email}}\",\n    \"password\": \"{{client_password}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "evt-login-client",
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test(\"Status HTTP 200 OK\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "try {",
+                                    "    const json = pm.response.json();",
+                                    "    if (json && json.status === true && json.result && json.result.access_token) {",
+                                    "        pm.collectionVariables.set(\"client_access_token\", json.result.access_token);",
+                                    "        if (pm.environment && pm.environment.name) {",
+                                    "            pm.environment.set(\"client_access_token\", json.result.access_token);",
+                                    "        }",
+                                    "        console.log(\"client_access_token atualizado com sucesso.\");",
+                                    "    }",
+                                    "} catch (err) {",
+                                    "    console.error(\"Erro ao processar client_access_token:\", err);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Resumo Inicial do Cliente",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client"
+                            ]
+                        },
+                        "description": "Retorna Ãºltimas O.S. (`Os`) e Ãºltimas compras (`compras`) do cliente autenticado."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Listar Minhas O.S.",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/os?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "os"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "description": "Lista paginada de O.S. pertencentes exclusivamente ao cliente autenticado."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar Minha O.S. por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/os/{{os_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "os",
+                                "{{os_id}}"
+                            ]
+                        },
+                        "description": "Retorna O.S. do cliente autenticado com produtos (sem custo/estoque interno), serviÃ§os, anexos (sem `path`), QR Code Pix e dados do emitente. Bloqueia O.S. de terceiros com HTTP 403."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Abrir Nova O.S. pelo Cliente",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/os",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "os"
+                            ]
+                        },
+                        "description": "Permite ao cliente abrir uma solicitaÃ§Ã£o de Ordem de ServiÃ§o com status `Aberto`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"descricaoProduto\": \"Impressora TÃ©rmica NÃ£o Fiscal\",\n    \"defeito\": \"Falha intermitente na alimentaÃ§Ã£o do papel.\",\n    \"observacoes\": \"Equipamento disponÃ­vel na recepÃ§Ã£o em horÃ¡rio comercial.\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Listar Minhas Compras / Vendas",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/compras?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "compras"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "description": "Lista compras (`vendas`) paginadas do cliente autenticado."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar Minha Compra por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/compras/{{venda_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "compras",
+                                "{{venda_id}}"
+                            ]
+                        },
+                        "description": "Retorna detalhes da compra do cliente com `Produtos`, `QrCode` Pix e `ChaveFormatada`. Bloqueia compras de outros clientes com HTTP 403."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Listar Minhas CobranÃ§as",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/cobrancas?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "cobrancas"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "description": "Lista cobranÃ§as vinculadas exclusivamente ao cliente autenticado."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Listar Meus Contratos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/contratos?perPage=20&page=0",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "contratos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "perPage",
+                                    "value": "20",
+                                    "description": "Itens por pagina (padrao 20)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Indice da pagina iniciando em 0",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "description": "Lista contratos vinculados exclusivamente ao cliente autenticado (somente leitura)."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "name": "Detalhar Meu Contrato por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/index.php/api/v1/client/contratos/{{contrato_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "index.php",
+                                "api",
+                                "v1",
+                                "client",
+                                "contratos",
+                                "{{contrato_id}}"
+                            ]
+                        },
+                        "description": "Retorna contrato do cliente com `sistemas` + `checks`, `os`, `vendas`, `cobrancas` e `anexos` (sem `path`). Bloqueia contratos de terceiros com HTTP 403."
+                    },
+                    "response": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080",
+            "type": "string",
+            "description": "URL base do STEOS (sem barra final). Sobrescrita quando um Environment estiver selecionado."
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "secret",
+            "description": "Token JWT administrativo preenchido automaticamente pelo endpoint Login Administrativo."
+        },
+        {
+            "key": "client_access_token",
+            "value": "",
+            "type": "secret",
+            "description": "Token JWT do Portal do Cliente preenchido automaticamente pelo endpoint Login do Cliente."
+        },
+        {
+            "key": "admin_email",
+            "value": "admin@admin.com",
+            "type": "string",
+            "description": "E-mail de acesso administrativo para testes de login."
+        },
+        {
+            "key": "admin_password",
+            "value": "admin",
+            "type": "secret",
+            "description": "Senha do usuÃ¡rio administrativo para testes de login."
+        },
+        {
+            "key": "client_email",
+            "value": "cliente@exemplo.com.br",
+            "type": "string",
+            "description": "E-mail do cliente cadastrado para testes no Portal Conecte."
+        },
+        {
+            "key": "client_password",
+            "value": "steas@123",
+            "type": "secret",
+            "description": "Senha do cliente (padrÃ£o STEOS: steas@123)."
+        },
+        {
+            "key": "usuario_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "cliente_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "produto_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "servico_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "os_id",
+            "value": "2842",
+            "type": "string"
+        },
+        {
+            "key": "produto_os_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "servico_os_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "anotacao_os_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "anexo_os_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "contrato_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "cobranca_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "servico_nfse_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "lancamento_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "veiculo_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "venda_id",
+            "value": "1",
+            "type": "string"
+        }
+    ]
+}
